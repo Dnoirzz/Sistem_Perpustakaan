@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script id="tailwind-config">
         tailwind.config = {
@@ -273,6 +274,29 @@
             </div>
         </section>
 
+        <!-- Charts Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+            <!-- Line Chart: Tren Peminjaman -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm">
+                <h3 class="text-sm font-bold text-on-surface mb-4">Tren Peminjaman Bulanan ({{ date('Y') }})</h3>
+                <div class="h-64 relative">
+                    <canvas id="chartTrenPeminjaman"></canvas>
+                </div>
+            </div>
+
+            <!-- Pie Chart: Distribusi Kategori -->
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+                <h3 class="text-sm font-bold text-on-surface mb-4">Distribusi Kategori Populer</h3>
+                <div class="h-64 relative flex items-center justify-center">
+                    @if(count($categoryLabels) > 0)
+                        <canvas id="chartKategoriPopuler"></canvas>
+                    @else
+                        <div class="text-xs text-outline font-medium">Belum ada data sirkulasi kategori buku.</div>
+                    @endif
+                </div>
+            </div>
+        </section>
+
         <!-- Two Column Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column: Recent Loans Table -->
@@ -375,50 +399,6 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- Library Announcements -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="font-headline-md text-on-surface text-lg">Pengumuman Internal</h2>
-                        <span class="material-symbols-outlined text-primary">campaign</span>
-                    </div>
-                    <div class="space-y-6">
-                        <div class="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 flex gap-4">
-                            <div class="w-10 h-10 rounded-xl bg-blue-100 flex-shrink-0 flex items-center justify-center text-blue-600">
-                                <span class="material-symbols-outlined text-[20px]">info</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-blue-800 font-semibold">Audit Buku Semester</p>
-                                <p class="text-[11px] text-blue-700 mt-1">Stok fisik buku akan diverifikasi pada pertengahan bulan ini. Mohon siapkan log data sirkulasi.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Quick Actions Widget -->
-                <section class="bg-gradient-to-br from-primary to-primary-container rounded-3xl shadow-lg p-8 text-white relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h3 class="font-headline-md text-lg mb-2">Pintasan Cepat</h3>
-                        <p class="text-xs opacity-70 mb-6">Akses modul operasional perpustakaan secara instan.</p>
-                        
-                        <div class="space-y-3">
-                            <a href="{{ route('petugas.books.index') }}" class="flex items-center justify-between p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-xs font-bold border border-white/15">
-                                <span>Tambah Buku Baru</span>
-                                <span class="material-symbols-outlined text-[16px]">library_add</span>
-                            </a>
-                            <a href="{{ route('petugas.loans.index') }}" class="flex items-center justify-between p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-xs font-bold border border-white/15">
-                                <span>Proses Peminjaman</span>
-                                <span class="material-symbols-outlined text-[16px]">swap_horiz</span>
-                            </a>
-                            <a href="{{ route('petugas.returns.index') }}" class="flex items-center justify-between p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-xs font-bold border border-white/15">
-                                <span>Proses Pengembalian</span>
-                                <span class="material-symbols-outlined text-[16px]">assignment_return</span>
-                            </a>
-                        </div>
-                    </div>
-                    <!-- Decorative element -->
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                </section>
             </div>
         </div>
     </main>
@@ -435,6 +415,63 @@
                 if(icon) icon.classList.remove('animate-bounce');
             });
         });
+
+        // Initialize Tren Peminjaman Chart
+        const ctxLine = document.getElementById('chartTrenPeminjaman').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($months) !!},
+                datasets: [{
+                    label: 'Peminjaman',
+                    data: {!! json_encode($monthlyLoans) !!},
+                    borderColor: '#00a5c0',
+                    backgroundColor: 'rgba(0, 165, 192, 0.05)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1 } 
+                    }
+                }
+            }
+        });
+
+        // Initialize Kategori Populer Chart
+        const hasCategories = {{ count($categoryLabels) > 0 ? 'true' : 'false' }};
+        if (hasCategories) {
+            const ctxPie = document.getElementById('chartKategoriPopuler').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: {!! json_encode($categoryLabels) !!},
+                    datasets: [{
+                        data: {!! json_encode($categoryCounts) !!},
+                        backgroundColor: ['#00a5c0', '#4edea3', '#ffb2b7', '#bf0f3c', '#006c49']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { boxWidth: 12, font: { size: 10 } } 
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>

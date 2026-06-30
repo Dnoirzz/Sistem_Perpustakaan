@@ -229,6 +229,12 @@ class LoanController extends Controller
             return $newLoan;
         });
 
+        // Catat Log Aktivitas (Fase 6)
+        \App\Models\ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Mencatat peminjaman baru untuk anggota: ' . $member->name . ' (Koleksi: "' . ($loan->collection->display_title ?? 'Koleksi') . '")',
+        ]);
+
         // Kirim Notifikasi WhatsApp (Fase 6)
         try {
             $loan->load(['user', 'collection.book']);

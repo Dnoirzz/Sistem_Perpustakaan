@@ -19,6 +19,10 @@
             <span class="material-symbols-outlined">settings_phone</span>
             <span class="font-label-md">Pengaturan Notifikasi</span>
         </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('admin.activity-logs.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('admin.activity-logs.index') }}">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="font-label-md">Log Aktivitas</span>
+        </a>
         <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('profile.edit') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('profile.edit') }}">
             <span class="material-symbols-outlined">person</span>
             <span class="font-label-md">Profil</span>

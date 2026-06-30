@@ -47,6 +47,14 @@
             <span class="material-symbols-outlined">group</span>
             <span class="font-label-md">Kelola Anggota</span>
         </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.recommendations.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.recommendations.index') }}">
+            <span class="material-symbols-outlined">rate_review</span>
+            <span class="font-label-md">Kelola Usulan Buku</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.voting.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.voting.index') }}">
+            <span class="material-symbols-outlined">how_to_vote</span>
+            <span class="font-label-md">Kelola Voting Buku</span>
+        </a>
 
         <details class="group" {{ $loanManagementMenuOpen ? 'open' : '' }}>
             <summary class="list-none flex items-center justify-between gap-3 px-4 py-3 rounded-2xl cursor-pointer {{ $loanManagementMenuOpen ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all">
@@ -80,6 +88,11 @@
                 </a>
             </div>
         </details>
+
+        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.reports.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.reports.index') }}">
+            <span class="material-symbols-outlined">analytics</span>
+            <span class="font-label-md">Laporan & Rekap</span>
+        </a>
 
         <details class="group" {{ $settingsMenuOpen ? 'open' : '' }}>
             <summary class="list-none flex items-center justify-between gap-3 px-4 py-3 rounded-2xl cursor-pointer {{ $settingsMenuOpen ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all">

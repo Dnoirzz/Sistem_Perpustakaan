@@ -53,6 +53,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
     Route::post('/settings/test-wa', [\App\Http\Controllers\Admin\SettingController::class, 'testWa'])->name('settings.test-wa');
+
+    // Activity Logs (Fase 6)
+    Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
 });
 
 // Petugas routes
@@ -112,6 +115,21 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::delete('/return-settings/checklists/{checklist}', [PetugasReturnSettingController::class, 'destroyChecklist'])->name('return-settings.checklists.destroy');
     Route::get('/return-settings/penalty-rules/{penaltyRule}/edit', [PetugasReturnSettingController::class, 'editPenaltyRule'])->name('return-settings.penalty-rules.edit');
     Route::put('/return-settings/penalty-rules/{penaltyRule}', [PetugasReturnSettingController::class, 'updatePenaltyRule'])->name('return-settings.penalty-rules.update');
+
+    // Usulan Buku Baru (Fase 6)
+    Route::get('/recommendations', [\App\Http\Controllers\Petugas\RecommendationController::class, 'index'])->name('recommendations.index');
+    Route::post('/recommendations/{id}/verify', [\App\Http\Controllers\Petugas\RecommendationController::class, 'verify'])->name('recommendations.verify');
+    Route::delete('/recommendations/{id}', [\App\Http\Controllers\Petugas\RecommendationController::class, 'destroy'])->name('recommendations.destroy');
+
+    // Laporan & Ekspor Data (Fase 6)
+    Route::get('/reports', [\App\Http\Controllers\Petugas\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/print-sirkulasi', [\App\Http\Controllers\Petugas\ReportController::class, 'printSirkulasi'])->name('reports.print-sirkulasi');
+    Route::get('/reports/export-sirkulasi', [\App\Http\Controllers\Petugas\ReportController::class, 'exportSirkulasiExcel'])->name('reports.export-sirkulasi');
+    Route::get('/reports/print-koleksi', [\App\Http\Controllers\Petugas\ReportController::class, 'printKoleksi'])->name('reports.print-koleksi');
+    Route::get('/reports/export-koleksi', [\App\Http\Controllers\Petugas\ReportController::class, 'exportKoleksiExcel'])->name('reports.export-koleksi');
+
+    // Kelola Voting Buku (Petugas View)
+    Route::resource('voting', \App\Http\Controllers\Petugas\VotingController::class);
 });
 
 // Dosen routes
@@ -120,9 +138,9 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     
     Route::get('/books', [\App\Http\Controllers\BookSearchController::class, 'index'])->name('books.index');
     
-    Route::get('/recommendations', function () {
-        return 'Usul Buku (Fase 6)';
-    })->name('recommendations.index');
+    Route::get('/recommendations', [\App\Http\Controllers\RecommendationController::class, 'index'])->name('recommendations.index');
+    Route::get('/recommendations/create', [\App\Http\Controllers\RecommendationController::class, 'create'])->name('recommendations.create');
+    Route::post('/recommendations', [\App\Http\Controllers\RecommendationController::class, 'store'])->name('recommendations.store');
 
     // Voting routes
     Route::get('/voting', [\App\Http\Controllers\VotingController::class, 'index'])->name('voting.index');
@@ -147,9 +165,9 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
     
     Route::get('/books', [\App\Http\Controllers\BookSearchController::class, 'index'])->name('books.index');
     
-    Route::get('/recommendations', function () {
-        return 'Usul Buku (Fase 6)';
-    })->name('recommendations.index');
+    Route::get('/recommendations', [\App\Http\Controllers\RecommendationController::class, 'index'])->name('recommendations.index');
+    Route::get('/recommendations/create', [\App\Http\Controllers\RecommendationController::class, 'create'])->name('recommendations.create');
+    Route::post('/recommendations', [\App\Http\Controllers\RecommendationController::class, 'store'])->name('recommendations.store');
 
     // Fase 5: Upload Repository & Katalog Arsip
     Route::get('/arsip', [MahasiswaArsipController::class, 'index'])->name('arsip.index');

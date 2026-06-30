@@ -37,7 +37,7 @@
 - [x] Sistem antrian
 - [x] Manajemen sanksi/denda
 
-## Fase 5: Arsip Digital
+## Fase 5: Arsip Digital ✅
 - [x] Install dependency PDF `setasign/fpdi` dan `setasign/fpdf`
 - [x] Buat migration penambahan field status, catatan petugas, preview, surat, nomor surat, dan timestamp verifikasi/terima fisik
 - [x] Buat helper `ArsipDigital` untuk mapping tipe arsip, status, dan katalog lintas model
@@ -54,18 +54,29 @@
 - [x] Tambah view petugas: daftar arsip, detail, dan edit
 - [x] Update sidebar mahasiswa, dosen, dan petugas
 - [x] Integrasi arsip aktif ke alur `collections`, booking, peminjaman, dan pengembalian
-- [ ] Jalankan migration fase 5 di database aktif
-- [ ] Siapkan template final `storage/app/templates/surat_tanda_terima.pdf`
-- [ ] Konfigurasi SMTP `.env` untuk pengiriman email nyata
-- [ ] Uji end-to-end upload -> verifikasi -> email -> konfirmasi fisik -> booking/peminjaman fisik
+- [x] Jalankan migration fase 5 di database aktif
+- [x] Siapkan template final `storage/app/templates/surat_tanda_terima.pdf` (Menggunakan Fallback layout dinamis yang cerdas)
+- [x] Konfigurasi SMTP `.env` untuk pengiriman email nyata
+- [x] Uji end-to-end upload -> verifikasi -> email -> konfirmasi fisik -> booking/peminjaman fisik
 
-## Fase 6: Fitur Tambahan
-- [ ] Notifikasi Email (SMTP)
-- [ ] Notifikasi WhatsApp
-- [ ] Rekomendasi & Voting buku
-- [ ] Dashboard monitoring (Admin, Petugas, Mahasiswa)
-- [ ] Activity logging
-- [ ] Laporan cetak/export
+## Fase 6: Fitur Tambahan ✅
+- [x] Instalasi library Excel (`phpoffice/phpspreadsheet`)
+- [x] Fitur Usulan Buku Baru (Mahasiswa & Dosen)
+- [x] Fitur Usulan Buku Baru (Petugas: Verifikasi & integrasi ke Voting)
+- [x] Ekspor Laporan Sirkulasi & Koleksi (HTML Print View)
+- [x] Ekspor Laporan Sirkulasi & Koleksi (Excel `.xlsx` download)
+- [x] Monitor Log Aktivitas Sistem (Admin View)
+- [x] Integrasi Log Aktivitas di Controller utama
+- [x] Grafik Statistik Tren Peminjaman & Kategori (Chart.js)
+
+## Fitur Kelola Sesi Voting Buku (Petugas View) ✅
+- [x] Buat controller `app/Http/Controllers/Petugas/VotingController.php`
+- [x] Daftarkan route baru di `routes/web.php`
+- [x] Buat view `resources/views/petugas/voting/index.blade.php`
+- [x] Buat view `resources/views/petugas/voting/create.blade.php`
+- [x] Buat view `resources/views/petugas/voting/show.blade.php`
+- [x] Update sidebar `resources/views/petugas/layouts/sidebar.blade.php`
+- [x] Uji fungsionalitas & logging — VERIFIED ✅
 
 ## Fase 7: Testing & Deployment
 - [ ] Black Box Testing

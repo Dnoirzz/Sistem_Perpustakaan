@@ -29,6 +29,41 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('petugas.dashboard', compact('stats', 'recentLoans'));
+        // 1. Tren Peminjaman Bulanan (Tahun Berjalan)
+        $monthlyLoansData = Loan::selectRaw('MONTH(tgl_pinjam) as month, COUNT(*) as count')
+            ->whereYear('tgl_pinjam', date('Y'))
+            ->groupBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $monthlyLoans = [];
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        foreach (range(1, 12) as $m) {
+            $monthlyLoans[] = $monthlyLoansData[$m] ?? 0;
+        }
+
+        // 2. Distribusi Kategori Buku Terpopuler
+        $categoryData = Loan::join('collections', 'loans.koleksi_id', '=', 'collections.koleksi_id')
+            ->join('books', 'collections.item_id', '=', 'books.buku_id')
+            ->join('categories', 'books.kategori_id', '=', 'categories.kategori_id')
+            ->where('collections.item_type', 'book')
+            ->selectRaw('categories.kategori_name as name, COUNT(*) as count')
+            ->groupBy('name')
+            ->orderByDesc('count')
+            ->take(5)
+            ->pluck('count', 'name')
+            ->toArray();
+
+        $categoryLabels = array_keys($categoryData);
+        $categoryCounts = array_values($categoryData);
+
+        return view('petugas.dashboard', compact(
+            'stats', 
+            'recentLoans', 
+            'months', 
+            'monthlyLoans', 
+            'categoryLabels', 
+            'categoryCounts'
+        ));
     }
 }

@@ -280,3 +280,38 @@ Seluruh pelacakan tugas dan dokumentasi perkembangan hari ini telah disimpan den
 *   Template final `storage/app/templates/surat_tanda_terima.pdf` masih perlu disediakan untuk hasil surat yang sesuai desain akhir.
 *   SMTP nyata di `.env` masih perlu dikonfigurasi agar email verifikasi benar-benar terkirim ke alamat mahasiswa.
 *   `php artisan test` masih gagal pada test auth bawaan karena konfigurasi lama project yang mensyaratkan `users.role_id`, sehingga belum dapat dipakai sebagai indikator khusus untuk modul fase 5.
+
+---
+
+## Progress Lanjutan Fase 6 & Fitur Kelola Sesi Voting Buku (Petugas View)
+
+**Hari/Tanggal:** Selasa, 30 Juni 2026 (Sore)  
+**Fokus:** Penyelesaian modul tambahan Fase 6 (Usulan Buku, Laporan Excel/Print, Log Aktivitas, Grafik Dashboard) dan pembangunan modul Kelola Sesi Voting Buku bagi Petugas.
+
+### Fitur & Perbaikan yang Diselesaikan Hari Ini ✅
+
+*   **Sistem Usulan Buku Baru (Mahasiswa, Dosen, Petugas)**:
+    *   **Anggota (Mahasiswa/Dosen)**: Formulir pengajuan usulan buku baru serta halaman riwayat usulan ber-badge status warna. Teks alasan usulan ditampilkan penuh (*word wrap*) tanpa terpotong untuk mempermudah penilaian.
+    *   **Petugas**: Panel verifikasi usulan masuk (Setuju langsung / Setuju & Masukkan ke Sesi Voting Aktif / Tolak).
+*   **Modul Laporan & Ekspor Data (Excel & Print Layout)**:
+    *   Petugas dapat memfilter laporan sirkulasi periodik.
+    *   Menyediakan tombol cetak HTML ber-kop surat resmi PSDKU POLNEP Sukamara yang memicu print browser secara otomatis (`window.print()`).
+    *   Menyediakan ekspor file spreadsheet `.xlsx` Excel yang didukung oleh library `phpoffice/phpspreadsheet` untuk rekapitulasi data sirkulasi dan data koleksi pustaka lengkap (Buku + Arsip Digital PKL/TA).
+*   **Pemantauan Log Aktivitas Sistem (Admin)**:
+    *   Admin dapat memantau log aktivitas sistem terstruktur (Login/Logout, Sirkulasi, dan aktivitas unggah/verifikasi arsip digital).
+*   **Grafik Statistik Visual (Chart.js)**:
+    *   Dashboard Admin dan Petugas sekarang memuat visualisasi real-time grafik garis (tren peminjaman bulanan) dan pie/doughnut chart (distribusi kategori buku terpopuler) berbasis data SQL dinamis.
+*   **Modul Kelola Sesi Voting Buku (Petugas View)**:
+    *   **CRUD Sesi Voting**: Petugas dapat membuat sesi voting baru dengan judul, deskripsi, tanggal mulai, dan tanggal selesai.
+    *   **Detail Rekapitulasi Suara**: Menampilkan statistik hasil suara kandidat usulan buku dengan bar persentase horizontal yang responsif serta log nama pemilih.
+    *   **Sidebar & Rute**: Penambahan menu "Kelola Voting Buku" di sidebar petugas dan pendaftaran route resource `voting` baru.
+*   **Pembersihan & Perbaikan Bug Database**:
+    *   **Perbaikan Field `prodi_name`**: Mengubah referensi query/view dari `prodi_name` ke `nama_prodi` pada katalog arsip mahasiswa.
+    *   **Perbaikan Field `category_name`**: Menyelaraskan relasi kategori pustaka menjadi `kategori_name` pada cetak laporan dan queries dashboard.
+    *   **Perbaikan Join `category_id`**: Mengubah kunci join categories dari `category_id` menjadi `kategori_id` di database.
+    *   **Penyederhanaan Dashboard**: Menghapus widget "Reading Progress" dari dashboard Mahasiswa/Dosen dan menyederhanakan panel widget "Pintasan Cepat" & "Pengumuman Internal" di dashboard Petugas atas permintaan pengguna.
+
+### Verifikasi yang Sudah Dilakukan
+*   Seluruh rute baru dan controller voting petugas telah terdaftar dengan benar (`php artisan route:list` sukses).
+*   Kompilasi template Blade berhasil tanpa ada error parsing.
+

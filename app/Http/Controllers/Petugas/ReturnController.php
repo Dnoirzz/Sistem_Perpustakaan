@@ -239,6 +239,12 @@ class ReturnController extends Controller
             }
         });
 
+        // Catat Log Aktivitas (Fase 6)
+        \App\Models\ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Memproses pengembalian koleksi "' . ($loan->collection->display_title ?? 'Koleksi') . '" oleh anggota: ' . $loan->user->name,
+        ]);
+
         // Kirim Notifikasi WhatsApp Antrian Tersedia (Fase 6)
         if ($notifiableQueue) {
             try {

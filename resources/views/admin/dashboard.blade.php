@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script id="tailwind-config">
         tailwind.config = {
@@ -250,6 +251,29 @@
             </div>
         </section>
 
+        <!-- Charts Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+            <!-- Line Chart: Tren Peminjaman -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm">
+                <h3 class="text-sm font-bold text-on-surface mb-4">Tren Peminjaman Bulanan ({{ date('Y') }})</h3>
+                <div class="h-64 relative">
+                    <canvas id="chartTrenPeminjaman"></canvas>
+                </div>
+            </div>
+
+            <!-- Pie Chart: Distribusi Kategori -->
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+                <h3 class="text-sm font-bold text-on-surface mb-4">Distribusi Kategori Populer</h3>
+                <div class="h-64 relative flex items-center justify-center">
+                    @if(count($categoryLabels) > 0)
+                        <canvas id="chartKategoriPopuler"></canvas>
+                    @else
+                        <div class="text-xs text-outline font-medium">Belum ada data sirkulasi kategori buku.</div>
+                    @endif
+                </div>
+            </div>
+        </section>
+
         <!-- Two Column Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column: Recent Users Table -->
@@ -418,6 +442,63 @@
                 if(icon) icon.classList.remove('animate-bounce');
             });
         });
+
+        // Initialize Tren Peminjaman Chart
+        const ctxLine = document.getElementById('chartTrenPeminjaman').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($months) !!},
+                datasets: [{
+                    label: 'Peminjaman',
+                    data: {!! json_encode($monthlyLoans) !!},
+                    borderColor: '#00a5c0',
+                    backgroundColor: 'rgba(0, 165, 192, 0.05)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1 } 
+                    }
+                }
+            }
+        });
+
+        // Initialize Kategori Populer Chart
+        const hasCategories = {{ count($categoryLabels) > 0 ? 'true' : 'false' }};
+        if (hasCategories) {
+            const ctxPie = document.getElementById('chartKategoriPopuler').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: {!! json_encode($categoryLabels) !!},
+                    datasets: [{
+                        data: {!! json_encode($categoryCounts) !!},
+                        backgroundColor: ['#00a5c0', '#4edea3', '#ffb2b7', '#bf0f3c', '#006c49']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { boxWidth: 12, font: { size: 10 } } 
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
