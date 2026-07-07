@@ -176,7 +176,7 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     Route::get('/katalog-arsip', [ArsipKatalogController::class, 'index'])->name('katalog-arsip.index');
     Route::get('/katalog-arsip/{type}/{id}', [ArsipKatalogController::class, 'show'])->name('katalog-arsip.show');
     Route::get('/katalog-arsip/{type}/{id}/preview', [ArsipKatalogController::class, 'preview'])->name('katalog-arsip.preview');
-    Route::get('/katalog-arsip/{type}/{id}/{slug}.pdf', [ArsipKatalogController::class, 'full'])->name('katalog-arsip.full');
+    Route::get('/katalog-arsip/{type}/{id}/{slug}', [ArsipKatalogController::class, 'full'])->name('katalog-arsip.full');
 });
 
 // Mahasiswa routes
@@ -198,7 +198,7 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
     Route::get('/katalog-arsip', [ArsipKatalogController::class, 'index'])->name('katalog-arsip.index');
     Route::get('/katalog-arsip/{type}/{id}', [ArsipKatalogController::class, 'show'])->name('katalog-arsip.show');
     Route::get('/katalog-arsip/{type}/{id}/preview', [ArsipKatalogController::class, 'preview'])->name('katalog-arsip.preview');
-    Route::get('/katalog-arsip/{type}/{id}/{slug}.pdf', [ArsipKatalogController::class, 'full'])->name('katalog-arsip.full');
+    Route::get('/katalog-arsip/{type}/{id}/{slug}', [ArsipKatalogController::class, 'full'])->name('katalog-arsip.full');
 
     // Voting routes
     Route::get('/voting', [\App\Http\Controllers\VotingController::class, 'index'])->name('voting.index');
