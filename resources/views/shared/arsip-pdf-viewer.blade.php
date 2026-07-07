@@ -19,7 +19,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="h-screen flex flex-col overflow-hidden">
     <!-- Top Sleek Bar -->
     <header class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-10 shadow-lg">
         <div class="flex items-center gap-3 overflow-hidden mr-4">
@@ -40,7 +40,7 @@
 
     <!-- PDF Viewer Frame -->
     <main class="flex-1 bg-slate-950 relative">
-        <iframe src="{{ $streamUrl }}" class="w-full h-full border-none shadow-inner" allow="fullscreen"></iframe>
+        <iframe src="{{ $streamUrl }}" class="absolute inset-0 w-full h-full border-none shadow-inner" allow="fullscreen"></iframe>
     </main>
 
     <!-- Close Log Beacon Tracker -->
