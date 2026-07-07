@@ -190,7 +190,7 @@
                 <form action="{{ route('mahasiswa.arsip.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Jenis Arsip</label>
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Jenis Arsip <span class="text-error">*</span></label>
                         <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                             @foreach($typeOptions as $option)
                                 <option value="{{ $option['value'] }}" @selected(old('type') === $option['value'])>{{ $option['label'] }}</option>
@@ -198,36 +198,36 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip</label>
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip <span class="text-error">*</span></label>
                         <input type="text" name="judul" value="{{ old('judul') }}" placeholder="Masukkan Judul Laporan" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                     </div>
                     <div class="grid gap-5 md:grid-cols-2">
                         <div>
-                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Pembimbing</label>
-                            <input type="text" name="pembimbing" value="{{ old('pembimbing') }}" placeholder="Nama Pembimbing" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Pembimbing <span class="text-error">*</span></label>
+                            <input type="text" name="pembimbing" value="{{ old('pembimbing') }}" placeholder="Nama Pembimbing" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tahun Terbit</label>
-                            <input type="number" name="tahun" value="{{ old('tahun') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tahun Terbit <span class="text-error">*</span></label>
+                            <input type="number" name="tahun" value="{{ old('tahun') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                         </div>
                     </div>
                     <div class="grid gap-5 md:grid-cols-2">
                         <div>
-                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 1</label>
-                            <input type="text" name="penguji_1" value="{{ old('penguji_1') }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 1 <span class="text-error">*</span></label>
+                            <input type="text" name="penguji_1" value="{{ old('penguji_1') }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 2</label>
-                            <input type="text" name="penguji_2" value="{{ old('penguji_2') }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 2 <span class="text-error">*</span></label>
+                            <input type="text" name="penguji_2" value="{{ old('penguji_2') }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">File PDF Utama (Wajib)</label>
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">File PDF <span class="text-error">*</span></label>
                         <input type="file" name="file_pdf" accept="application/pdf" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">File Word (Opsional)</label>
-                        <input type="file" name="file_word" accept=".doc,.docx" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all">
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">File Word <span class="text-error">*</span></label>
+                        <input type="file" name="file_word" accept=".doc,.docx" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required>
                     </div>
                     <button class="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
                         <span class="material-symbols-outlined text-[18px]">send</span>

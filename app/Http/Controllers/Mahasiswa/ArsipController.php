@@ -134,22 +134,27 @@ class ArsipController extends Controller
         abort_unless(in_array($archive->status, ArsipDigital::editableStatuses(), true), 403, 'Arsip ini tidak dapat diubah lagi.');
     }
 
-    protected function validateArchive(Request $request, bool $requirePdf): array
+    protected function validateArchive(Request $request, bool $isCreate): array
     {
         return $request->validate([
             'type' => ['required', 'in:' . implode(',', array_keys(ArsipDigital::definitions()))],
             'judul' => ['required', 'string', 'max:255'],
-            'pembimbing' => ['nullable', 'string', 'max:255'],
-            'penguji_1' => ['nullable', 'string', 'max:255'],
-            'penguji_2' => ['nullable', 'string', 'max:255'],
-            'tahun' => ['nullable', 'digits:4', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
-            'file_pdf' => [$requirePdf ? 'required' : 'nullable', 'file', 'mimes:pdf', 'max:20480'],
-            'file_word' => ['nullable', 'file', 'mimes:doc,docx', 'max:20480'],
+            'pembimbing' => ['required', 'string', 'max:255'],
+            'penguji_1' => ['required', 'string', 'max:255'],
+            'penguji_2' => ['required', 'string', 'max:255'],
+            'tahun' => ['required', 'digits:4', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
+            'file_pdf' => [$isCreate ? 'required' : 'nullable', 'file', 'mimes:pdf', 'max:20480'],
+            'file_word' => [$isCreate ? 'required' : 'nullable', 'file', 'mimes:doc,docx', 'max:20480'],
         ], [
             'type.required' => 'Jenis arsip wajib dipilih.',
             'judul.required' => 'Judul arsip wajib diisi.',
-            'file_pdf.required' => 'File PDF wajib diunggah.',
+            'pembimbing.required' => 'Nama dosen pembimbing wajib diisi.',
+            'penguji_1.required' => 'Nama dosen penguji 1 wajib diisi.',
+            'penguji_2.required' => 'Nama dosen penguji 2 wajib diisi.',
+            'tahun.required' => 'Tahun terbit wajib diisi.',
+            'file_pdf.required' => 'File PDF utama wajib diunggah.',
             'file_pdf.mimes' => 'File utama harus berformat PDF.',
+            'file_word.required' => 'File Word wajib diunggah.',
             'file_word.mimes' => 'File pendukung harus berformat DOC atau DOCX.',
         ]);
     }

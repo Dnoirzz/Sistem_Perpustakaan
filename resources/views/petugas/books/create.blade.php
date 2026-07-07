@@ -192,7 +192,7 @@
                         <!-- Judul Buku -->
                         <div class="space-y-2">
                             <label for="judul" class="block text-xs font-bold text-outline uppercase tracking-wider">Judul Buku</label>
-                            <input type="text" name="judul" id="judul" placeholder="Contoh: Algoritma dan Struktur Data" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('judul') }}" required/>
+                            <input type="text" name="judul" id="judul" placeholder="Masukkan Judul Buku" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('judul') }}" required/>
                             @error('judul')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -203,7 +203,7 @@
                             <!-- Penulis -->
                             <div class="space-y-2">
                                 <label for="author" class="block text-xs font-bold text-outline uppercase tracking-wider">Penulis / Author</label>
-                                <input type="text" name="author" id="author" placeholder="Contoh: Prof. Dr. Suharsono" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('author') }}" required/>
+                                <input type="text" name="author" id="author" placeholder="Masukkan Nama Penulis" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('author') }}" required/>
                                 @error('author')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror
@@ -231,7 +231,7 @@
                             <!-- Penerbit -->
                             <div class="sm:col-span-2 space-y-2">
                                 <label for="publisher" class="block text-xs font-bold text-outline uppercase tracking-wider">Penerbit</label>
-                                <input type="text" name="publisher" id="publisher" placeholder="Contoh: Penerbit Andi" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('publisher') }}"/>
+                                <input type="text" name="publisher" id="publisher" placeholder="Masukkan Nama Penerbit" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('publisher') }}"/>
                                 @error('publisher')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror
@@ -240,7 +240,7 @@
                             <!-- Tahun Terbit -->
                             <div class="space-y-2">
                                 <label for="release" class="block text-xs font-bold text-outline uppercase tracking-wider">Tahun Terbit</label>
-                                <input type="number" name="release" id="release" placeholder="Contoh: 2024" min="1900" max="{{ date('Y') + 1 }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('release') }}"/>
+                                <input type="number" name="release" id="release" placeholder="2024" min="1900" max="{{ date('Y') + 1 }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('release') }}"/>
                                 @error('release')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror
@@ -249,7 +249,7 @@
                             <!-- Stok -->
                             <div class="space-y-2">
                                 <label for="stock" class="block text-xs font-bold text-outline uppercase tracking-wider">Stok Buku</label>
-                                <input type="number" name="stock" id="stock" placeholder="Contoh: 5" min="0" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('stock', 0) }}" required/>
+                                <input type="number" name="stock" id="stock" placeholder="5" min="0" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('stock', 0) }}" required/>
                                 @error('stock')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror

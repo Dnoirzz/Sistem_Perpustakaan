@@ -163,12 +163,27 @@
         </header>
 
         <div class="grid gap-8 xl:grid-cols-[1.2fr_.8fr]">
-            <section class="rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
-                <h2 class="mb-4 text-lg font-bold text-on-surface flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary text-[24px]">picture_as_pdf</span> 
-                    Preview PDF (10 Halaman Pertama)
+            <section class="rounded-3xl border border-outline-variant/10 bg-white p-8 shadow-sm flex flex-col justify-center items-center text-center bg-gradient-to-br from-primary/5 via-transparent to-primary-container/10 min-h-[480px]">
+                <div class="w-24 h-24 rounded-3xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-inner">
+                    <span class="material-symbols-outlined text-[48px] animate-pulse">picture_as_pdf</span>
+                </div>
+                
+                <h2 class="text-2xl font-black text-on-surface mb-2 max-w-lg leading-snug">
+                    {{ $archiveTitle }}
                 </h2>
-                <iframe src="{{ route($rolePrefix . '.katalog-arsip.preview', [$archiveType, $archive->getKey()]) }}" class="h-[720px] w-full rounded-2xl border border-outline-variant/15"></iframe>
+                <p class="text-sm text-outline mb-8 max-w-md font-semibold">
+                    Oleh: {{ $archive->mahasiswa?->user?->name ?? 'Mahasiswa' }} ({{ $archive->mahasiswa?->nim ?? '-' }})
+                </p>
+
+                <div class="space-y-4">
+                    <a href="{{ route($rolePrefix . '.katalog-arsip.full', [$archiveType, $archive->getKey(), \Illuminate\Support\Str::slug($archiveTitle)]) }}" target="_blank" class="inline-flex items-center gap-2.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-8 py-4 text-base shadow-lg shadow-primary/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                        <span class="material-symbols-outlined text-[22px]">open_in_new</span>
+                        Baca Dokumen Lengkap (PDF)
+                    </a>
+                    <p class="text-xs text-outline font-medium">
+                        *Dokumen lengkap akan dibuka secara aman di tab baru browser Anda.
+                    </p>
+                </div>
             </section>
 
             <div class="space-y-6">
@@ -217,7 +232,7 @@
                 <section class="rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
                     <h2 class="mb-4 text-lg font-bold text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[22px]">swap_horizontal_circle</span> 
-                        Sirkulasi Koleksi Fisik
+                        Booking Peminjaman Dokumen Fisik
                     </h2>
                     
                     <div class="border-t border-outline-variant/10 pt-4">

@@ -192,7 +192,7 @@ class ArsipDigital
                                 $userQuery->where('name', 'like', "%{$search}%");
                             })
                             ->orWhereHas('mahasiswa.prodi', function (Builder $prodiQuery) use ($search) {
-                                $prodiQuery->where('prodi_name', 'like', "%{$search}%");
+                                $prodiQuery->where('nama_prodi', 'like', "%{$search}%");
                             });
                     });
                 }
@@ -222,7 +222,7 @@ class ArsipDigital
             'updated_at' => $archive->updated_at,
             'mahasiswa_name' => $archive->mahasiswa?->user?->name,
             'nim' => $archive->mahasiswa?->nim,
-            'prodi' => $archive->mahasiswa?->prodi?->prodi_name,
+            'prodi' => $archive->mahasiswa?->prodi?->nama_prodi,
             'preview_pdf' => $archive->preview_pdf,
             'collection' => $archive->collection,
             'model' => $archive,

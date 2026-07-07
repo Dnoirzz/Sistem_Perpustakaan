@@ -49,10 +49,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Phase 2: User Management
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 
-    // Phase 6: WhatsApp Settings
-    Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
-    Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
-    Route::post('/settings/test-wa', [\App\Http\Controllers\Admin\SettingController::class, 'testWa'])->name('settings.test-wa');
+    // Phase 6: Notification Settings
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/wa', [\App\Http\Controllers\Admin\SettingController::class, 'waIndex'])->name('wa');
+        Route::post('/wa', [\App\Http\Controllers\Admin\SettingController::class, 'waUpdate'])->name('wa.update');
+        Route::post('/wa/test', [\App\Http\Controllers\Admin\SettingController::class, 'testWa'])->name('wa.test');
+
+        Route::get('/email', [\App\Http\Controllers\Admin\SettingController::class, 'emailIndex'])->name('email');
+        Route::post('/email', [\App\Http\Controllers\Admin\SettingController::class, 'emailUpdate'])->name('email.update');
+        Route::post('/email/test', [\App\Http\Controllers\Admin\SettingController::class, 'testEmail'])->name('email.test');
+        
+        // Fallback redirect
+        Route::get('/', function() {
+            return redirect()->route('admin.settings.wa');
+        })->name('index');
+    });
 
     // Activity Logs (Fase 6)
     Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
@@ -153,10 +164,15 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     Route::post('/antrian', [\App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store');
     Route::get('/antrian', [\App\Http\Controllers\AntrianController::class, 'myAntrian'])->name('antrian.my');
 
+    // Member Loans & History (Rak Pinjam)
+    Route::get('/loans', [\App\Http\Controllers\MemberLoanController::class, 'activeLoans'])->name('loans.active');
+    Route::get('/loans/history', [\App\Http\Controllers\MemberLoanController::class, 'loanHistory'])->name('loans.history');
+
     // Fase 5: Katalog Arsip
     Route::get('/katalog-arsip', [ArsipKatalogController::class, 'index'])->name('katalog-arsip.index');
     Route::get('/katalog-arsip/{type}/{id}', [ArsipKatalogController::class, 'show'])->name('katalog-arsip.show');
     Route::get('/katalog-arsip/{type}/{id}/preview', [ArsipKatalogController::class, 'preview'])->name('katalog-arsip.preview');
+    Route::get('/katalog-arsip/{type}/{id}/{slug}.pdf', [ArsipKatalogController::class, 'full'])->name('katalog-arsip.full');
 });
 
 // Mahasiswa routes
@@ -178,6 +194,7 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
     Route::get('/katalog-arsip', [ArsipKatalogController::class, 'index'])->name('katalog-arsip.index');
     Route::get('/katalog-arsip/{type}/{id}', [ArsipKatalogController::class, 'show'])->name('katalog-arsip.show');
     Route::get('/katalog-arsip/{type}/{id}/preview', [ArsipKatalogController::class, 'preview'])->name('katalog-arsip.preview');
+    Route::get('/katalog-arsip/{type}/{id}/{slug}.pdf', [ArsipKatalogController::class, 'full'])->name('katalog-arsip.full');
 
     // Voting routes
     Route::get('/voting', [\App\Http\Controllers\VotingController::class, 'index'])->name('voting.index');
@@ -189,6 +206,10 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
     Route::post('/bookings/{booking}/cancel', [\App\Http\Controllers\BookingController::class, 'cancel'])->name('bookings.cancel');
     Route::post('/antrian', [\App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store');
     Route::get('/antrian', [\App\Http\Controllers\AntrianController::class, 'myAntrian'])->name('antrian.my');
+
+    // Member Loans & History (Rak Pinjam)
+    Route::get('/loans', [\App\Http\Controllers\MemberLoanController::class, 'activeLoans'])->name('loans.active');
+    Route::get('/loans/history', [\App\Http\Controllers\MemberLoanController::class, 'loanHistory'])->name('loans.history');
 });
 
 require __DIR__.'/auth.php';

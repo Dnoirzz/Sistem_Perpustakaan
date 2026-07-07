@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Pengaturan WA - SIPUS PSDKU POLNEP</title>
+    <title>Pengaturan Email SMTP - SIPUS PSDKU POLNEP</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -144,8 +144,8 @@
         <!-- Top Bar / Header Info -->
         <header class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="font-headline-md text-on-surface">Pengaturan Notifikasi WA</h1>
-                <p class="text-sm text-outline">Kelola kredensial Fonnte dan konfigurasi sistem notifikasi WhatsApp otomatis.</p>
+                <h1 class="font-headline-md text-on-surface">Pengaturan SMTP Email</h1>
+                <p class="text-sm text-outline">Kelola konfigurasi server SMTP untuk pengiriman surat tanda terima arsip digital secara otomatis.</p>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
@@ -172,73 +172,125 @@
                 <section class="bg-white rounded-3xl border border-outline-variant/20 p-8 shadow-sm">
                     <div class="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant/10">
                         <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-primary text-3xl">api</span>
+                            <span class="material-symbols-outlined text-primary text-3xl">mail</span>
                             <div>
-                                <h2 class="font-headline-md text-lg text-on-surface">Kredensial Fonnte API</h2>
-                                <p class="text-xs text-outline">Token disimpan dengan aman di database sirkulasi.</p>
+                                <h2 class="font-headline-md text-lg text-on-surface">Server SMTP Dinamis</h2>
+                                <p class="text-xs text-outline">Kredensial disimpan dengan aman di database sirkulasi.</p>
                             </div>
                         </div>
                         
                         <!-- Badge status koneksi -->
-                        @if(empty($settings['fonnte_token']))
-                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-bold uppercase tracking-wider">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                                Belum Diatur
+                        @if($settings['mail_mailer'] === 'log')
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider">
+                                Driver Log Lokal
                             </span>
                         @else
                             <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Konfigurasi Ada
+                                SMTP Aktif
                             </span>
                         @endif
                     </div>
 
-                    <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
+                    <form action="{{ route('admin.settings.email.update') }}" method="POST" class="space-y-6">
                         @csrf
                         
-                        <!-- Toggle ON/OFF -->
+                        <!-- Toggle ON/OFF Driver -->
                         <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-outline-variant/15">
                             <div class="flex flex-col gap-0.5">
-                                <label class="font-label-md text-sm text-on-surface">Aktifkan Notifikasi WhatsApp</label>
-                                <p class="text-xs text-outline">Kirim WA otomatis saat pinjaman dibuat, jatuh tempo, dsb.</p>
+                                <label class="font-label-md text-sm text-on-surface">Driver Pengiriman Email</label>
+                                <p class="text-xs text-outline">Pilih 'SMTP' untuk pengiriman email asli, atau 'Log' untuk keperluan debug lokal.</p>
                             </div>
                             <div class="relative inline-flex items-center cursor-pointer">
-                                <select name="wa_notification_enabled" class="bg-white border border-outline-variant rounded-xl px-3 py-1.5 text-sm font-semibold focus:ring-primary focus:border-primary">
-                                    <option value="true" {{ $settings['wa_notification_enabled'] === 'true' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="false" {{ $settings['wa_notification_enabled'] === 'false' ? 'selected' : '' }}>Nonaktif</option>
+                                <select name="mail_mailer" id="mail_mailer" onchange="toggleMailerFields()" class="bg-white border border-outline-variant rounded-xl px-3 py-1.5 text-sm font-semibold focus:ring-primary focus:border-primary">
+                                    <option value="smtp" {{ $settings['mail_mailer'] === 'smtp' ? 'selected' : '' }}>SMTP Server</option>
+                                    <option value="log" {{ $settings['mail_mailer'] === 'log' ? 'selected' : '' }}>Laravel Log (Lokal)</option>
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Fonnte Token -->
-                        <div class="space-y-2">
-                            <label for="fonnte_token" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Fonnte API Token</label>
-                            <div class="relative rounded-xl shadow-sm">
-                                <input type="password" 
-                                       name="fonnte_token" 
-                                       id="fonnte_token" 
-                                       value="{{ $settings['fonnte_token'] }}" 
-                                       class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm font-mono" 
-                                       placeholder="Masukkan API Token Fonnte Anda" />
-                                <button type="button" 
-                                        onclick="toggleTokenVisibility()" 
-                                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-outline hover:text-primary transition-colors">
-                                    <span class="material-symbols-outlined text-[20px]" id="visibility-icon">visibility</span>
-                                </button>
+                        <div id="smtp_fields" class="space-y-6">
+                            <!-- SMTP Host & Port -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                <div class="sm:col-span-2 space-y-2">
+                                    <label for="mail_host" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">SMTP Host</label>
+                                    <input type="text" 
+                                           name="mail_host" 
+                                           id="mail_host" 
+                                           value="{{ $settings['mail_host'] }}" 
+                                           class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm font-mono" 
+                                           placeholder="smtp.gmail.com atau sandbox.smtp.mailtrap.io" />
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="mail_port" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">SMTP Port</label>
+                                    <input type="number" 
+                                           name="mail_port" 
+                                           id="mail_port" 
+                                           value="{{ $settings['mail_port'] }}" 
+                                           class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm font-mono" 
+                                           placeholder="587, 465, 2525" />
+                                </div>
                             </div>
-                            <p class="text-xs text-outline">Anda dapat mendapatkan API token ini dari dasbor akun Fonnte Anda.</p>
+
+                            <!-- Encryption -->
+                            <div class="space-y-2">
+                                <label for="mail_encryption" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Protokol Keamanan (Encryption)</label>
+                                <select name="mail_encryption" id="mail_encryption" class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm">
+                                    <option value="none" {{ $settings['mail_encryption'] === 'none' || empty($settings['mail_encryption']) ? 'selected' : '' }}>None (Tanpa Enkripsi / Port 25/8025/2525)</option>
+                                    <option value="tls" {{ $settings['mail_encryption'] === 'tls' ? 'selected' : '' }}>TLS (Direkomendasikan untuk Port 587)</option>
+                                    <option value="ssl" {{ $settings['mail_encryption'] === 'ssl' ? 'selected' : '' }}>SSL (Direkomendasikan untuk Port 465)</option>
+                                </select>
+                            </div>
+
+                            <!-- Username & Password -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="mail_username" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">SMTP Username</label>
+                                    <input type="text" 
+                                           name="mail_username" 
+                                           id="mail_username" 
+                                           value="{{ $settings['mail_username'] }}" 
+                                           class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
+                                           placeholder="Masukkan username atau email login SMTP" />
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="mail_password" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">SMTP Password</label>
+                                    <div class="relative rounded-xl shadow-sm">
+                                        <input type="password" 
+                                               name="mail_password" 
+                                               id="mail_password" 
+                                               value="{{ $settings['mail_password'] }}" 
+                                               class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm font-mono" 
+                                               placeholder="Masukkan password atau App Password" />
+                                        <button type="button" 
+                                                onclick="togglePasswordVisibility()" 
+                                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-outline hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[20px]" id="password-visibility-icon">visibility</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Sender Name -->
-                        <div class="space-y-2">
-                            <label for="wa_sender_name" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Pengirim (Footer Message)</label>
-                            <input type="text" 
-                                   name="wa_sender_name" 
-                                   id="wa_sender_name" 
-                                   value="{{ $settings['wa_sender_name'] }}" 
-                                   class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
-                                   placeholder="Contoh: Perpustakaan PSDKU POLNEP" />
-                            <p class="text-xs text-outline">Nama ini akan dicantumkan di bagian bawah pesan notifikasi otomatis.</p>
+                        <!-- From Address & From Name -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                            <div class="space-y-2">
+                                <label for="mail_from_address" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Email Pengirim (Sender Email)</label>
+                                <input type="email" 
+                                       name="mail_from_address" 
+                                       id="mail_from_address" 
+                                       value="{{ $settings['mail_from_address'] }}" 
+                                       class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
+                                       placeholder="noreply@perpustakaan-polnep.ac.id" required />
+                            </div>
+                            <div class="space-y-2">
+                                <label for="mail_from_name" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Pengirim (Sender Name)</label>
+                                <input type="text" 
+                                       name="mail_from_name" 
+                                       id="mail_from_name" 
+                                       value="{{ $settings['mail_from_name'] }}" 
+                                       class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
+                                       placeholder="SIPUS PSDKU POLNEP" required />
+                            </div>
                         </div>
 
                         <!-- Button Simpan -->
@@ -257,66 +309,81 @@
                 <!-- Status Sistem Widget -->
                 <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/15 p-8">
                     <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/10">
-                        <span class="material-symbols-outlined text-primary text-3xl">send</span>
+                        <span class="material-symbols-outlined text-primary text-3xl">send_and_archive</span>
                         <div>
-                            <h2 class="font-headline-md text-lg text-on-surface">Uji Koneksi WA</h2>
-                            <p class="text-xs text-outline">Kirim pesan uji coba ke nomor tujuan.</p>
+                            <h2 class="font-headline-md text-lg text-on-surface">Uji Koneksi SMTP</h2>
+                            <p class="text-xs text-outline">Kirim email uji coba secara real-time.</p>
                         </div>
                     </div>
                     
                     <div class="space-y-4">
-                        <!-- Target Phone -->
+                        <!-- Target Email -->
                         <div class="space-y-1.5">
-                            <label for="test_phone" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Nomor HP Tujuan</label>
-                            <input type="text" 
-                                   id="test_phone" 
+                            <label for="test_email" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Email Penerima</label>
+                            <input type="email" 
+                                   id="test_email" 
                                    class="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
-                                   placeholder="Contoh: 081234567890" />
+                                   placeholder="Masukkan email tujuan Anda" />
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="space-y-1.5">
+                            <label for="test_subject" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Subjek Email</label>
+                            <input type="text" 
+                                   id="test_subject" 
+                                   class="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
+                                   value="Tes Koneksi SMTP - SIPUS PSDKU POLNEP" />
                         </div>
 
                         <!-- Message Body -->
                         <div class="space-y-1.5">
-                            <label for="test_message" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Isi Pesan Uji Coba</label>
-                            <textarea id="test_message" 
-                                      rows="3"
-                                      class="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm resize-none">Halo! Ini adalah pesan uji coba sistem notifikasi WhatsApp dari panel Admin SIPUS PSDKU POLNEP Sukamara. Koneksi API Fonnte berfungsi dengan baik! 👍</textarea>
+                            <label for="test_body" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Isi Email Uji Coba</label>
+                            <textarea id="test_body" 
+                                      rows="4"
+                                      class="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm resize-none">Halo!
+
+Ini adalah email uji coba dari modul Pengaturan SMTP Administrator SIPUS PSDKU POLNEP.
+
+Jika Anda menerima email ini, berarti koneksi server SMTP dan kredensial yang dimasukkan sudah berfungsi dengan baik dan sistem siap mengirimkan surat tanda terima arsip digital otomatis.
+
+Terima kasih!</textarea>
                         </div>
 
                         <!-- AJAX Response Alerts -->
-                        <div id="test-wa-result" class="hidden text-xs p-4 rounded-xl border"></div>
+                        <div id="test-email-result" class="hidden text-xs p-4 rounded-xl border"></div>
 
                         <!-- Button Uji Coba -->
                         <button type="button" 
-                                id="btn-test-wa"
-                                onclick="sendTestWa()" 
+                                id="btn-test-email"
+                                onclick="sendTestEmail()" 
                                 class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 transition-all">
-                            <span class="material-symbols-outlined text-[18px]" id="test-wa-btn-icon">bolt</span>
-                            <span id="test-wa-btn-text">Kirim Uji Coba</span>
+                            <span class="material-symbols-outlined text-[18px]" id="test-email-btn-icon">bolt</span>
+                            <span id="test-email-btn-text">Kirim Uji Coba</span>
                         </button>
                     </div>
                 </section>
 
-                <!-- Panduan / Bantuan Widget -->
+                <!-- Panduan SMTP Widget -->
                 <section class="bg-gradient-to-br from-primary to-primary-container rounded-3xl shadow-lg p-8 text-white relative overflow-hidden">
                     <div class="relative z-10">
                         <h3 class="font-headline-md text-lg mb-2 flex items-center gap-2">
                             <span class="material-symbols-outlined text-[20px]">help_outline</span>
-                            Panduan Fonnte
+                            Bantuan SMTP
                         </h3>
-                        <p class="text-xs opacity-75 mb-6 leading-relaxed">Fonnte adalah gateway notifikasi WA. Pastikan status device Anda di dasbor Fonnte adalah **"Connect"** (Aktif) agar pesan dapat terkirim.</p>
+                        <p class="text-xs opacity-75 mb-6 leading-relaxed">SMTP (Simple Mail Transfer Protocol) digunakan untuk mengirim email. Jika menggunakan Gmail, Anda wajib membuat **App Password** di setelan akun Google Anda.</p>
                         
                         <div class="space-y-3 text-xs">
                             <div class="flex items-start gap-2.5">
                                 <span class="material-symbols-outlined text-[16px] shrink-0 mt-0.5">check</span>
-                                <span>Gunakan nomor berformat *08...* atau *62...*</span>
+                                <span>Gmail: host=smtp.gmail.com, port=587, encryption=tls</span>
                             </div>
                             <div class="flex items-start gap-2.5">
                                 <span class="material-symbols-outlined text-[16px] shrink-0 mt-0.5">check</span>
-                                <span>Pastikan masa aktif paket device Fonnte aktif</span>
+                                <span>Mailtrap (Test): port=2525 atau 587, encryption=tls</span>
                             </div>
                             <div class="flex items-start gap-2.5">
                                 <span class="material-symbols-outlined text-[16px] shrink-0 mt-0.5">check</span>
-                                <span>Cek menu *Logs* di Fonnte jika WA tidak masuk</span>
+                                <span>Gunakan tombol "Uji coba" sebelum menyimpan data</span>
                             </div>
                         </div>
                     </div>
@@ -328,9 +395,9 @@
     </main>
 
     <script>
-        function toggleTokenVisibility() {
-            const input = document.getElementById('fonnte_token');
-            const icon = document.getElementById('visibility-icon');
+        function togglePasswordVisibility() {
+            const input = document.getElementById('mail_password');
+            const icon = document.getElementById('password-visibility-icon');
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.textContent = 'visibility_off';
@@ -340,25 +407,51 @@
             }
         }
 
-        async function sendTestWa() {
-            const phoneInput = document.getElementById('test_phone');
-            const messageInput = document.getElementById('test_message');
-            const resultDiv = document.getElementById('test-wa-result');
-            const btn = document.getElementById('btn-test-wa');
-            const btnText = document.getElementById('test-wa-btn-text');
-            const btnIcon = document.getElementById('test-wa-btn-icon');
-
-            const phone = phoneInput.value.trim();
-            const message = messageInput.value.trim();
-
-            if (!phone) {
-                alert('Silakan masukkan nomor HP tujuan.');
-                phoneInput.focus();
-                return;
+        function toggleMailerFields() {
+            const mailerSelect = document.getElementById('mail_mailer');
+            const smtpFields = document.getElementById('smtp_fields');
+            
+            if (mailerSelect.value === 'log') {
+                // Sembunyikan field SMTP atau disable input
+                smtpFields.style.opacity = '0.4';
+                smtpFields.style.pointerEvents = 'none';
+            } else {
+                smtpFields.style.opacity = '1';
+                smtpFields.style.pointerEvents = 'auto';
             }
-            if (!message) {
-                alert('Silakan masukkan isi pesan.');
-                messageInput.focus();
+        }
+
+        // Jalankan pada load pertama
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleMailerFields();
+        });
+
+        async function sendTestEmail() {
+            const testEmailInput = document.getElementById('test_email');
+            const subjectInput = document.getElementById('test_subject');
+            const bodyInput = document.getElementById('test_body');
+            
+            const mailerSelect = document.getElementById('mail_mailer');
+            const hostInput = document.getElementById('mail_host');
+            const portInput = document.getElementById('mail_port');
+            const encryptionSelect = document.getElementById('mail_encryption');
+            const usernameInput = document.getElementById('mail_username');
+            const passwordInput = document.getElementById('mail_password');
+            const fromAddressInput = document.getElementById('mail_from_address');
+            const fromNameInput = document.getElementById('mail_from_name');
+            
+            const resultDiv = document.getElementById('test-email-result');
+            const btn = document.getElementById('btn-test-email');
+            const btnText = document.getElementById('test-email-btn-text');
+            const btnIcon = document.getElementById('test-email-btn-icon');
+
+            const testEmail = testEmailInput.value.trim();
+            const subject = subjectInput.value.trim();
+            const body = bodyInput.value.trim();
+
+            if (!testEmail) {
+                alert('Silakan masukkan email penerima.');
+                testEmailInput.focus();
                 return;
             }
 
@@ -373,7 +466,7 @@
             resultDiv.className = 'text-xs p-4 rounded-xl border';
 
             try {
-                const response = await fetch("{{ route('admin.settings.test-wa') }}", {
+                const response = await fetch("{{ route('admin.settings.email.test') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -381,8 +474,17 @@
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        test_phone: phone,
-                        test_message: message
+                        test_email: testEmail,
+                        test_subject: subject,
+                        test_body: body,
+                        mail_mailer: mailerSelect.value,
+                        mail_host: hostInput.value.trim(),
+                        mail_port: portInput.value.trim(),
+                        mail_encryption: encryptionSelect.value,
+                        mail_username: usernameInput.value.trim(),
+                        mail_password: passwordInput.value.trim(),
+                        mail_from_address: fromAddressInput.value.trim(),
+                        mail_from_name: fromNameInput.value.trim()
                     })
                 });
 
@@ -408,7 +510,7 @@
                             <span class="material-symbols-outlined text-rose-600 text-[18px] shrink-0">error</span>
                             <div>
                                 <p class="font-bold">Gagal Kirim!</p>
-                                <p>${data.message || 'Terjadi kesalahan sistem.'}</p>
+                                <p>${data.message || 'Terjadi kesalahan SMTP.'}</p>
                             </div>
                         </div>
                     `;
@@ -421,7 +523,7 @@
                         <span class="material-symbols-outlined text-rose-600 text-[18px] shrink-0">error</span>
                         <div>
                             <p class="font-bold">Error Terkoneksi!</p>
-                            <p>Gagal menghubungi server. Periksa koneksi internet Anda.</p>
+                            <p>Gagal menghubungi server. Periksa koneksi internet Anda atau logs server.</p>
                         </div>
                     </div>
                 `;

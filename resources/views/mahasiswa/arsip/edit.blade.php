@@ -169,29 +169,29 @@
                 <input type="hidden" name="type" value="{{ $archiveType }}">
                 
                 <div>
-                    <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip</label>
+                    <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip <span class="text-error">*</span></label>
                     <input type="text" name="judul" value="{{ old('judul', $archiveTitle) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                 </div>
                 
                 <div class="grid gap-6 md:grid-cols-2">
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Pembimbing</label>
-                        <input type="text" name="pembimbing" value="{{ old('pembimbing', $archive->pembimbing) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Pembimbing <span class="text-error">*</span></label>
+                        <input type="text" name="pembimbing" value="{{ old('pembimbing', $archive->pembimbing) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tahun Terbit</label>
-                        <input type="number" name="tahun" value="{{ old('tahun', $archive->tahun) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tahun Terbit <span class="text-error">*</span></label>
+                        <input type="number" name="tahun" value="{{ old('tahun', $archive->tahun) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                     </div>
                 </div>
                 
                 <div class="grid gap-6 md:grid-cols-2">
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 1</label>
-                        <input type="text" name="penguji_1" value="{{ old('penguji_1', $archive->penguji_1) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 1 <span class="text-error">*</span></label>
+                        <input type="text" name="penguji_1" value="{{ old('penguji_1', $archive->penguji_1) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 2</label>
-                        <input type="text" name="penguji_2" value="{{ old('penguji_2', $archive->penguji_2) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 2 <span class="text-error">*</span></label>
+                        <input type="text" name="penguji_2" value="{{ old('penguji_2', $archive->penguji_2) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                     </div>
                 </div>
                 

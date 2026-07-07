@@ -78,7 +78,7 @@ class SuratTandaTerimaService
         $pdf->SetXY(70, 128);
         $pdf->Cell(100, 6, $this->encode($archive->mahasiswa?->nim ?? '-'), 0, 1);
         $pdf->SetXY(70, 136);
-        $pdf->Cell(100, 6, $this->encode($archive->mahasiswa?->prodi?->prodi_name ?? '-'), 0, 1);
+        $pdf->Cell(100, 6, $this->encode($archive->mahasiswa?->prodi?->nama_prodi ?? '-'), 0, 1);
         $pdf->SetXY(70, 144);
         $pdf->Cell(100, 6, $this->encode($definition['full_label']), 0, 1);
         $pdf->SetXY(70, 152);
@@ -130,7 +130,7 @@ class SuratTandaTerimaService
         $pdf->Cell(50, 7, $this->encode('NIM'));
         $pdf->Cell(0, 7, $this->encode(': ' . ($archive->mahasiswa?->nim ?? '-')), 0, 1);
         $pdf->Cell(50, 7, $this->encode('Program Studi'));
-        $pdf->Cell(0, 7, $this->encode(': ' . ($archive->mahasiswa?->prodi?->prodi_name ?? '-')), 0, 1);
+        $pdf->Cell(0, 7, $this->encode(': ' . ($archive->mahasiswa?->prodi?->nama_prodi ?? '-')), 0, 1);
         $pdf->Cell(50, 7, $this->encode('Jenis Arsip'));
         $pdf->Cell(0, 7, $this->encode(': ' . $definition['full_label']), 0, 1);
         $pdf->Cell(50, 7, $this->encode('Pembimbing'));

@@ -155,7 +155,7 @@ class LoanController extends Controller
 
                 return str_contains($haystack, strtolower($q));
             })
-            ->limit(5)
+            ->take(5)
             ->values()
             ->map(function (Collection $collection) {
                 return [

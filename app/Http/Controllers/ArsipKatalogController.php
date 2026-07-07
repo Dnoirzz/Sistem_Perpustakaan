@@ -71,6 +71,23 @@ class ArsipKatalogController extends Controller
         );
     }
 
+    public function full(string $type, int $id, string $slug = '')
+    {
+        $archive = ArsipDigital::findOrFail($type, $id);
+        abort_unless(in_array($archive->status, ArsipDigital::catalogStatuses(), true), 404);
+        abort_unless($archive->file_pdf && Storage::disk('local')->exists($archive->file_pdf), 404);
+
+        $filename = ($slug ?: \Illuminate\Support\Str::slug(ArsipDigital::title($archive))) . '.pdf';
+
+        return response()->file(
+            storage_path('app/' . $archive->file_pdf),
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]
+        );
+    }
+
     protected function viewPrefix(): string
     {
         $user = Auth::user();
