@@ -136,8 +136,8 @@
     <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
         <header class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="font-headline-md text-on-surface">Riwayat Peminjaman Buku</h1>
-                <p class="text-sm text-outline">Daftar riwayat buku fisik yang pernah Anda pinjam dan telah dikembalikan ke perpustakaan.</p>
+                <h1 class="font-headline-md text-on-surface">Riwayat Aktivitas Perpustakaan</h1>
+                <p class="text-sm text-outline">Daftar riwayat peminjaman buku fisik dan pembacaan arsip digital secara online.</p>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
@@ -156,59 +156,65 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tanggal Pinjam</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tanggal Kembali</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Kondisi Pengembalian</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Catatan / Status</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku / Arsip</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tipe Aktivitas</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Pinjam / Akses</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Kembali</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Keterangan / Kondisi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($loans as $loan)
+                        @forelse($history as $item)
                             <tr class="hover:bg-surface-container-low/30 transition-colors">
                                 <td class="px-8 py-5">
                                     <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $loan->collection?->display_title ?? 'Koleksi tidak ditemukan' }}</span>
+                                        <span class="font-bold text-on-surface text-sm">{{ $item['judul'] }}</span>
                                         <span class="text-xs text-outline">
-                                            {{ $loan->collection?->book?->author ?? 'Penulis' }}
+                                            {{ $item['penulis'] }}
                                         </span>
                                     </div>
                                 </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ $loan->tgl_pinjam ? \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') : '-' }}
+                                <td class="px-8 py-5">
+                                    @if($item['tipe_riwayat'] === 'fisik')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide border border-blue-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
+                                            Buku Fisik
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide border border-emerald-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                                            Baca Online (Digital)
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="px-8 py-5 text-sm text-on-surface-variant font-semibold">
-                                    {{ $loan->tgl_kembali ? \Carbon\Carbon::parse($loan->tgl_kembali)->translatedFormat('d M Y') : '-' }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($loan->return_condition_status === 'baik')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                            Kondisi Baik
-                                        </span>
-                                    @elseif($loan->return_condition_status === 'bermasalah')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span>
-                                            Ada Masalah
-                                        </span>
+                                    @if($item['tipe_riwayat'] === 'fisik')
+                                        {{ $item['tgl_pinjam'] ? \Carbon\Carbon::parse($item['tgl_pinjam'])->translatedFormat('d M Y') : '-' }}
                                     @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
-                                            Lengkap
-                                        </span>
+                                        {{ $item['tgl_pinjam'] ? \Carbon\Carbon::parse($item['tgl_pinjam'])->translatedFormat('d M Y, H:i') : '-' }} WIB
                                     @endif
                                 </td>
-                                <td class="px-8 py-5 text-xs text-on-surface-variant font-medium">
-                                    @if($loan->return_condition_notes)
-                                        {{ $loan->return_condition_notes }}
+                                <td class="px-8 py-5 text-sm text-on-surface-variant font-semibold">
+                                    @if($item['tipe_riwayat'] === 'fisik')
+                                        {{ $item['tgl_kembali'] ? \Carbon\Carbon::parse($item['tgl_kembali'])->translatedFormat('d M Y') : '-' }}
                                     @else
-                                        <span class="text-outline font-normal">Sudah dikembalikan dengan sukses</span>
+                                        @if($item['tgl_kembali'])
+                                            {{ \Carbon\Carbon::parse($item['tgl_kembali'])->translatedFormat('d M Y, H:i') }} WIB
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide border border-emerald-200 animate-pulse">
+                                                Membaca
+                                            </span>
+                                        @endif
                                     @endif
+                                </td>
+                                <td class="px-8 py-5 text-sm text-on-surface-variant font-medium">
+                                    {{ $item['keterangan'] }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="5" class="px-8 py-12 text-center text-outline font-medium">
-                                    Anda belum memiliki riwayat peminjaman buku yang telah selesai.
+                                    Belum ada riwayat aktivitas peminjaman fisik maupun baca online.
                                 </td>
                             </tr>
                         @endforelse
@@ -216,9 +222,9 @@
                 </table>
             </div>
 
-            @if($loans->hasPages())
+            @if($history->hasPages())
                 <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $loans->links() }}
+                    {{ $history->links() }}
                 </div>
             @endif
         </section>

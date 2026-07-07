@@ -21,6 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Database\Eloquent\Relations\Relation::morphMap([
+            'laporan-pkl' => \App\Models\LaporanPkl::class,
+            'proposal-ta' => \App\Models\ProposalTa::class,
+            'laporan-ta' => \App\Models\LaporanTugasAkhir::class,
+        ]);
+
         try {
             // Overwrite mail configuration at boot time if app_settings table exists
             if (Schema::hasTable('app_settings')) {

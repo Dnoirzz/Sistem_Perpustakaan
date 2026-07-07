@@ -40,6 +40,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Stream PDF & Close Log
+    Route::get('/katalog-arsip/{type}/{id}/stream/{slug}.pdf', [ArsipKatalogController::class, 'stream'])->name('katalog-arsip.stream');
+    Route::post('/katalog-arsip/read-log/{id}/close', [ArsipKatalogController::class, 'closeReadLog'])->name('katalog-arsip.read-log.close');
 });
 
 // Admin routes

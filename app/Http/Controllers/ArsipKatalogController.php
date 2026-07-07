@@ -77,6 +77,29 @@ class ArsipKatalogController extends Controller
         abort_unless(in_array($archive->status, ArsipDigital::catalogStatuses(), true), 404);
         abort_unless($archive->file_pdf && Storage::disk('local')->exists($archive->file_pdf), 404);
 
+        // Record the reading history
+        $log = \App\Models\ArchiveReadLog::create([
+            'user_id' => auth()->id(),
+            'archive_id' => $archive->getKey(),
+            'archive_type' => $type,
+        ]);
+
+        $archiveTitle = ArsipDigital::title($archive);
+        $streamUrl = route('katalog-arsip.stream', [$type, $id, 'slug' => $slug ?: \Illuminate\Support\Str::slug($archiveTitle)]);
+
+        return view('shared.arsip-pdf-viewer', [
+            'logId' => $log->id,
+            'archiveTitle' => $archiveTitle,
+            'streamUrl' => $streamUrl,
+        ]);
+    }
+
+    public function stream(string $type, int $id, string $slug = '')
+    {
+        $archive = ArsipDigital::findOrFail($type, $id);
+        abort_unless(in_array($archive->status, ArsipDigital::catalogStatuses(), true), 404);
+        abort_unless($archive->file_pdf && Storage::disk('local')->exists($archive->file_pdf), 404);
+
         $filename = ($slug ?: \Illuminate\Support\Str::slug(ArsipDigital::title($archive))) . '.pdf';
 
         return response()->file(
@@ -86,6 +109,19 @@ class ArsipKatalogController extends Controller
                 'Content-Disposition' => 'inline; filename="' . $filename . '"',
             ]
         );
+    }
+
+    public function closeReadLog(int $id)
+    {
+        $log = \App\Models\ArchiveReadLog::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $log->update([
+            'finished_at' => now(),
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     protected function viewPrefix(): string
