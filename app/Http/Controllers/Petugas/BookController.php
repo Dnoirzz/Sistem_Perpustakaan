@@ -52,6 +52,18 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->has('stock')) {
+            $request->merge([
+                'stock' => preg_match('/^\d+$/', $request->stock) ? (int) $request->stock : $request->stock
+            ]);
+        }
+
+        if ($request->has('release')) {
+            $request->merge([
+                'release' => preg_match('/^\d+$/', $request->release) ? (int) $request->release : $request->release
+            ]);
+        }
+
         $request->validate([
             'judul' => 'required|string|max:255',
             'author' => 'required|string|max:255',
@@ -100,6 +112,18 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
+        if ($request->has('stock')) {
+            $request->merge([
+                'stock' => preg_match('/^\d+$/', $request->stock) ? (int) $request->stock : $request->stock
+            ]);
+        }
+
+        if ($request->has('release')) {
+            $request->merge([
+                'release' => preg_match('/^\d+$/', $request->release) ? (int) $request->release : $request->release
+            ]);
+        }
+
         $request->validate([
             'judul' => 'required|string|max:255',
             'author' => 'required|string|max:255',

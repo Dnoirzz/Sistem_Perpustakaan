@@ -19,29 +19,9 @@
         }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
-    <!-- Top Sleek Bar -->
-    <header class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-10 shadow-lg">
-        <div class="flex items-center gap-3 overflow-hidden mr-4">
-            <span class="material-symbols-outlined text-primary text-[28px] text-sky-400 flex-shrink-0">menu_book</span>
-            <div class="overflow-hidden">
-                <h1 class="header-font font-bold text-sm text-slate-100 truncate tracking-wide leading-tight">{{ $archiveTitle }}</h1>
-                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 uppercase tracking-widest mt-0.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Membaca Digital
-                </span>
-            </div>
-        </div>
-        <button onclick="window.close()" class="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-rose-600/90 rounded-xl transition duration-200 border border-slate-700/50 hover:border-transparent shadow-sm flex-shrink-0">
-            <span class="material-symbols-outlined text-[16px]">close</span>
-            Tutup Tab
-        </button>
-    </header>
-
-    <!-- PDF Viewer Frame -->
-    <main class="flex-1 bg-slate-950 relative">
-        <iframe src="{{ $streamUrl }}" class="absolute inset-0 w-full h-full border-none shadow-inner" allow="fullscreen"></iframe>
-    </main>
+<body class="h-screen w-screen overflow-hidden bg-slate-950">
+    <!-- PDF Viewer Frame (Full Screen) -->
+    <iframe src="{{ $streamUrl }}" class="w-full h-full border-none" allow="fullscreen"></iframe>
 
     <!-- Close Log Beacon Tracker -->
     <script>
@@ -58,17 +38,9 @@
             navigator.sendBeacon(closeUrl);
         }
 
-        // Handle page close & hide events on mobile/desktop
+        // Handle page close events on mobile/desktop
         window.addEventListener('beforeunload', sendCloseBeacon);
         window.addEventListener('unload', sendCloseBeacon);
-        window.addEventListener('pagehide', sendCloseBeacon);
-
-        // Detect tab switching or locking screen on mobile
-        window.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'hidden') {
-                sendCloseBeacon();
-            }
-        });
     </script>
 </body>
 </html>

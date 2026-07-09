@@ -315,3 +315,42 @@ Seluruh pelacakan tugas dan dokumentasi perkembangan hari ini telah disimpan den
 *   Seluruh rute baru dan controller voting petugas telah terdaftar dengan benar (`php artisan route:list` sukses).
 *   Kompilasi template Blade berhasil tanpa ada error parsing.
 
+---
+
+## Progress Lanjutan Fase 5: Pelacakan Waktu Tutup Tab PDF (HTML Wrapper Viewer) & Tanggal Kembali Riwayat Digital
+
+**Hari/Tanggal:** Selasa, 7 Juli 2026  
+**Fokus:** Implementasi pelacakan waktu tutup tab PDF menggunakan penampil HTML kustom (HTML Wrapper Viewer) untuk mengisi tanggal kembali pada riwayat baca online secara otomatis serta integrasi sirkulasi digital terpadu secara visual.
+
+### Fitur & Perbaikan yang Diselesaikan Hari Ini ✅
+
+*   **HTML Wrapper Viewer Full-Screen tanpa Header**:
+    *   Membuat berkas view kustom [arsip-pdf-viewer.blade.php](file:///d:/POLNEP/Semester%206/Tugas%20Akhir/perpustakaan/resources/views/shared/arsip-pdf-viewer.blade.php) yang memuat dokumen PDF di dalam tag `iframe` dengan tampilan 100% penuh layar (*full screen*).
+    *   Menghilangkan header atas untuk menyajikan pengalaman membaca native yang bersih dan memprioritaskan kenyamanan visual pengguna.
+
+*   **Pencatatan Log Waktu Buka & Selesai Baca (Tanggal Kembali)**:
+    *   **Tanggal Pinjam / Mulai**: Tercatat secara otomatis ketika rute katalog arsip dibuka oleh pengguna.
+    *   **Tanggal Kembali / Selesai (Tutup Tab)**: Menggunakan API browser `navigator.sendBeacon` pada event window `unload` dan `beforeunload` untuk mengirimkan sinyal penutupan secara andal ke backend server Laravel guna mengisi kolom `finished_at` pada tabel database `archive_read_logs`.
+    *   **Pencegahan Salah Deteksi Beralih Tab**: Menghapus event listener `visibilitychange` dan `pagehide` agar beralih tab, meminimalkan browser, atau mengunci layar perangkat **TIDAK** memicu pengisian tanggal kembali (status pembacaan tetap aktif).
+
+*   **Skema Database & Model Baru**:
+    *   Membuat migrasi untuk menambahkan kolom `finished_at` (timestamp, nullable) pada tabel `archive_read_logs` dan menjalankannya dengan sukses.
+    *   Memperbarui properti `$fillable` dan `$casts` pada model [ArchiveReadLog.php](file:///d:/POLNEP/Semester%206/Tugas%20Akhir/perpustakaan/app/Models/ArchiveReadLog.php) agar kolom `finished_at` dikenali sebagai objek `datetime` (Carbon).
+
+*   **Pengecualian Proteksi CSRF**:
+    *   Mengecualikan rute POST penutupan log `katalog-arsip/read-log/*/close` dari verifikasi token CSRF di [bootstrap/app.php](file:///d:/POLNEP/Semester%206/Tugas%20Akhir/perpustakaan/bootstrap/app.php) guna menjamin browser dapat mengirimkan request latar belakang (*beacon request*) secara langsung tanpa hambatan token kedaluwarsa. Keamanan tetap terjamin melalui validasi ID pengguna (`auth()->id()`) di controller.
+
+*   **Pencegahan Cache Agresif Browser (Bug Suffix .pdf)**:
+    *   Mengubah rute katalog arsip utama `katalog-arsip.full` di [routes/web.php](file:///d:/POLNEP/Semester%206/Tugas%20Akhir/perpustakaan/routes/web.php) agar tidak menggunakan ekstensi `.pdf` di belakang URL. Hal ini mencegah browser seperti Google Chrome dan Microsoft Edge dari melakukan caching statis secara sepihak dan memotong pemanggilan HTML wrapper.
+
+*   **Visualisasi Riwayat Terpadu dengan Badge Animasi**:
+    *   Memperbarui [MemberLoanController.php](file:///d:/POLNEP/Semester%206/Tugas%20Akhir/perpustakaan/app/Http/Controllers/MemberLoanController.php) untuk memetakan `tgl_pinjam` ke `created_at` dan `tgl_kembali` ke `finished_at`.
+    *   Memperbarui halaman Riwayat [Mahasiswa](file:///d:/POLNEP/Semester%206/Tugas%20Akhir/perpustakaan/resources/views/mahasiswa/loans/history.blade.php) dan [Dosen](file:///d:/POLNEP/Semester%206/Tugas%20Akhir/perpustakaan/resources/views/dosen/loans/history.blade.php) untuk memformat tanggal dan jam pembacaan digital lengkap dengan penanda "WIB".
+    *   Jika dokumen sedang aktif dibaca (belum ditutup), kolom Tanggal Kembali menampilkan **Badge Animasi Hijau Kedip "Membaca"** secara dinamis.
+
+### Verifikasi yang Sudah Dilakukan
+*   Menjalankan migrasi database kolom `finished_at`: **sukses**
+*   Uji coba penutupan tab secara fisik: **sukses** (kolom Tanggal Kembali langsung terisi real-time)
+*   Uji coba beralih tab browser: **sukses** (tidak memicu penutupan sesi baca)
+*   Pembersihan cache rute, view, config, dan cache aplikasi: **sukses**
+

@@ -33,13 +33,13 @@ class MemberController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhereHas('mahasiswa', function ($m) use ($search) {
-                      $m->where('nim', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('dosen', function ($d) use ($search) {
-                      $d->where('nip', 'like', "%{$search}%");
-                  });
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('mahasiswa', function ($m) use ($search) {
+                        $m->where('nim', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('dosen', function ($d) use ($search) {
+                        $d->where('nip', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -60,7 +60,7 @@ class MemberController extends Controller
         }
 
         $members = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-        
+
         $roles = Role::whereIn('role_name', ['mahasiswa', 'dosen'])->get();
         $prodis = Prodi::orderBy('nama_prodi', 'asc')->get();
 
@@ -150,6 +150,99 @@ class MemberController extends Controller
 
         return redirect()->route('petugas.members.index')
             ->with('success', 'Anggota perpustakaan baru berhasil ditambahkan.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(User $member)
+    {
+        // Proteksi: Petugas hanya boleh melihat Mahasiswa atau Dosen
+        $member->load(['role', 'mahasiswa.prodi', 'dosen.prodi']);
+        if (!in_array($member->role->role_name, ['mahasiswa', 'dosen'])) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki wewenang untuk mengelola akun ini.');
+        }
+
+        // 1. Get active physical borrowings (status dipinjam, terlambat)
+        $activeLoans = \App\Models\Loan::with(['collection.book'])
+            ->where('user_id', $member->user_id)
+            ->whereIn('status', ['dipinjam', 'terlambat'])
+            ->orderBy('tgl_pinjam', 'desc')
+            ->get();
+
+        // 2. Get completed physical loans (returned)
+        $completedLoans = \App\Models\Loan::with(['collection.book'])
+            ->where('user_id', $member->user_id)
+            ->where('status', 'dikembalikan')
+            ->get()
+            ->map(function ($loan) {
+                // Calculate lateness
+                $isLate = $loan->tgl_kembali && $loan->bts_waktu && $loan->tgl_kembali->greaterThan($loan->bts_waktu);
+                $daysLate = 0;
+                if ($isLate) {
+                    $daysLate = $loan->tgl_kembali->diffInDays($loan->bts_waktu);
+                }
+
+                // Check condition
+                $isDamaged = $loan->return_condition_status === 'bermasalah';
+                $notes = $loan->return_condition_notes;
+
+                // Build description (keterangan)
+                $keteranganParts = [];
+                if ($isLate) {
+                    $keteranganParts[] = "Terlambat ({$daysLate} hari)";
+                }
+                if ($isDamaged) {
+                    $detailKerusakan = $notes ? ": {$notes}" : "";
+                    $keteranganParts[] = "Buku rusak{$detailKerusakan}";
+                }
+
+                $keterangan = count($keteranganParts) > 0
+                    ? implode(' & ', $keteranganParts)
+                    : 'Kondisi baik';
+
+                return [
+                    'tipe_riwayat' => 'fisik',
+                    'judul' => $loan->collection?->display_title ?? 'Koleksi tidak ditemukan',
+                    'penulis' => $loan->collection?->book?->author ?? 'Penulis',
+                    'tgl_pinjam' => $loan->tgl_pinjam,
+                    'tgl_kembali' => $loan->tgl_kembali,
+                    'tanggal_aksi' => $loan->tgl_kembali, // Carbon instance
+                    'keterangan' => $keterangan,
+                    'status_kondisi' => $loan->return_condition_status,
+                    'catatan' => $loan->return_condition_notes,
+                ];
+            });
+
+        // 3. Get digital read logs
+        $readLogs = \App\Models\ArchiveReadLog::with(['archive'])
+            ->where('user_id', $member->user_id)
+            ->get()
+            ->map(function ($log) {
+                $archive = $log->archive;
+                $title = $archive ? \App\Support\ArsipDigital::title($archive) : 'Arsip tidak ditemukan';
+                $author = $archive?->mahasiswa?->user?->name ?? 'Mahasiswa';
+                return [
+                    'tipe_riwayat' => 'digital',
+                    'judul' => $title,
+                    'penulis' => 'Oleh: ' . $author,
+                    'tgl_pinjam' => $log->created_at,
+                    'tgl_kembali' => $log->finished_at,
+                    'tanggal_aksi' => $log->created_at, // Carbon instance
+                    'keterangan' => 'Baca Online',
+                    'status_kondisi' => null,
+                    'catatan' => null,
+                ];
+            });
+
+        // 4. Combine and sort by date descending
+        $history = $completedLoans->concat($readLogs)->sortByDesc(function ($item) {
+            return $item['tanggal_aksi'] instanceof \Carbon\Carbon
+                ? $item['tanggal_aksi']->timestamp
+                : (is_string($item['tanggal_aksi']) ? strtotime($item['tanggal_aksi']) : 0);
+        })->values();
+
+        return view('petugas.members.show', compact('member', 'activeLoans', 'history'));
     }
 
     /**

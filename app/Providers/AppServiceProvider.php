@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\AppSetting;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Password::defaults(function () {
+            return Password::min(8)
+                ->letters()
+                ->mixedCase()
+                ->numbers();
+        });
+
         \Illuminate\Database\Eloquent\Relations\Relation::morphMap([
             'laporan-pkl' => \App\Models\LaporanPkl::class,
             'proposal-ta' => \App\Models\ProposalTa::class,

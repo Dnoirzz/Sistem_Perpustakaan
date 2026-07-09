@@ -52,6 +52,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     
     // Phase 2: User Management
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+    Route::resource('prodis', \App\Http\Controllers\Admin\ProdiController::class)->except(['create', 'show']);
 
     // Phase 6: Notification Settings
     Route::prefix('settings')->name('settings.')->group(function () {

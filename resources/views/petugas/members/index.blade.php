@@ -149,7 +149,7 @@
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
                     <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">Petugas Perpustakaan</p>
+                    <p class="text-xs text-outline font-medium uppercase tracking-wide">{{ Auth::user()->petugas?->jabatan ?? 'Petugas Perpustakaan' }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
                     <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
@@ -299,6 +299,11 @@
                                 <!-- Actions -->
                                 <td class="px-8 py-5 text-center">
                                     <div class="flex items-center justify-center gap-2">
+                                        <!-- History button -->
+                                        <a href="{{ route('petugas.members.show', $m->user_id) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 flex items-center justify-center transition-all" title="Lihat Detail">
+                                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        </a>
+
                                         <!-- Edit button -->
                                         <a href="{{ route('petugas.members.edit', $m->user_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center justify-center transition-all" title="Edit Anggota">
                                             <span class="material-symbols-outlined text-[18px]">edit</span>

@@ -129,7 +129,7 @@
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
                     <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">Petugas Perpustakaan</p>
+                    <p class="text-xs text-outline font-medium uppercase tracking-wide">{{ Auth::user()->petugas?->jabatan ?? 'Petugas Perpustakaan' }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
                     <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
@@ -148,7 +148,53 @@
                     <p class="text-xs text-outline mb-6">Rekapitulasi data transaksi peminjaman, pengembalian, dan keterlambatan buku/arsip dalam rentang waktu tertentu.</p>
                     
                     <form id="form-sirkulasi" class="space-y-4 mb-6">
-                        <div class="grid grid-cols-2 gap-4">
+                        <!-- Pilihan Rentang Waktu -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Rentang Laporan</label>
+                            <div class="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-on-surface-variant mb-4">
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="filter_type" value="harian" class="text-primary focus:ring-primary/20 border-outline-variant/50" checked>
+                                    <span>Harian</span>
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="filter_type" value="bulanan" class="text-primary focus:ring-primary/20 border-outline-variant/50">
+                                    <span>Bulanan</span>
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="filter_type" value="tahunan" class="text-primary focus:ring-primary/20 border-outline-variant/50">
+                                    <span>Tahunan</span>
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="filter_type" value="custom" class="text-primary focus:ring-primary/20 border-outline-variant/50">
+                                    <span>Pilih Tanggal</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 1. Harian Input -->
+                        <div id="container-harian">
+                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Tanggal</label>
+                            <input type="date" id="filter_hari" value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                        </div>
+
+                        <!-- 2. Bulanan Input -->
+                        <div id="container-bulanan" class="hidden">
+                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Bulan</label>
+                            <input type="month" id="filter_bulan" value="{{ date('Y-m') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                        </div>
+
+                        <!-- 3. Tahunan Input -->
+                        <div id="container-tahunan" class="hidden">
+                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Tahun</label>
+                            <select id="filter_tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                                @for ($y = date('Y'); $y >= 2020; $y--)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <!-- 4. Custom Input -->
+                        <div id="container-custom" class="grid grid-cols-2 gap-4 hidden">
                             <div>
                                 <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Mulai Tanggal</label>
                                 <input type="date" id="tgl_awal" name="tgl_awal" value="{{ date('Y-m-01') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
@@ -196,13 +242,56 @@
     </main>
 
     <script>
-        function actionSirkulasi(type) {
-            const tglAwal = document.getElementById('tgl_awal').value;
-            const tglAkhir = document.getElementById('tgl_akhir').value;
+        document.querySelectorAll('input[name="filter_type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const val = this.value;
+                document.getElementById('container-harian').classList.toggle('hidden', val !== 'harian');
+                document.getElementById('container-bulanan').classList.toggle('hidden', val !== 'bulanan');
+                document.getElementById('container-tahunan').classList.toggle('hidden', val !== 'tahunan');
+                document.getElementById('container-custom').classList.toggle('hidden', val !== 'custom');
+            });
+        });
 
-            if(!tglAwal || !tglAkhir) {
-                alert('Silakan pilih rentang tanggal laporan terlebih dahulu.');
-                return;
+        function actionSirkulasi(type) {
+            const filterType = document.querySelector('input[name="filter_type"]:checked').value;
+            let tglAwal = '';
+            let tglAkhir = '';
+
+            if (filterType === 'harian') {
+                const dayVal = document.getElementById('filter_hari').value;
+                if (!dayVal) {
+                    alert('Silakan pilih tanggal terlebih dahulu.');
+                    return;
+                }
+                tglAwal = dayVal;
+                tglAkhir = dayVal;
+            } else if (filterType === 'bulanan') {
+                const monthVal = document.getElementById('filter_bulan').value;
+                if (!monthVal) {
+                    alert('Silakan pilih bulan terlebih dahulu.');
+                    return;
+                }
+                const parts = monthVal.split('-');
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]);
+                tglAwal = `${year}-${String(month).padStart(2, '0')}-01`;
+                const lastDay = new Date(year, month, 0).getDate();
+                tglAkhir = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+            } else if (filterType === 'tahunan') {
+                const yearVal = document.getElementById('filter_tahun').value;
+                if (!yearVal) {
+                    alert('Silakan pilih tahun terlebih dahulu.');
+                    return;
+                }
+                tglAwal = `${yearVal}-01-01`;
+                tglAkhir = `${yearVal}-12-31`;
+            } else if (filterType === 'custom') {
+                tglAwal = document.getElementById('tgl_awal').value;
+                tglAkhir = document.getElementById('tgl_akhir').value;
+                if (!tglAwal || !tglAkhir) {
+                    alert('Silakan pilih rentang tanggal laporan terlebih dahulu.');
+                    return;
+                }
             }
 
             if (type === 'print') {

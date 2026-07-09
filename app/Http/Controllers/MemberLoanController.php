@@ -42,7 +42,7 @@ class MemberLoanController extends Controller
         // 1. Get physical returned loans
         $loans = Loan::with(['collection.book'])
             ->where('user_id', $user->user_id)
-            ->where('status', 'kembali')
+            ->where('status', 'dikembalikan')
             ->get()
             ->map(function ($loan) {
                 // Calculate lateness

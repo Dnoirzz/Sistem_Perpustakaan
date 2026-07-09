@@ -23,12 +23,20 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $role = \App\Models\Role::first();
+        if (!$role) {
+            foreach (['admin', 'petugas', 'dosen', 'mahasiswa'] as $roleName) {
+                $role = \App\Models\Role::firstOrCreate(['role_name' => $roleName]);
+            }
+        }
+
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role_id' => $role->role_id,
         ];
     }
 

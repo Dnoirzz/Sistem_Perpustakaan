@@ -19,6 +19,10 @@
             <span class="material-symbols-outlined">group</span>
             <span class="font-label-md">Kelola User</span>
         </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('admin.prodis.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('admin.prodis.index') }}">
+            <span class="material-symbols-outlined">school</span>
+            <span class="font-label-md">Kelola Prodi</span>
+        </a>
         <details class="group" {{ $settingsMenuOpen ? 'open' : '' }}>
             <summary class="list-none flex items-center justify-between gap-3 px-4 py-3 rounded-2xl cursor-pointer {{ $settingsMenuOpen ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all">
                 <span class="flex items-center gap-3 min-w-0">

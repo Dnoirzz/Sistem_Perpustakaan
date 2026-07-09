@@ -172,6 +172,12 @@
             color: var(--text-main);
         }
 
+        .required-asterisk {
+            color: #ea4335;
+            margin-left: 3px;
+            font-size: 0.85rem;
+        }
+
         .field-input,
         .field-password-wrap input,
         .field-group select {
@@ -421,9 +427,123 @@
                 background: #96a0ad;
             }
         }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(19, 27, 46, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards ease;
+        }
+
+        /* Modal Container */
+        .modal-card {
+            background: #ffffff;
+            border-radius: 24px;
+            width: min(440px, 90%);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: slideIn 0.35s 0.1s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-family: "Outfit", sans-serif;
+        }
+
+        /* Success Icon */
+        .modal-icon-wrap {
+            width: 80px;
+            height: 80px;
+            background: #e6f7f8;
+            color: #00a5c0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .modal-icon-wrap svg {
+            width: 42px;
+            height: 42px;
+        }
+
+        /* Text Styles */
+        .modal-card h2 {
+            margin: 0 0 0.75rem;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #141b2b;
+        }
+
+        .modal-card p {
+            margin: 0 0 2rem;
+            font-size: 0.95rem;
+            color: #707882;
+            line-height: 1.6;
+        }
+
+        /* Modal Button */
+        .modal-button {
+            width: 100%;
+            border: 0;
+            background: #00a5c0;
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 0.9rem 1.5rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(0, 165, 192, 0.25);
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+
+        .modal-button:hover {
+            background: #007b91;
+            transform: translateY(-1px);
+        }
+
+        .modal-button:active {
+            transform: translateY(0);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
+    @if (session('registration_success'))
+        <div class="modal-overlay" id="successModal">
+            <div class="modal-card">
+                <div class="modal-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h2>Registrasi Berhasil!</h2>
+                <p>Akun anggota perpustakaan digital Anda telah berhasil dibuat. Silakan masuk untuk mengakses layanan.</p>
+                <a href="{{ route('login') }}" class="modal-button">Ke Halaman Login</a>
+            </div>
+        </div>
+    @endif
     <div class="register-layout">
         <aside class="visual-pane" aria-hidden="true">
             <div class="visual-box"></div>
@@ -487,12 +607,12 @@
                     </div>
 
                     <div class="field-group">
-                        <label for="name">Nama Lengkap</label>
+                        <label for="name">Nama Lengkap<span class="required-asterisk">*</span></label>
                         <input id="name" type="text" name="name" class="field-input" value="{{ old('name') }}" placeholder="Nama lengkap" required>
                     </div>
 
                     <div class="field-group">
-                        <label for="prodi_id">Program Studi</label>
+                        <label for="prodi_id">Program Studi<span class="required-asterisk">*</span></label>
                         <select id="prodi_id" name="prodi_id" required>
                             <option value="" disabled selected>Pilih Program Studi</option>
                             @foreach($prodis as $prodi)
@@ -504,7 +624,7 @@
                     </div>
 
                     <div class="field-group mahasiswa-only" data-mahasiswa-field>
-                        <label for="nim">NIM</label>
+                        <label for="nim">NIM<span class="required-asterisk">*</span></label>
                         <input
                             id="nim"
                             type="text"
@@ -523,7 +643,7 @@
                     </div>
 
                     <div class="field-group mahasiswa-only" data-mahasiswa-field>
-                        <label for="semester">Semester</label>
+                        <label for="semester">Semester<span class="required-asterisk">*</span></label>
                         <select id="semester" name="semester" data-required-for-mahasiswa="true">
                             <option value="" disabled selected>Pilih Semester</option>
                             @for($i = 1; $i <= 6; $i++)
@@ -533,7 +653,7 @@
                     </div>
 
                     <div class="field-group dosen-only" data-dosen-field>
-                        <label for="nip">NIP</label>
+                        <label for="nip">NIP<span class="required-asterisk">*</span></label>
                         <input
                             id="nip"
                             type="text"
@@ -552,17 +672,17 @@
                     </div>
 
                     <div class="field-group">
-                        <label for="no_hp">No HP / WhatsApp</label>
+                        <label for="no_hp">No HP / WhatsApp<span class="required-asterisk">*</span></label>
                         <input id="no_hp" type="text" name="no_hp" class="field-input" value="{{ old('no_hp') }}" placeholder="08xxxxxxxxxx" inputmode="numeric" pattern="[0-9]{1,25}" maxlength="25" oninput="this.value=this.value.replace(/[^0-9]/g, '')" title="No HP hanya boleh berisi angka." required>
                     </div>
 
                     <div class="field-group">
-                        <label for="email">Email</label>
+                        <label for="email">Email<span class="required-asterisk">*</span></label>
                         <input id="email" type="email" name="email" class="field-input" value="{{ old('email') }}" placeholder="nama@email.com" required>
                     </div>
 
                     <div class="field-group">
-                        <label for="password">Password</label>
+                        <label for="password">Password<span class="required-asterisk">*</span></label>
                         <div class="field-password-wrap">
                             <input id="password" type="password" name="password" placeholder="Buat password" required>
                             <button type="button" class="toggle-password" id="togglePassword" aria-label="Tampilkan password">
@@ -594,7 +714,7 @@
                     </div>
 
                     <div class="field-group">
-                        <label for="password_confirmation">Konfirmasi Password</label>
+                        <label for="password_confirmation">Konfirmasi Password<span class="required-asterisk">*</span></label>
                         <div class="field-password-wrap">
                             <input id="password_confirmation" type="password" name="password_confirmation" class="field-input" placeholder="Ulangi password" required>
                             <button type="button" class="toggle-password" id="togglePasswordConfirmation" aria-label="Tampilkan konfirmasi password">
@@ -704,15 +824,124 @@
             });
         }
 
+        function validatePasswordStrength() {
+            const passwordValue = passwordInput.value;
+            if (!passwordValue) {
+                passwordInput.setCustomValidity("");
+                return;
+            }
+            const hasMin = passwordValue.length >= 8;
+            const hasLower = /[a-z]/.test(passwordValue);
+            const hasUpper = /[A-Z]/.test(passwordValue);
+            const hasNumber = /[0-9]/.test(passwordValue);
+
+            if (!hasMin) {
+                passwordInput.setCustomValidity("password minimal harus 8 karakter");
+            } else if (!hasLower) {
+                passwordInput.setCustomValidity("password harus mengandung setidaknya satu huruf kecil");
+            } else if (!hasUpper) {
+                passwordInput.setCustomValidity("password harus mengandung setidaknya satu huruf kapital");
+            } else if (!hasNumber) {
+                passwordInput.setCustomValidity("password harus mengandung setidaknya satu angka");
+            } else {
+                passwordInput.setCustomValidity("");
+            }
+        }
+
+        function validatePasswordConfirmation() {
+            if (!passwordConfirmationInput.value) {
+                passwordConfirmationInput.setCustomValidity("");
+                return;
+            }
+            if (passwordConfirmationInput.value !== passwordInput.value) {
+                passwordConfirmationInput.setCustomValidity("password tidak cocok");
+            } else {
+                passwordConfirmationInput.setCustomValidity("");
+            }
+        }
+
         if (passwordInput) {
             updatePasswordRules(passwordInput.value);
+            validatePasswordStrength();
             passwordInput.addEventListener('input', function () {
                 updatePasswordRules(passwordInput.value);
+                validatePasswordStrength();
+                if (passwordConfirmationInput) {
+                    validatePasswordConfirmation();
+                }
+            });
+        }
+
+        if (passwordConfirmationInput) {
+            validatePasswordConfirmation();
+            passwordConfirmationInput.addEventListener('input', function () {
+                validatePasswordConfirmation();
             });
         }
 
         bindPasswordToggle(passwordInput, passwordToggle, 'Tampilkan password', 'Sembunyikan password');
         bindPasswordToggle(passwordConfirmationInput, passwordConfirmationToggle, 'Tampilkan konfirmasi password', 'Sembunyikan konfirmasi password');
+
+        // Translate native validation error tooltips to Indonesian
+        const formInputs = document.querySelectorAll('#registerForm input, #registerForm select');
+        formInputs.forEach(input => {
+            input.addEventListener('invalid', function (e) {
+                // If it is already a custom error set by our code (like password strength or match), preserve it
+                if (this.validity.customError) {
+                    return;
+                }
+
+                // Clear any previous custom validity
+                this.setCustomValidity('');
+
+                if (this.id === 'email') {
+                    if (this.validity.valueMissing) {
+                        this.setCustomValidity('Email wajib diisi');
+                    } else {
+                        this.setCustomValidity('Format email tidak valid');
+                    }
+                    return;
+                }
+
+                if (this.validity.valueMissing) {
+                    let fieldName = document.querySelector(`label[for="${this.id}"]`)?.textContent || 'kolom ini';
+                    fieldName = fieldName.replace('*', '').split('/')[0].trim();
+                    if (this.tagName === 'SELECT') {
+                        this.setCustomValidity(`${fieldName} wajib dipilih`);
+                    } else {
+                        this.setCustomValidity(`${fieldName} wajib diisi`);
+                    }
+                } else if (this.validity.patternMismatch || this.validity.tooShort || this.validity.tooLong) {
+                    if (this.id === 'nim') {
+                        this.setCustomValidity('NIM harus berisi 10 digit angka');
+                    } else if (this.id === 'nip') {
+                        this.setCustomValidity('NIP harus berisi 18 digit angka');
+                    } else if (this.id === 'no_hp') {
+                        this.setCustomValidity('Nomor HP hanya boleh berisi angka');
+                    } else {
+                        this.setCustomValidity('Format input tidak valid');
+                    }
+                }
+            });
+
+            // Clear custom validity on interaction so browser can re-evaluate
+            input.addEventListener('input', function () {
+                if (this.id !== 'password' && this.id !== 'password_confirmation') {
+                    this.setCustomValidity('');
+                }
+                if (this.id === 'email' && this.validity.typeMismatch) {
+                    this.setCustomValidity('Format email tidak valid');
+                }
+            });
+            input.addEventListener('change', function () {
+                if (this.id !== 'password' && this.id !== 'password_confirmation') {
+                    this.setCustomValidity('');
+                }
+                if (this.id === 'email' && this.validity.typeMismatch) {
+                    this.setCustomValidity('Format email tidak valid');
+                }
+            });
+        });
     </script>
 </body>
 </html>

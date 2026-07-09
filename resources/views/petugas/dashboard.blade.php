@@ -155,7 +155,7 @@
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
                     <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">Jabatan: Staff Perpustakaan</p>
+                    <p class="text-xs text-outline font-medium uppercase tracking-wide">{{ Auth::user()->petugas?->jabatan ?? 'Petugas Perpustakaan' }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
                     <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
@@ -291,7 +291,7 @@
                     @if(count($categoryLabels) > 0)
                         <canvas id="chartKategoriPopuler"></canvas>
                     @else
-                        <div class="text-xs text-outline font-medium">Belum ada data sirkulasi kategori buku.</div>
+                        <div class="text-xs text-outline font-medium">Belum ada data peminjaman buku</div>
                     @endif
                 </div>
             </div>
@@ -305,8 +305,8 @@
                 <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
                     <div class="p-8 border-b border-outline-variant/10 flex items-center justify-between">
                         <div>
-                            <h2 class="font-headline-md text-on-surface">Sirkulasi Peminjaman Terbaru</h2>
-                            <p class="text-sm text-outline">Daftar transaksi sirkulasi buku yang terjadi baru-baru ini.</p>
+                            <h2 class="font-headline-md text-on-surface">Daftar Transaksi Peminjaman Terbaru</h2>
+                            <p class="text-sm text-outline">Daftar transaksi peminjaman yang terjadi belakangan ini</p>
                         </div>
                         <a href="{{ route('petugas.loans.index') }}" class="text-primary font-label-md text-sm hover:underline">Lihat Semua</a>
                     </div>
@@ -315,7 +315,7 @@
                             <thead>
                                 <tr class="bg-surface-container-low/50">
                                     <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Peminjam</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Item Koleksi</th>
+                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Judul Buku</th>
                                     <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Pinjam</th>
                                     <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Waktu</th>
                                     <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
@@ -372,7 +372,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-8 py-8 text-center text-outline font-medium">Belum ada transaksi sirkulasi.</td>
+                                        <td colspan="5" class="px-8 py-8 text-center text-outline font-medium">Belum ada transaksi peminjaman buku</td>
                                     </tr>
                                 @endforelse
                             </tbody>
