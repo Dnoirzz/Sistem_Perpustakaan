@@ -363,6 +363,18 @@ Seluruh pelacakan tugas dan dokumentasi perkembangan hari ini telah disimpan den
 
 ### Fitur & Perbaikan yang Diselesaikan Hari Ini ✅
 
+*   **Laporan Pengumpulan & Penyerahan Arsip Digital**:
+    *   Mendaftarkan rute cetak dan ekspor Excel Laporan Arsip di `routes/web.php`.
+    *   Menambahkan method `printArsip` dan `exportArsipExcel` pada `ReportController.php` untuk memuat data arsip berstatus `diverifikasi` ("Belum penyerahan buku fisik") dan `aktif` ("Buku fisik telah diserahkan").
+    *   Membuat view `print-arsip.blade.php` dengan Kop Dinas dinamis, logo instansi, dan penanganan kolom **Tempat PKL** (ditampilkan sebagai kolom mandiri pada filter PKL, atau teks kecil di bawah judul pada filter Semua Kategori).
+    *   Menambahkan card filter ketiga dan Javascript pendukung di halaman rekap `index.blade.php`.
+    *   Membuat migrasi database untuk menambahkan kolom `nama_tempat_pkl` pada tabel `laporan_pkl` dan model `LaporanPkl.php`.
+
+*   **Pengaturan & Templat Surat Tanda Terima**:
+    *   Membuat view `admin/settings/receipt.blade.php` untuk pengelolaan (unduh/unggah) templat file Microsoft Word (`.docx`) Surat Tanda Terima (Laporan PKL, Proposal TA, Laporan TA) untuk penyerahan fisik arsip digital.
+    *   Memperbarui `Admin\SettingController.php` untuk menangani proses simpan dan unduh berkas templat tersebut.
+    *   Memperbarui `SuratTandaTerimaService.php` agar dapat membaca templat surat dinamis yang diunggah admin.
+
 *   **Batch Pemilihan Usulan Buku (Petugas)**:
     *   Mengubah dropdown usulan yang membebani memori di halaman detail voting petugas menjadi tombol link "Pilih dari Usulan Pengguna" yang mengarah ke halaman checkbox batch.
     *   Halaman pemilihan baru menyajikan daftar usulan dalam bentuk tabel checkbox berpaginasi (15 data per halaman) untuk memudahkan petugas menambahkan kandidat secara massal.
@@ -391,5 +403,3 @@ Seluruh pelacakan tugas dan dokumentasi perkembangan hari ini telah disimpan den
 *   Menjalankan query dan routing via `php artisan route:list`: **sukses**
 *   Kompilasi view dan pembersihan cache aplikasi: **sukses**
 *   Uji coba fungsionalitas penyortiran dan visualisasi medali Top 1-3 di seluruh role: **sukses**
-
-
