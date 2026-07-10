@@ -219,7 +219,7 @@ class ArsipController extends Controller
     public function update(Request $request, string $type, int $id)
     {
         $archive = ArsipDigital::findOrFail($type, $id);
-        $validated = $this->validateArchive($request);
+        $validated = $this->validateArchive($request, $type);
         $payload = ArsipDigital::buildPayload($type, $validated);
 
         if ($request->hasFile('file_pdf')) {
@@ -294,9 +294,9 @@ class ArsipController extends Controller
         return response()->download(storage_path('app/' . $path));
     }
 
-    protected function validateArchive(Request $request): array
+    protected function validateArchive(Request $request, string $type): array
     {
-        return $request->validate([
+        $rules = [
             'judul' => ['required', 'string', 'max:255'],
             'pembimbing' => ['nullable', 'string', 'max:255'],
             'penguji_1' => ['nullable', 'string', 'max:255'],
@@ -304,6 +304,16 @@ class ArsipController extends Controller
             'tahun' => ['nullable', 'digits:4', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
             'file_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:20480'],
             'file_word' => ['nullable', 'file', 'mimes:doc,docx', 'max:20480'],
+        ];
+
+        if ($type === 'laporan-pkl') {
+            $rules['nama_tempat_pkl'] = ['required', 'string', 'max:255'];
+        } else {
+            $rules['nama_tempat_pkl'] = ['nullable', 'string', 'max:255'];
+        }
+
+        return $request->validate($rules, [
+            'nama_tempat_pkl.required' => 'Nama tempat PKL wajib diisi.',
         ]);
     }
 

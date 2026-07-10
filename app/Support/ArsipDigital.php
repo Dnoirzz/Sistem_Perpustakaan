@@ -126,13 +126,19 @@ class ArsipDigital
     {
         $titleField = static::titleField($type);
 
-        return [
+        $payload = [
             'pembimbing' => $validated['pembimbing'] ?? null,
             'penguji_1' => $validated['penguji_1'] ?? null,
             'penguji_2' => $validated['penguji_2'] ?? null,
             'tahun' => $validated['tahun'] ?? null,
             $titleField => $validated['judul'],
         ];
+
+        if ($type === 'laporan-pkl') {
+            $payload['nama_tempat_pkl'] = $validated['nama_tempat_pkl'] ?? null;
+        }
+
+        return $payload;
     }
 
     public static function query(string $type, array $relations = []): Builder
@@ -218,6 +224,7 @@ class ArsipDigital
             'status' => $archive->status,
             'year' => $archive->tahun,
             'pembimbing' => $archive->pembimbing,
+            'nama_tempat_pkl' => $archive->nama_tempat_pkl ?? null,
             'created_at' => $archive->created_at,
             'updated_at' => $archive->updated_at,
             'mahasiswa_name' => $archive->mahasiswa?->user?->name,

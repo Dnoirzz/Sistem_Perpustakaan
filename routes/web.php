@@ -44,6 +44,9 @@ Route::middleware('auth')->group(function () {
     // Stream PDF & Close Log
     Route::get('/katalog-arsip/{type}/{id}/stream/{slug}.pdf', [ArsipKatalogController::class, 'stream'])->name('katalog-arsip.stream');
     Route::post('/katalog-arsip/read-log/{id}/close', [ArsipKatalogController::class, 'closeReadLog'])->name('katalog-arsip.read-log.close');
+    
+    // Receipt & Report Logo
+    Route::get('/receipt/logo', [\App\Http\Controllers\Admin\SettingController::class, 'receiptLogo'])->name('receipt.logo');
 });
 
 // Admin routes
@@ -63,6 +66,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/email', [\App\Http\Controllers\Admin\SettingController::class, 'emailIndex'])->name('email');
         Route::post('/email', [\App\Http\Controllers\Admin\SettingController::class, 'emailUpdate'])->name('email.update');
         Route::post('/email/test', [\App\Http\Controllers\Admin\SettingController::class, 'testEmail'])->name('email.test');
+        
+        Route::get('/receipt', [\App\Http\Controllers\Admin\SettingController::class, 'receiptIndex'])->name('receipt');
+        Route::post('/receipt', [\App\Http\Controllers\Admin\SettingController::class, 'receiptUpdate'])->name('receipt.update');
+        Route::post('/receipt/preview', [\App\Http\Controllers\Admin\SettingController::class, 'receiptPreview'])->name('receipt.preview');
         
         // Fallback redirect
         Route::get('/', function() {
@@ -143,8 +150,14 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::get('/reports/export-sirkulasi', [\App\Http\Controllers\Petugas\ReportController::class, 'exportSirkulasiExcel'])->name('reports.export-sirkulasi');
     Route::get('/reports/print-koleksi', [\App\Http\Controllers\Petugas\ReportController::class, 'printKoleksi'])->name('reports.print-koleksi');
     Route::get('/reports/export-koleksi', [\App\Http\Controllers\Petugas\ReportController::class, 'exportKoleksiExcel'])->name('reports.export-koleksi');
+    Route::get('/reports/print-arsip', [\App\Http\Controllers\Petugas\ReportController::class, 'printArsip'])->name('reports.print-arsip');
+    Route::get('/reports/export-arsip', [\App\Http\Controllers\Petugas\ReportController::class, 'exportArsipExcel'])->name('reports.export-arsip');
 
     // Kelola Voting Buku (Petugas View)
+    Route::get('/voting/{id}/select-recommendations', [\App\Http\Controllers\Petugas\VotingController::class, 'selectRecommendations'])->name('voting.select-recommendations');
+    Route::post('/voting/{id}/add-recommendations-batch', [\App\Http\Controllers\Petugas\VotingController::class, 'addRecommendationsBatch'])->name('voting.add-recommendations-batch');
+    Route::post('/voting/{id}/add-manual', [\App\Http\Controllers\Petugas\VotingController::class, 'addManual'])->name('voting.add-manual');
+    Route::delete('/voting/{id}/remove-item/{itemId}', [\App\Http\Controllers\Petugas\VotingController::class, 'removeItem'])->name('voting.remove-item');
     Route::resource('voting', \App\Http\Controllers\Petugas\VotingController::class);
 });
 

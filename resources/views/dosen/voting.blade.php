@@ -210,6 +210,15 @@
                                 <!-- Visual Cover Header -->
                                 <div class="h-32 bg-gradient-to-br from-primary to-primary-container relative flex items-center justify-center text-white/20">
                                     <span class="material-symbols-outlined text-[60px]">image</span>
+                                    
+                                    @if($loop->iteration === 1 && $itemVotesCount > 0)
+                                        <div class="absolute top-4 left-4 bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm border border-amber-600">🏆 Top 1</div>
+                                    @elseif($loop->iteration === 2 && $itemVotesCount > 0)
+                                        <div class="absolute top-4 left-4 bg-slate-400 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm border border-slate-500">🥈 Top 2</div>
+                                    @elseif($loop->iteration === 3 && $itemVotesCount > 0)
+                                        <div class="absolute top-4 left-4 bg-amber-750 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm border border-amber-800" style="background-color: #a05a2c;">🥉 Top 3</div>
+                                    @endif
+
                                     <div class="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-md rounded-xl p-2 flex items-center justify-between">
                                         <span class="text-[10px] font-bold text-white uppercase tracking-wider">Calon Pengadaan</span>
                                         <div class="flex items-center gap-1 text-white bg-primary px-2.5 py-0.5 rounded-lg text-[10px] font-bold shadow-sm">

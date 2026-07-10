@@ -136,8 +136,7 @@ class ArsipController extends Controller
 
     protected function validateArchive(Request $request, bool $isCreate): array
     {
-        return $request->validate([
-            'type' => ['required', 'in:' . implode(',', array_keys(ArsipDigital::definitions()))],
+        $rules = [
             'judul' => ['required', 'string', 'max:255'],
             'pembimbing' => ['required', 'string', 'max:255'],
             'penguji_1' => ['required', 'string', 'max:255'],
@@ -145,7 +144,21 @@ class ArsipController extends Controller
             'tahun' => ['required', 'digits:4', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
             'file_pdf' => [$isCreate ? 'required' : 'nullable', 'file', 'mimes:pdf', 'max:20480'],
             'file_word' => [$isCreate ? 'required' : 'nullable', 'file', 'mimes:doc,docx', 'max:20480'],
-        ], [
+        ];
+
+        if ($isCreate) {
+            $rules['type'] = ['required', 'in:' . implode(',', array_keys(ArsipDigital::definitions()))];
+        }
+
+        $type = $isCreate ? $request->input('type') : $request->route('type');
+
+        if ($type === 'laporan-pkl') {
+            $rules['nama_tempat_pkl'] = ['required', 'string', 'max:255'];
+        } else {
+            $rules['nama_tempat_pkl'] = ['nullable', 'string', 'max:255'];
+        }
+
+        return $request->validate($rules, [
             'type.required' => 'Jenis arsip wajib dipilih.',
             'judul.required' => 'Judul arsip wajib diisi.',
             'pembimbing.required' => 'Nama dosen pembimbing wajib diisi.',
@@ -156,6 +169,7 @@ class ArsipController extends Controller
             'file_pdf.mimes' => 'File utama harus berformat PDF.',
             'file_word.required' => 'File Word wajib diunggah.',
             'file_word.mimes' => 'File pendukung harus berformat DOC atau DOCX.',
+            'nama_tempat_pkl.required' => 'Nama tempat PKL wajib diisi.',
         ]);
     }
 

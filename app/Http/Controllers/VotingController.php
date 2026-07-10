@@ -23,6 +23,12 @@ class VotingController extends Controller
             ->where('tgl_selesai', '>=', now()->toDateString())
             ->get();
 
+        foreach ($votings as $voting) {
+            $voting->setRelation('votingItems', $voting->votingItems->sortByDesc(function ($item) {
+                return $item->votes->count();
+            }));
+        }
+
         // Pluck the IDs of items this user has voted for
         $userVotes = Vote::where('user_id', $user->user_id)
             ->pluck('voting_item_id')

@@ -14,6 +14,7 @@ class LaporanPkl extends Model
     protected $fillable = [
         'mahasiswa_id',
         'judul_pkl',
+        'nama_tempat_pkl',
         'pembimbing',
         'penguji_1',
         'penguji_2',

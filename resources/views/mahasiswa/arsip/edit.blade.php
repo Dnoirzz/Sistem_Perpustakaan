@@ -173,6 +173,13 @@
                     <input type="text" name="judul" value="{{ old('judul', $archiveTitle) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                 </div>
                 
+                @if ($archiveType === 'laporan-pkl')
+                    <div>
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Nama Tempat PKL <span class="text-error">*</span></label>
+                        <input type="text" name="nama_tempat_pkl" value="{{ old('nama_tempat_pkl', $archive->nama_tempat_pkl) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                    </div>
+                @endif
+                
                 <div class="grid gap-6 md:grid-cols-2">
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Pembimbing <span class="text-error">*</span></label>

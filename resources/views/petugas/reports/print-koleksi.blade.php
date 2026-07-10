@@ -14,25 +14,40 @@
             line-height: 1.3;
         }
         .kop-surat {
-            text-align: center;
             border-bottom: 3px double #000;
             padding-bottom: 10px;
             margin-bottom: 25px;
         }
+        .kop-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none !important;
+            margin-bottom: 0;
+        }
+        .kop-table tr, .kop-table td {
+            border: none !important;
+            padding: 0 !important;
+        }
         .kop-surat h2 {
             margin: 0;
+            font-size: 16pt;
+            font-weight: normal;
+        }
+        .kop-surat h3.line-2 {
+            margin: 5px 0 0 0;
             font-size: 14pt;
             font-weight: bold;
         }
-        .kop-surat h3 {
+        .kop-surat h3.line-3 {
             margin: 5px 0 0 0;
-            font-size: 13pt;
+            font-size: 12pt;
             font-weight: bold;
         }
         .kop-surat p {
             margin: 5px 0 0 0;
-            font-size: 10pt;
-            font-style: italic;
+            font-size: 11pt;
+            font-style: normal;
+            line-height: 1.2;
         }
         .title-section {
             text-align: center;
@@ -109,10 +124,21 @@
 
     <!-- Kop Surat Dinas -->
     <div class="kop-surat">
-        <h2>KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h2>
-        <h3>POLITEKNIK NEGERI PONTIANAK</h3>
-        <h3>PSDKU KABUPATEN SUKAMARA</h3>
-        <p>Jalan Pancasila No. 01, Sukamara, Kalimantan Tengah. Email: psdku@polnep.ac.id</p>
+        <table class="kop-table">
+            <tr>
+                <!-- Kolom logo diset rata kiri dengan padding-left untuk memberi ruang kosong di sebelah kiri -->
+                <td style="width: 15%; text-align: left; vertical-align: middle; padding-left: 15px !important;">
+                    <img src="{{ route('receipt.logo') }}" style="height: 120px; width: auto;" alt="Logo Instansi">
+                </td>
+                <!-- Ditambahkan padding-right 15% agar teks tetap center secara presisi terhadap kertas -->
+                <td style="text-align: center; padding-right: 15% !important;">
+                    <h2>{!! nl2br(e(\App\Models\AppSetting::get('receipt_kop_line_1', 'KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI'))) !!}</h2>
+                    <h3 class="line-2">{{ \App\Models\AppSetting::get('receipt_kop_line_2', 'POLITEKNIK NEGERI PONTIANAK') }}</h3>
+                    <h3 class="line-3">{{ \App\Models\AppSetting::get('receipt_kop_line_3', 'PERPUSTAKAAN PSDKU POLNEP DI KABUPATEN SUKAMARA') }}</h3>
+                    <p style="margin-top: 5px;">{!! nl2br(e(\App\Models\AppSetting::get('receipt_kop_alamat', "Jalan Jenderal Ahmad Yani - Pontianak 78124, Kalimantan Barat\nTelepon: (0561)736180, Faksimile: (0561)740143, Kotak Pos: 1286"))) !!}</p>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <!-- Judul Laporan -->

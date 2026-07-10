@@ -26,8 +26,8 @@
         <details class="group" {{ $settingsMenuOpen ? 'open' : '' }}>
             <summary class="list-none flex items-center justify-between gap-3 px-4 py-3 rounded-2xl cursor-pointer {{ $settingsMenuOpen ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all">
                 <span class="flex items-center gap-3 min-w-0">
-                    <span class="material-symbols-outlined">notifications</span>
-                    <span class="font-label-md">Pengaturan Notifikasi</span>
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="font-label-md">Pengaturan</span>
                 </span>
                 <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
             </summary>
@@ -40,6 +40,10 @@
                 <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('admin.settings.email') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('admin.settings.email') }}">
                     <span class="material-symbols-outlined text-[18px]">mail</span>
                     <span class="text-sm">Notifikasi Email</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('admin.settings.receipt') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('admin.settings.receipt') }}">
+                    <span class="material-symbols-outlined text-[18px]">description</span>
+                    <span class="text-sm">Template Tanda Terima</span>
                 </a>
             </div>
         </details>

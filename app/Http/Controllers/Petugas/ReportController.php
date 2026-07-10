@@ -284,4 +284,196 @@ class ReportController extends Controller
             'Cache-Control' => 'max-age=0',
         ]);
     }
+
+    public function printArsip(Request $request)
+    {
+        $request->validate([
+            'tgl_awal' => 'required|date',
+            'tgl_akhir' => 'required|date',
+            'jenis_arsip' => 'required|in:all,laporan_pkl,proposal_ta,laporan_ta',
+        ]);
+
+        $tglAwal = Carbon::parse($request->tgl_awal);
+        $tglAkhir = Carbon::parse($request->tgl_akhir);
+        $jenisArsip = $request->jenis_arsip;
+
+        $archives = $this->getArchivesData($tglAwal, $tglAkhir, $jenisArsip);
+
+        // Catat Log Aktivitas
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity' => 'Mencetak laporan penerimaan arsip digital periode ' . $tglAwal->format('d/m/Y') . ' - ' . $tglAkhir->format('d/m/Y'),
+        ]);
+
+        return view('petugas.reports.print-arsip', [
+            'archives' => $archives,
+            'tglAwal' => $tglAwal,
+            'tglAkhir' => $tglAkhir,
+            'jenisArsip' => $jenisArsip,
+        ]);
+    }
+
+    public function exportArsipExcel(Request $request)
+    {
+        $request->validate([
+            'tgl_awal' => 'required|date',
+            'tgl_akhir' => 'required|date',
+            'jenis_arsip' => 'required|in:all,laporan_pkl,proposal_ta,laporan_ta',
+        ]);
+
+        $tglAwal = Carbon::parse($request->tgl_awal);
+        $tglAkhir = Carbon::parse($request->tgl_akhir);
+        $jenisArsip = $request->jenis_arsip;
+
+        // Catat Log Aktivitas
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity' => 'Mengekspor laporan penerimaan arsip digital Excel periode ' . $tglAwal->format('d/m/Y') . ' - ' . $tglAkhir->format('d/m/Y'),
+        ]);
+
+        $spreadsheet = new Spreadsheet();
+        $sheetIndex = 0;
+
+        $types = [];
+        if ($jenisArsip === 'all') {
+            $types = [
+                'laporan_pkl' => ['title' => 'Laporan PKL', 'model' => LaporanPkl::class, 'title_field' => 'judul_pkl'],
+                'proposal_ta' => ['title' => 'Proposal TA', 'model' => ProposalTa::class, 'title_field' => 'judul_proposal'],
+                'laporan_ta' => ['title' => 'Laporan TA', 'model' => LaporanTugasAkhir::class, 'title_field' => 'judul_tgs_akhir'],
+            ];
+        } else {
+            if ($jenisArsip === 'laporan_pkl') {
+                $types['laporan_pkl'] = ['title' => 'Laporan PKL', 'model' => LaporanPkl::class, 'title_field' => 'judul_pkl'];
+            } elseif ($jenisArsip === 'proposal_ta') {
+                $types['proposal_ta'] = ['title' => 'Proposal TA', 'model' => ProposalTa::class, 'title_field' => 'judul_proposal'];
+            } elseif ($jenisArsip === 'laporan_ta') {
+                $types['laporan_ta'] = ['title' => 'Laporan TA', 'model' => LaporanTugasAkhir::class, 'title_field' => 'judul_tgs_akhir'];
+            }
+        }
+
+        foreach ($types as $key => $typeConfig) {
+            if ($sheetIndex > 0) {
+                $sheet = $spreadsheet->createSheet();
+            } else {
+                $sheet = $spreadsheet->getActiveSheet();
+            }
+
+            $sheet->setTitle($typeConfig['title']);
+
+            // Title headers
+            $sheet->setCellValue('A1', 'LAPORAN PENGUMPULAN ARSIP DIGITAL - ' . strtoupper($typeConfig['title']));
+            $sheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d F Y') . ' s/d ' . $tglAkhir->translatedFormat('d F Y'));
+            
+            $sheet->setCellValue('A4', 'No');
+            $sheet->setCellValue('B4', 'Nama Mahasiswa');
+            $sheet->setCellValue('C4', 'NIM');
+            $sheet->setCellValue('D4', 'Program Studi');
+            $sheet->setCellValue('E4', 'Judul Arsip');
+            
+            $hasPkl = ($key === 'laporan_pkl');
+            if ($hasPkl) {
+                $sheet->setCellValue('F4', 'Tempat PKL');
+                $sheet->setCellValue('G4', 'Dosen Pembimbing');
+                $sheet->setCellValue('H4', 'Tanggal Verifikasi');
+                $sheet->setCellValue('I4', 'Status Penyerahan Fisik');
+            } else {
+                $sheet->setCellValue('F4', 'Dosen Pembimbing');
+                $sheet->setCellValue('G4', 'Tanggal Verifikasi');
+                $sheet->setCellValue('H4', 'Status Penyerahan Fisik');
+            }
+
+            $lastCol = $hasPkl ? 'I' : 'H';
+            $sheet->getStyle('A4:' . $lastCol . '4')->getFont()->setBold(true);
+
+            $items = $typeConfig['model']::with(['mahasiswa.user', 'mahasiswa.prodi'])
+                ->whereIn('status', ['diverifikasi', 'aktif'])
+                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59'])
+                ->latest('verified_at')
+                ->get();
+
+            $rowNum = 5;
+            foreach ($items as $index => $item) {
+                $statusLabel = $item->status === 'aktif' ? 'Buku fisik telah diserahkan' : 'Belum penyerahan buku fisik';
+                $sheet->setCellValue('A' . $rowNum, $index + 1);
+                $sheet->setCellValue('B' . $rowNum, $item->mahasiswa?->user?->name ?: '-');
+                $sheet->setCellValue('C' . $rowNum, $item->mahasiswa?->nim ?: '-');
+                $sheet->setCellValue('D' . $rowNum, $item->mahasiswa?->prodi?->nama_prodi ?: '-');
+                $sheet->setCellValue('E' . $rowNum, $item->{$typeConfig['title_field']} ?: '-');
+                
+                if ($hasPkl) {
+                    $sheet->setCellValue('F' . $rowNum, $item->nama_tempat_pkl ?: '-');
+                    $sheet->setCellValue('G' . $rowNum, $item->pembimbing ?: '-');
+                    $sheet->setCellValue('H' . $rowNum, $item->verified_at ? Carbon::parse($item->verified_at)->format('d-m-Y') : '-');
+                    $sheet->setCellValue('I' . $rowNum, $statusLabel);
+                } else {
+                    $sheet->setCellValue('F' . $rowNum, $item->pembimbing ?: '-');
+                    $sheet->setCellValue('G' . $rowNum, $item->verified_at ? Carbon::parse($item->verified_at)->format('d-m-Y') : '-');
+                    $sheet->setCellValue('H' . $rowNum, $statusLabel);
+                }
+                $rowNum++;
+            }
+
+            foreach (range('A', $lastCol) as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            $sheetIndex++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'laporan-pengumpulan-arsip-' . $tglAwal->format('Ymd') . '-ke-' . $tglAkhir->format('Ymd') . '.xlsx';
+
+        return response()->streamDownload(function() use ($writer) {
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
+    }
+
+    private function getArchivesData(Carbon $tglAwal, Carbon $tglAkhir, string $jenisArsip)
+    {
+        $data = collect();
+
+        if ($jenisArsip === 'all' || $jenisArsip === 'laporan_pkl') {
+            $pkls = LaporanPkl::with(['mahasiswa.user', 'mahasiswa.prodi'])
+                ->whereIn('status', ['diverifikasi', 'aktif'])
+                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59'])
+                ->get()
+                ->map(function ($item) {
+                    $item->jenis_label = 'Laporan PKL';
+                    $item->judul_display = $item->judul_pkl;
+                    return $item;
+                });
+            $data = $data->concat($pkls);
+        }
+
+        if ($jenisArsip === 'all' || $jenisArsip === 'proposal_ta') {
+            $ptas = ProposalTa::with(['mahasiswa.user', 'mahasiswa.prodi'])
+                ->whereIn('status', ['diverifikasi', 'aktif'])
+                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59'])
+                ->get()
+                ->map(function ($item) {
+                    $item->jenis_label = 'Proposal TA';
+                    $item->judul_display = $item->judul_proposal;
+                    return $item;
+                });
+            $data = $data->concat($ptas);
+        }
+
+        if ($jenisArsip === 'all' || $jenisArsip === 'laporan_ta') {
+            $tas = LaporanTugasAkhir::with(['mahasiswa.user', 'mahasiswa.prodi'])
+                ->whereIn('status', ['diverifikasi', 'aktif'])
+                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59'])
+                ->get()
+                ->map(function ($item) {
+                    $item->jenis_label = 'Laporan TA';
+                    $item->judul_display = $item->judul_tgs_akhir;
+                    return $item;
+                });
+            $data = $data->concat($tas);
+        }
+
+        return $data->sortByDesc('verified_at')->values();
+    }
 }

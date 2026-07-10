@@ -354,3 +354,42 @@ Seluruh pelacakan tugas dan dokumentasi perkembangan hari ini telah disimpan den
 *   Uji coba beralih tab browser: **sukses** (tidak memicu penutupan sesi baca)
 *   Pembersihan cache rute, view, config, dan cache aplikasi: **sukses**
 
+---
+
+## Progress Lanjutan Fase 6: Kelola Kandidat Voting (Batch Checkbox, Riwayat Sesi, & Medali Top 1-3)
+
+**Hari/Tanggal:** Jumat, 10 Juli 2026  
+**Fokus:** Penyelesaian Fitur Pemilihan Batch Usulan Buku, Riwayat Sesi Voting Sebelumnya (Opsi 2), Filter/Sorting Terintegrasi, serta Lencana/Medali Top 1-3 Kandidat Terpopuler.
+
+### Fitur & Perbaikan yang Diselesaikan Hari Ini ✅
+
+*   **Batch Pemilihan Usulan Buku (Petugas)**:
+    *   Mengubah dropdown usulan yang membebani memori di halaman detail voting petugas menjadi tombol link "Pilih dari Usulan Pengguna" yang mengarah ke halaman checkbox batch.
+    *   Halaman pemilihan baru menyajikan daftar usulan dalam bentuk tabel checkbox berpaginasi (15 data per halaman) untuk memudahkan petugas menambahkan kandidat secara massal.
+    *   Implementasi logic backend menggunakan *Database Transaction* untuk menjamin konsistensi data saat batch input.
+
+*   **Logika Riwayat Sesi Voting Sebelumnya (Opsi 2)**:
+    *   Menampilkan tag keterangan kecil di bawah judul buku usulan: `Pernah di-voting pada: [Nama Sesi]` jika buku tersebut pernah masuk ke sesi voting lain sebelumnya.
+    *   Buku usulan yang terdaftar pada sesi aktif saat ini disembunyikan agar tidak terjadi duplikasi data.
+    *   Membedakan duplikasi buku berdasarkan kombinasi unik **Judul + Penulis**.
+
+*   **Fitur Pencarian, Paginasi, & Penyortiran (Sorting)**:
+    *   Menyediakan input pencarian kata kunci judul/penulis serta dropdown select untuk pengurutan: **Terbaru** (default), **Terlama**, **Judul: A - Z**, dan **Judul: Z - A**.
+    *   Dropdown select dilengkapi aksi *auto-submit* via JavaScript.
+    *   Tombol **Reset** pencarian disetel agar hanya muncul ketika filter pencarian aktif (tidak dipicu jika hanya menyortir).
+    *   Menyinkronkan query parameter pencarian dan pengurutan pada tautan paginasi.
+
+*   **Pengurutan Suara Terbanyak & Lencana Top 1-3**:
+    *   Mengurutkan daftar kandidat pada sesi voting aktif dari suara terbanyak ke terkecil di seluruh dashboard/view (Petugas detail, Mahasiswa voting, Dosen voting).
+    *   Menyematkan lencana visual juara bagi kandidat teratas yang memiliki minimal 1 suara masuk:
+        - 🥇 Peringkat 1: **🏆 Top 1** (Emas)
+        - 🥈 Peringkat 2: **🥈 Top 2** (Perak)
+        - 🥉 Peringkat 3: **🥉 Top 3** (Perunggu)
+    *   Penempatan lencana disetel secara premium di sudut kiri atas cover header kartu kandidat (pada mahasiswa & dosen) dan di samping judul (pada petugas).
+
+### Verifikasi yang Sudah Dilakukan
+*   Menjalankan query dan routing via `php artisan route:list`: **sukses**
+*   Kompilasi view dan pembersihan cache aplikasi: **sukses**
+*   Uji coba fungsionalitas penyortiran dan visualisasi medali Top 1-3 di seluruh role: **sukses**
+
+

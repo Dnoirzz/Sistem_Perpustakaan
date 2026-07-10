@@ -187,16 +187,23 @@
                     Form Upload Arsip
                 </h2>
                 
-                <form action="{{ route('mahasiswa.arsip.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+                <form action="{{ route('mahasiswa.arsip.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" x-data="{ type: '{{ old('type', $typeOptions[0]['value'] ?? 'laporan-pkl') }}' }">
                     @csrf
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Jenis Arsip <span class="text-error">*</span></label>
-                        <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                        <select name="type" x-model="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                             @foreach($typeOptions as $option)
-                                <option value="{{ $option['value'] }}" @selected(old('type') === $option['value'])>{{ $option['label'] }}</option>
+                                <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
                             @endforeach
                         </select>
                     </div>
+                    
+                    <!-- Nama Tempat PKL (Hanya muncul jika Laporan PKL) -->
+                    <div x-show="type === 'laporan-pkl'" x-transition class="space-y-2">
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Nama Tempat PKL <span class="text-error">*</span></label>
+                        <input type="text" name="nama_tempat_pkl" :required="type === 'laporan-pkl'" value="{{ old('nama_tempat_pkl') }}" placeholder="Masukkan Nama Instansi/Perusahaan Tempat PKL" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip <span class="text-error">*</span></label>
                         <input type="text" name="judul" value="{{ old('judul') }}" placeholder="Masukkan Judul Laporan" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
@@ -249,10 +256,14 @@
                                 <div>
                                     <span class="mb-2 inline-block text-xs font-bold uppercase tracking-wide text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">{{ $item['type_label'] }}</span>
                                     <h3 class="text-[16px] font-bold text-on-surface line-clamp-2 mt-1">{{ $item['title'] }}</h3>
-                                    <p class="mt-2 text-xs text-outline font-semibold flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-[14px]">calendar_month</span> Tahun {{ $item['year'] ?? '-' }} 
+                                    <p class="mt-2 text-xs text-outline font-semibold flex flex-wrap items-center gap-2">
+                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_month</span> Tahun {{ $item['year'] ?? '-' }}</span>
                                         <span class="text-outline-variant">•</span> 
-                                        <span class="material-symbols-outlined text-[14px]">person</span> Pembimbing: {{ $item['pembimbing'] ?? '-' }}
+                                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">person</span> Pembimbing: {{ $item['pembimbing'] ?? '-' }}</span>
+                                        @if($item['type'] === 'laporan-pkl' && !empty($item['nama_tempat_pkl']))
+                                            <span class="text-outline-variant">•</span> 
+                                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">corporate_fare</span> Tempat PKL: {{ $item['nama_tempat_pkl'] }}</span>
+                                        @endif
                                     </p>
                                 </div>
                                 <span class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide border

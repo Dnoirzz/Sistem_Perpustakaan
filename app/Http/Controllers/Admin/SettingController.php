@@ -178,4 +178,131 @@ class SettingController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * Tampilkan halaman pengaturan Surat Tanda Terima.
+     */
+    public function receiptIndex()
+    {
+        $settings = [
+            'receipt_penerima_nama' => AppSetting::get('receipt_penerima_nama', 'Fathul Romdani S.Pd'),
+            'receipt_penerima_nip' => AppSetting::get('receipt_penerima_nip', 'NUP. 199912072023091991'),
+            'receipt_penerima_jabatan' => AppSetting::get('receipt_penerima_jabatan', 'Staff Perpustakaan'),
+            'receipt_kode_surat' => AppSetting::get('receipt_kode_surat', '/PL.16.A3/KM/'),
+            'receipt_kop_line_1' => AppSetting::get('receipt_kop_line_1', 'KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI'),
+            'receipt_kop_line_2' => AppSetting::get('receipt_kop_line_2', 'POLITEKNIK NEGERI PONTIANAK'),
+            'receipt_kop_line_3' => AppSetting::get('receipt_kop_line_3', 'PERPUSTAKAAN PSDKU POLNEP DI KABUPATEN SUKAMARA'),
+            'receipt_kop_alamat' => AppSetting::get('receipt_kop_alamat', 'Jalan Jenderal Ahmad Yani - Pontianak 78124, Kalimantan Barat Telepon: (0561)736180, Faksimile: (0561)740143, Kotak Pos: 1286'),
+        ];
+
+        return view('admin.settings.receipt', compact('settings'));
+    }
+
+    /**
+     * Simpan perubahan pengaturan Surat Tanda Terima.
+     */
+    public function receiptUpdate(Request $request)
+    {
+        $request->validate([
+            'receipt_penerima_nama' => 'required|string|max:255',
+            'receipt_penerima_nip' => 'required|string|max:255',
+            'receipt_penerima_jabatan' => 'required|string|max:255',
+            'receipt_kode_surat' => 'required|string|max:255',
+            'receipt_kop_line_1' => 'required|string|max:255',
+            'receipt_kop_line_2' => 'required|string|max:255',
+            'receipt_kop_line_3' => 'required|string|max:255',
+            'receipt_kop_alamat' => 'required|string|max:1000',
+            'receipt_logo' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+        ]);
+
+        AppSetting::set('receipt_penerima_nama', $request->receipt_penerima_nama);
+        AppSetting::set('receipt_penerima_nip', $request->receipt_penerima_nip);
+        AppSetting::set('receipt_penerima_jabatan', $request->receipt_penerima_jabatan);
+        AppSetting::set('receipt_kode_surat', $request->receipt_kode_surat);
+        AppSetting::set('receipt_kop_line_1', $request->receipt_kop_line_1);
+        AppSetting::set('receipt_kop_line_2', $request->receipt_kop_line_2);
+        AppSetting::set('receipt_kop_line_3', $request->receipt_kop_line_3);
+        AppSetting::set('receipt_kop_alamat', $request->receipt_kop_alamat);
+
+        if ($request->hasFile('receipt_logo')) {
+            $destDir = storage_path('app/templates');
+            if (!is_dir($destDir)) {
+                mkdir($destDir, 0777, true);
+            }
+            $request->file('receipt_logo')->move($destDir, 'logo_custom.png');
+        }
+
+        return redirect()->route('admin.settings.receipt')
+            ->with('success', 'Pengaturan template Surat Tanda Terima berhasil diperbarui.');
+    }
+
+    /**
+     * Aliran file logo tanda terima (dari folder private templates).
+     */
+    public function receiptLogo()
+    {
+        $logoPath = storage_path('app/templates/logo_custom.png');
+        if (!file_exists($logoPath)) {
+            $logoPath = storage_path('app/templates/logo_default.png');
+        }
+
+        if (!file_exists($logoPath)) {
+            abort(404);
+        }
+
+        return response()->file($logoPath);
+    }
+
+    /**
+     * Preview Surat Tanda Terima dengan inputan form saat ini secara real-time.
+     */
+    public function receiptPreview(Request $request)
+    {
+        $overrides = $request->validate([
+            'receipt_penerima_nama' => 'required|string|max:255',
+            'receipt_penerima_nip' => 'required|string|max:255',
+            'receipt_penerima_jabatan' => 'required|string|max:255',
+            'receipt_kode_surat' => 'required|string|max:255',
+            'receipt_kop_line_1' => 'required|string|max:255',
+            'receipt_kop_line_2' => 'required|string|max:255',
+            'receipt_kop_line_3' => 'required|string|max:255',
+            'receipt_kop_alamat' => 'required|string|max:1000',
+        ]);
+
+        // Create dummy LaporanPkl
+        $archive = new \App\Models\LaporanPkl([
+            'judul_pkl' => 'DESAIN DAN IMPLEMENTASI APLIKASI WEB PERPUSTAKAAN PSDKU POLNEP KABUPATEN SUKAMARA',
+            'nama_tempat_pkl' => 'Kantor Bupati Sukamara - Bagian TIK',
+            'pembimbing' => 'Hendra, M.T.',
+            'penguji_1' => 'Agus, M.Cs.',
+            'penguji_2' => 'Budi, M.T.',
+            'tahun' => date('Y'),
+            'nomor_surat' => '024' . $overrides['receipt_kode_surat'] . date('Y'),
+            'verified_at' => now(),
+        ]);
+
+        // Setup relations
+        $dummyUser = new \App\Models\User(['name' => 'MUHAMMAD RIZKY']);
+        $dummyProdi = new \App\Models\Prodi(['nama_prodi' => 'Teknologi Informasi']);
+        $dummyMahasiswa = new \App\Models\Mahasiswa(['nim' => '3202116001']);
+        $dummyMahasiswa->setRelation('user', $dummyUser);
+        $dummyMahasiswa->setRelation('prodi', $dummyProdi);
+
+        $archive->setRelation('mahasiswa', $dummyMahasiswa);
+
+        // Generate temporary file in storage directory to avoid OS temp permissions issues
+        $tempDir = storage_path('app/temp_previews');
+        if (!is_dir($tempDir)) {
+            mkdir($tempDir, 0777, true);
+        }
+        $tempPath = $tempDir . '/' . uniqid('receipt_') . '.pdf';
+
+        $service = new \App\Services\SuratTandaTerimaService();
+        $service->generatePreview($archive, $overrides, $tempPath);
+
+        return response()->file($tempPath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="preview_tanda_terima.pdf"'
+        ])->deleteFileAfterSend(true);
+    }
 }

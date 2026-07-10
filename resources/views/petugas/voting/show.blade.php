@@ -136,6 +136,19 @@
             </div>
         </header>
 
+        @if (session('success'))
+            <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 text-sm font-semibold">
+                <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+                <div>{{ session('success') }}</div>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl flex items-center gap-3 text-sm font-semibold">
+                <span class="material-symbols-outlined text-rose-600">error</span>
+                <div>{{ session('error') }}</div>
+            </div>
+        @endif
+
         <!-- Two Column Content Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
@@ -187,6 +200,42 @@
                     </div>
                 </section>
 
+                <!-- Kelola Kandidat Card -->
+                <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8">
+                    <h3 class="font-headline-md text-on-surface text-lg mb-2">Kelola Kandidat Buku</h3>
+                    <p class="text-xs text-outline mb-6">Tambahkan opsi buku baru untuk sesi voting ini.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Tambah dari Usulan Pengguna -->
+                        <div class="flex flex-col justify-between space-y-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-outline uppercase tracking-wider mb-2">Usulan Buku Pengguna</h4>
+                                <p class="text-xs text-outline leading-relaxed">Pilih kandidat buku secara massal dari daftar rekomendasi yang diajukan oleh mahasiswa dan dosen.</p>
+                            </div>
+                            <a href="{{ route('petugas.voting.select-recommendations', $voting->voting_id) }}" class="w-full py-3.5 px-4 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 text-center">
+                                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                                Pilih dari Usulan Pengguna
+                            </a>
+                        </div>
+
+                        <!-- Tambah Manual (Instansi) -->
+                        <div class="space-y-4 border-t md:border-t-0 md:border-l border-outline-variant/10 pt-6 md:pt-0 md:pl-8">
+                            <h4 class="text-xs font-bold text-outline uppercase tracking-wider">Tambah Buku Manual</h4>
+                            <form action="{{ route('petugas.voting.add-manual', $voting->voting_id) }}" method="POST" class="space-y-3">
+                                @csrf
+                                <div class="grid grid-cols-1 gap-3">
+                                    <input type="text" name="title" required placeholder="Judul Buku baru..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
+                                    <input type="text" name="author" placeholder="Penulis/Karya..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
+                                </div>
+                                <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-tertiary hover:bg-tertiary/90 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">draw</span>
+                                    Tambahkan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Peringkat Kandidat (Bar Chart) -->
                 <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8">
                     <h3 class="font-headline-md text-on-surface text-lg mb-6">Hasil Perolehan Suara Kandidat</h3>
@@ -200,12 +249,32 @@
                             <div>
                                 <div class="flex justify-between items-start mb-2">
                                     <div>
-                                        <h4 class="font-bold text-on-surface text-sm">{{ $item->recommendation?->title }}</h4>
+                                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                                            <h4 class="font-bold text-on-surface text-sm">{{ $item->recommendation?->title }}</h4>
+                                            @if($loop->iteration === 1 && $itemVotes > 0)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-700 text-[10px] font-black uppercase tracking-wider border border-amber-500/20">🏆 Top 1</span>
+                                            @elseif($loop->iteration === 2 && $itemVotes > 0)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-400/10 text-slate-700 text-[10px] font-black uppercase tracking-wider border border-slate-400/20">🥈 Top 2</span>
+                                            @elseif($loop->iteration === 3 && $itemVotes > 0)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-700/10 text-amber-800 text-[10px] font-black uppercase tracking-wider border border-amber-700/20">🥉 Top 3</span>
+                                            @endif
+                                        </div>
                                         <p class="text-xs text-outline">Karya: {{ $item->recommendation?->author ?: '-' }} | Diusulkan oleh: {{ $item->recommendation?->user?->name }}</p>
                                     </div>
-                                    <div class="text-right">
-                                        <span class="text-sm font-bold text-primary">{{ $itemVotes }} suara</span>
-                                        <span class="block text-[10px] text-outline font-semibold">{{ $pct }}%</span>
+                                    <div class="flex items-center gap-4 text-right">
+                                        <div>
+                                            <span class="text-sm font-bold text-primary">{{ $itemVotes }} suara</span>
+                                            <span class="block text-[10px] text-outline font-semibold">{{ $pct }}%</span>
+                                        </div>
+                                        
+                                        <!-- Hapus Button -->
+                                        <form action="{{ route('petugas.voting.remove-item', [$voting->voting_id, $item->voting_item_id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kandidat ini dari voting? Semua suara masuk untuk buku ini juga akan dihapus.')" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                                 

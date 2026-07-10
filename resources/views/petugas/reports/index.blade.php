@@ -137,7 +137,7 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Sirkulasi Report Card -->
             <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
                 <div>
@@ -238,6 +238,97 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Digital Archive Report Card -->
+            <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary mb-6">
+                        <span class="material-symbols-outlined text-[32px]">folder_shared</span>
+                    </div>
+                    <h2 class="font-headline-md text-on-surface text-lg mb-2">Laporan Pengumpulan Arsip</h2>
+                    <p class="text-xs text-outline mb-6">Rekapitulasi data penyerahan dan penerimaan dokumen fisik arsip digital (Laporan PKL, Proposal TA, Laporan TA).</p>
+                    
+                    <form id="form-arsip" class="space-y-4 mb-6">
+                        <!-- Pilihan Rentang Waktu -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Rentang Laporan</label>
+                            <div class="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-on-surface-variant mb-4">
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="arsip_filter_type" value="harian" class="text-primary focus:ring-primary/20 border-outline-variant/50" checked>
+                                    <span>Harian</span>
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="arsip_filter_type" value="bulanan" class="text-primary focus:ring-primary/20 border-outline-variant/50">
+                                    <span>Bulanan</span>
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="arsip_filter_type" value="tahunan" class="text-primary focus:ring-primary/20 border-outline-variant/50">
+                                    <span>Tahunan</span>
+                                </label>
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="arsip_filter_type" value="custom" class="text-primary focus:ring-primary/20 border-outline-variant/50">
+                                    <span>Pilih Tanggal</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 1. Harian Input -->
+                        <div id="arsip-container-harian">
+                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Tanggal</label>
+                            <input type="date" id="arsip_filter_hari" value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                        </div>
+
+                        <!-- 2. Bulanan Input -->
+                        <div id="arsip-container-bulanan" class="hidden">
+                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Bulan</label>
+                            <input type="month" id="arsip_filter_bulan" value="{{ date('Y-m') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                        </div>
+
+                        <!-- 3. Tahunan Input -->
+                        <div id="arsip-container-tahunan" class="hidden">
+                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Tahun</label>
+                            <select id="arsip_filter_tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                                @for ($y = date('Y'); $y >= 2020; $y--)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <!-- 4. Custom Input -->
+                        <div id="arsip-container-custom" class="grid grid-cols-2 gap-4 hidden">
+                            <div>
+                                <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Mulai Tanggal</label>
+                                <input type="date" id="arsip_tgl_awal" value="{{ date('Y-m-01') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Sampai Tanggal</label>
+                                <input type="date" id="arsip_tgl_akhir" value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                            </div>
+                        </div>
+
+                        <!-- Pilihan Jenis Arsip -->
+                        <div>
+                            <label for="arsip_jenis" class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Jenis Arsip</label>
+                            <select id="arsip_jenis" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                                <option value="all">Semua Jenis Arsip</option>
+                                <option value="laporan_pkl">Laporan PKL</option>
+                                <option value="proposal_ta">Proposal Tugas Akhir (TA)</option>
+                                <option value="laporan_ta">Laporan Tugas Akhir (TA)</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex gap-3 border-t border-outline-variant/10 pt-6">
+                    <button type="button" onclick="actionArsip('print')" class="flex-1 py-3 px-4 rounded-2xl border border-tertiary/20 text-tertiary hover:bg-tertiary/5 text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">print</span>
+                        Cetak Laporan
+                    </button>
+                    <button type="button" onclick="actionArsip('excel')" class="flex-1 py-3 px-4 rounded-2xl bg-tertiary hover:bg-tertiary/90 text-white text-xs font-bold transition-all shadow-md text-center flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">download</span>
+                        Ekspor Excel
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -299,6 +390,67 @@
                 window.open(url, '_blank');
             } else if (type === 'excel') {
                 window.location.href = `{{ route('petugas.reports.export-sirkulasi') }}?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`;
+            }
+        }
+
+        document.querySelectorAll('input[name="arsip_filter_type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const val = this.value;
+                document.getElementById('arsip-container-harian').classList.toggle('hidden', val !== 'harian');
+                document.getElementById('arsip-container-bulanan').classList.toggle('hidden', val !== 'bulanan');
+                document.getElementById('arsip-container-tahunan').classList.toggle('hidden', val !== 'tahunan');
+                document.getElementById('arsip-container-custom').classList.toggle('hidden', val !== 'custom');
+            });
+        });
+
+        function actionArsip(type) {
+            const filterType = document.querySelector('input[name="arsip_filter_type"]:checked').value;
+            const jenisArsip = document.getElementById('arsip_jenis').value;
+            let tglAwal = '';
+            let tglAkhir = '';
+
+            if (filterType === 'harian') {
+                const dayVal = document.getElementById('arsip_filter_hari').value;
+                if (!dayVal) {
+                    alert('Silakan pilih tanggal terlebih dahulu.');
+                    return;
+                }
+                tglAwal = dayVal;
+                tglAkhir = dayVal;
+            } else if (filterType === 'bulanan') {
+                const monthVal = document.getElementById('arsip_filter_bulan').value;
+                if (!monthVal) {
+                    alert('Silakan pilih bulan terlebih dahulu.');
+                    return;
+                }
+                const parts = monthVal.split('-');
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]);
+                tglAwal = `${year}-${String(month).padStart(2, '0')}-01`;
+                const lastDay = new Date(year, month, 0).getDate();
+                tglAkhir = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+            } else if (filterType === 'tahunan') {
+                const yearVal = document.getElementById('arsip_filter_tahun').value;
+                if (!yearVal) {
+                    alert('Silakan pilih tahun terlebih dahulu.');
+                    return;
+                }
+                tglAwal = `${yearVal}-01-01`;
+                tglAkhir = `${yearVal}-12-31`;
+            } else if (filterType === 'custom') {
+                tglAwal = document.getElementById('arsip_tgl_awal').value;
+                tglAkhir = document.getElementById('arsip_tgl_akhir').value;
+                if (!tglAwal || !tglAkhir) {
+                    alert('Silakan pilih rentang tanggal laporan terlebih dahulu.');
+                    return;
+                }
+            }
+
+            if (type === 'print') {
+                const url = `{{ route('petugas.reports.print-arsip') }}?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}&jenis_arsip=${jenisArsip}`;
+                window.open(url, '_blank');
+            } else if (type === 'excel') {
+                window.location.href = `{{ route('petugas.reports.export-arsip') }}?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}&jenis_arsip=${jenisArsip}`;
             }
         }
     </script>
