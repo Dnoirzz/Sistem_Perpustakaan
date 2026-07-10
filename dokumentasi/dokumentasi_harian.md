@@ -399,7 +399,13 @@ Seluruh pelacakan tugas dan dokumentasi perkembangan hari ini telah disimpan den
         - 🥉 Peringkat 3: **🥉 Top 3** (Perunggu)
     *   Penempatan lencana disetel secara premium di sudut kiri atas cover header kartu kandidat (pada mahasiswa & dosen) dan di samping judul (pada petugas).
 
+*   **Validasi Duplikasi Buku di Sesi Aktif Lain**:
+    *   Mencegah penambahan buku usulan (baik secara batch/tunggal) atau buku manual jika buku tersebut sedang digunakan pada sesi voting lain yang berstatus aktif.
+    *   Pada halaman pemilihan batch usulan, buku yang sedang aktif di sesi lain otomatis disaring keluar (disembunyikan) agar tidak dapat dipilih kembali.
+    *   Pada input penambahan manual, sistem melakukan pengecekan kombinasi judul dan penulis yang sama di backend. Jika ada kecocokan di sesi aktif lain, request ditolak dan sistem menampilkan pemberitahuan kegagalan.
+
 ### Verifikasi yang Sudah Dilakukan
 *   Menjalankan query dan routing via `php artisan route:list`: **sukses**
 *   Kompilasi view dan pembersihan cache aplikasi: **sukses**
 *   Uji coba fungsionalitas penyortiran dan visualisasi medali Top 1-3 di seluruh role: **sukses**
+*   Uji coba pencegahan input buku yang sedang aktif di sesi lain (baik via seleksi batch maupun input manual): **sukses**
