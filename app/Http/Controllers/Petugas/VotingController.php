@@ -92,10 +92,19 @@ class VotingController extends Controller
         // Ambil ID rekomendasi yang sudah didaftarkan pada sesi voting ini agar tidak double
         $existingRekomendasiIds = $voting->votingItems->pluck('rekomendasi_id')->filter()->toArray();
 
-        // Query usulan yang belum terdaftar di sesi ini, berstatus pending atau disetujui
+        // Ambil ID rekomendasi yang sedang aktif di sesi voting lain agar tidak bertabrakan
+        $activeVotingRekomendasiIds = VotingItem::where('voting_id', '!=', $id)
+            ->whereHas('voting', function ($query) {
+                $query->where('tgl_mulai', '<=', now()->toDateString())
+                      ->where('tgl_selesai', '>=', now()->toDateString());
+            })->pluck('rekomendasi_id')->filter()->toArray();
+
+        $excludedIds = array_unique(array_merge($existingRekomendasiIds, $activeVotingRekomendasiIds));
+
+        // Query usulan yang belum terdaftar di sesi ini, berstatus pending atau disetujui, dan tidak sedang aktif di sesi lain
         // Load relasi votingItems.voting untuk mendeteksi riwayat sesi voting lain
         $query = Recommendation::with(['user', 'votingItems.voting'])
-            ->whereNotIn('rekomendasi_id', $existingRekomendasiIds)
+            ->whereNotIn('rekomendasi_id', $excludedIds)
             ->whereIn('status', ['pending', 'disetujui'])
             ->when($search, function ($query, $search) {
                 return $query->where(function($q) use ($search) {
@@ -130,7 +139,19 @@ class VotingController extends Controller
         $addedCount = 0;
 
         \DB::transaction(function () use ($voting, $request, &$addedCount) {
+            // Ambil ID rekomendasi yang sedang aktif di sesi voting lain agar tidak bertabrakan
+            $activeRekomendasiIds = VotingItem::where('voting_id', '!=', $voting->voting_id)
+                ->whereHas('voting', function ($query) {
+                    $query->where('tgl_mulai', '<=', now()->toDateString())
+                          ->where('tgl_selesai', '>=', now()->toDateString());
+                })->pluck('rekomendasi_id')->filter()->toArray();
+
             foreach ($request->rekomendasi_ids as $recId) {
+                // Lewati jika sedang aktif di sesi lain
+                if (in_array($recId, $activeRekomendasiIds)) {
+                    continue;
+                }
+
                 $exists = VotingItem::where('voting_id', $voting->voting_id)
                     ->where('rekomendasi_id', $recId)
                     ->exists();
@@ -168,6 +189,19 @@ class VotingController extends Controller
         ]);
 
         $voting = Voting::findOrFail($id);
+
+        // Cek apakah ada buku dengan judul dan penulis yang sama di sesi aktif lain
+        $duplicateActive = VotingItem::whereHas('voting', function ($query) {
+            $query->where('tgl_mulai', '<=', now()->toDateString())
+                  ->where('tgl_selesai', '>=', now()->toDateString());
+        })->whereHas('recommendation', function ($query) use ($request) {
+            $query->where('title', $request->title)
+                  ->where('author', $request->author);
+        })->exists();
+
+        if ($duplicateActive) {
+            return back()->with('error', 'Gagal: Buku dengan judul dan penulis yang sama sedang aktif di sesi voting lain.');
+        }
 
         // Buat usulan baru buatan petugas/instansi
         $recommendation = Recommendation::create([
