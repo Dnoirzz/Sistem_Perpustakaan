@@ -284,6 +284,9 @@ class SettingController extends Controller
         // Setup relations
         $dummyUser = new \App\Models\User(['name' => 'MUHAMMAD RIZKY']);
         $dummyProdi = new \App\Models\Prodi(['nama_prodi' => 'Teknologi Informasi']);
+        $dummyJurusan = new \App\Models\Jurusan(['nama_jurusan' => 'Teknologi Informasi']);
+        $dummyProdi->setRelation('jurusan', $dummyJurusan);
+
         $dummyMahasiswa = new \App\Models\Mahasiswa(['nim' => '3202116001']);
         $dummyMahasiswa->setRelation('user', $dummyUser);
         $dummyMahasiswa->setRelation('prodi', $dummyProdi);

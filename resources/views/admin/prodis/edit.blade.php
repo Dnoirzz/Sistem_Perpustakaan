@@ -189,6 +189,24 @@
                         @enderror
                     </div>
 
+                    <div class="space-y-2">
+                        <label for="jurusan_id" class="block text-xs font-bold text-outline uppercase tracking-wider">Jurusan</label>
+                        <select name="jurusan_id" 
+                                id="jurusan_id" 
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('jurusan_id') border-error @enderror" 
+                                required>
+                            <option value="" disabled>-- Pilih Jurusan --</option>
+                            @foreach($jurusans as $j)
+                                <option value="{{ $j->jurusan_id }}" {{ old('jurusan_id', $prodi->jurusan_id) == $j->jurusan_id ? 'selected' : '' }}>
+                                    {{ $j->nama_jurusan }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('jurusan_id')
+                            <p class="text-xs text-error font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <div class="flex gap-3 pt-2">
                         <button type="submit" 
                                 class="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">

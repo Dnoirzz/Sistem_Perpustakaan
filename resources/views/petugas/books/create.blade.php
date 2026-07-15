@@ -239,8 +239,8 @@
 
                             <!-- Tahun Terbit -->
                             <div class="space-y-2">
-                                <label for="release" class="block text-xs font-bold text-outline uppercase tracking-wider">Tahun Terbit</label>
-                                <input type="number" name="release" id="release" placeholder="2024" min="1900" max="{{ date('Y') + 1 }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('release') }}"/>
+                                <label for="release" class="block text-xs font-bold text-outline uppercase tracking-wider">Tahun Terbit <span class="text-error">*</span></label>
+                                <input type="number" name="release" id="release" placeholder="2024" min="1900" max="{{ date('Y') + 1 }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('release') }}" required/>
                                 @error('release')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror
@@ -248,8 +248,8 @@
 
                             <!-- Stok -->
                             <div class="space-y-2">
-                                <label for="stock" class="block text-xs font-bold text-outline uppercase tracking-wider">Stok Buku</label>
-                                <input type="number" name="stock" id="stock" placeholder="5" min="0" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('stock', 0) }}" required/>
+                                <label for="stock" class="block text-xs font-bold text-outline uppercase tracking-wider">Stok Buku <span class="text-error">*</span></label>
+                                <input type="number" name="stock" id="stock" placeholder="5" min="0" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('stock') }}" required/>
                                 @error('stock')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror

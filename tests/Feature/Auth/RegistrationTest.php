@@ -22,7 +22,11 @@ class RegistrationTest extends TestCase
             \App\Models\Role::firstOrCreate(['role_name' => $roleName]);
         }
 
-        $prodi = \App\Models\Prodi::create(['nama_prodi' => 'D3 Teknologi Informasi']);
+        $jurusan = \App\Models\Jurusan::create(['nama_jurusan' => 'Teknologi Informasi']);
+        $prodi = \App\Models\Prodi::create([
+            'nama_prodi' => 'D3 Teknologi Informasi',
+            'jurusan_id' => $jurusan->jurusan_id
+        ]);
 
         $response = $this->post('/register', [
             'name' => 'Test User',
@@ -47,7 +51,11 @@ class RegistrationTest extends TestCase
             \App\Models\Role::firstOrCreate(['role_name' => $roleName]);
         }
 
-        $prodi = \App\Models\Prodi::create(['nama_prodi' => 'D3 Teknologi Informasi']);
+        $jurusan = \App\Models\Jurusan::create(['nama_jurusan' => 'Teknologi Informasi']);
+        $prodi = \App\Models\Prodi::create([
+            'nama_prodi' => 'D3 Teknologi Informasi',
+            'jurusan_id' => $jurusan->jurusan_id
+        ]);
 
         $response = $this->post('/register', [
             'name' => 'Test User',
@@ -73,7 +81,11 @@ class RegistrationTest extends TestCase
             $roles[$roleName] = \App\Models\Role::firstOrCreate(['role_name' => $roleName]);
         }
 
-        $prodi = \App\Models\Prodi::create(['nama_prodi' => 'D3 Teknologi Informasi']);
+        $jurusan = \App\Models\Jurusan::create(['nama_jurusan' => 'Teknologi Informasi']);
+        $prodi = \App\Models\Prodi::create([
+            'nama_prodi' => 'D3 Teknologi Informasi',
+            'jurusan_id' => $jurusan->jurusan_id
+        ]);
 
         $petugasUser = \App\Models\User::create([
             'name' => 'Petugas Test',

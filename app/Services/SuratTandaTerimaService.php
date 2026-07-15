@@ -93,7 +93,7 @@ class SuratTandaTerimaService
 
         // 1. Draw Kop Surat (Letterhead) using Times New Roman (official font)
         // Offset to the right of the logo (logo X:20, width:22, so start at X:45)
-        $pdf->SetFont('Times', 'B', 16);
+        $pdf->SetFont('Times', '', 16);
         $pdf->SetXY(45, 15);
         $pdf->MultiCell(145, 6, $this->encode($kop1), 0, 'C');
         $pdf->SetFont('Times', 'B', 14);
@@ -156,18 +156,7 @@ class SuratTandaTerimaService
         $prodi = $mhs?->prodi?->nama_prodi ?? '-';
 
         // Resolve Jurusan dynamically from Program Studi
-        $jurusan = 'Teknologi Informasi';
-        if (str_contains(strtolower($prodi), 'sipil')) {
-            $jurusan = 'Teknik Sipil';
-        } elseif (str_contains(strtolower($prodi), 'mesin')) {
-            $jurusan = 'Teknik Mesin';
-        } elseif (str_contains(strtolower($prodi), 'elektro')) {
-            $jurusan = 'Teknik Elektro';
-        } elseif (str_contains(strtolower($prodi), 'akuntansi')) {
-            $jurusan = 'Akuntansi';
-        } elseif (str_contains(strtolower($prodi), 'administrasi')) {
-            $jurusan = 'Administrasi Bisnis';
-        }
+        $jurusan = $mhs?->prodi?->jurusan?->nama_jurusan ?? '-';
 
         $details = [
             'Nama Mahasiswa' => $mhsName,

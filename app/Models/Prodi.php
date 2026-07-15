@@ -14,7 +14,16 @@ class Prodi extends Model
 
     protected $fillable = [
         'nama_prodi',
+        'jurusan_id',
     ];
+
+    /**
+     * Relasi: Prodi milik suatu Jurusan
+     */
+    public function jurusan()
+    {
+        return $this->belongsTo(Jurusan::class, 'jurusan_id', 'jurusan_id');
+    }
 
     /**
      * Relasi: Prodi memiliki banyak Mahasiswa

@@ -308,6 +308,21 @@
                         </div>
 
                         <div class="space-y-2 md:col-span-2">
+                            <label for="collection_type"
+                                class="block text-xs font-bold text-outline uppercase tracking-wider">Jenis
+                                Koleksi</label>
+                            <select name="collection_type" id="collection_type"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all">
+                                <option value="">Semua jenis koleksi</option>
+                                @foreach($collectionTypes as $typeValue => $typeLabel)
+                                    <option value="{{ $typeValue }}" {{ old('collection_type') === $typeValue ? 'selected' : '' }}>
+                                        {{ $typeLabel }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="space-y-2 md:col-span-2">
                             <label for="koleksi_id"
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Koleksi yang
                                 Dipinjam</label>
@@ -318,6 +333,16 @@
                                     </option>
                                 @endforeach
                             </select>
+                            <div id="koleksi_search_feedback"
+                                class="hidden rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 shadow-sm shadow-rose-50">
+                                <div class="flex items-start gap-3">
+                                    <span class="material-symbols-outlined text-rose-600 text-[20px] leading-none mt-0.5">error</span>
+                                    <div>
+                                        <p class="font-semibold">Koleksi tidak dapat dipilih.</p>
+                                        <p id="koleksi_search_feedback_text" class="mt-1 text-xs text-rose-700"></p>
+                                    </div>
+                                </div>
+                            </div>
                             @error('koleksi_id')
                                 <p class="text-xs text-error font-medium">{{ $message }}</p>
                             @enderror
@@ -420,7 +445,7 @@
 
     <!-- Tom Select JS -->
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-    <script>
+        <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Initialize Tom Select for Member Selection (AJAX dynamic search)
             var tsMember = new TomSelect('#user_id', {
@@ -447,7 +472,7 @@
                         return '<div>' + escape(item.name_display) + '</div>';
                     }
                 },
-                placeholder: "Cari nama atau NIM/NIP anggota...",
+                placeholder: "Cari Berdasarkan Nama, NIP atau NIM",
                 allowEmptyOption: true,
                 create: false
             });
@@ -463,14 +488,40 @@
             });
 
             // Initialize Tom Select for Book Selection (AJAX dynamic search)
+            var collectionTypeSelect = document.getElementById('collection_type');
+            var collectionFeedback = document.getElementById('koleksi_search_feedback');
+            var collectionFeedbackText = document.getElementById('koleksi_search_feedback_text');
+            function showCollectionFeedback(message) {
+                if (!collectionFeedback || !collectionFeedbackText) {
+                    return;
+                }
+
+                collectionFeedbackText.textContent = message;
+                collectionFeedback.classList.remove('hidden');
+            }
+
+            function hideCollectionFeedback() {
+                if (!collectionFeedback || !collectionFeedbackText) {
+                    return;
+                }
+
+                collectionFeedbackText.textContent = '';
+                collectionFeedback.classList.add('hidden');
+            }
+
             var tsBook = new TomSelect('#koleksi_id', {
                 valueField: 'koleksi_id',
-                labelField: 'judul_display',
-                searchField: ['judul'],
+                labelField: 'judul',
+                searchField: ['judul', 'author', 'type_label', 'judul_display'],
                 // fetch remote data
                 load: function(query, callback) {
                     if (!query.length) return callback();
-                    var url = '/petugas/loans/search-books?q=' + encodeURIComponent(query);
+                    var params = new URLSearchParams({ q: query });
+                    if (collectionTypeSelect && collectionTypeSelect.value) {
+                        params.append('type', collectionTypeSelect.value);
+                    }
+
+                    var url = '/petugas/loans/search-books?' + params.toString();
                     fetch(url)
                         .then(response => response.json())
                         .then(json => {
@@ -481,15 +532,44 @@
                 },
                 render: {
                     option: function(item, escape) {
-                        return '<div class="py-1">' + escape(item.judul_display) + '</div>';
+                        var stockClass = item.is_available
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'bg-rose-50 text-rose-700';
+                        var stockLabel = item.is_available
+                            ? 'Stok tersedia: ' + escape(String(item.stock))
+                            : 'Stok habis';
+
+                        return '<div class="py-2">'
+                            + '<div class="font-semibold text-sm text-on-surface">' + escape(item.judul) + '</div>'
+                            + '<div class="mt-1 text-xs text-outline">' + escape(item.type_label)
+                            + (item.author ? ' • ' + escape(item.author) : '')
+                            + '</div>'
+                            + '<div class="mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ' + stockClass + '">' + stockLabel + '</div>'
+                            + '</div>';
                     },
                     item: function(item, escape) {
-                        return '<div>' + escape(item.judul_display) + '</div>';
+                        return '<div>' + escape(item.judul) + '</div>';
                     }
                 },
-                placeholder: "Cari judul koleksi, penulis, atau jenis arsip...",
+                placeholder: "Cari berdasarkan judul atau penulis",
                 allowEmptyOption: true,
-                create: false
+                create: false,
+                onChange: function(value) {
+                    if (!value) {
+                        hideCollectionFeedback();
+                        return;
+                    }
+
+                    var selectedItem = this.options[value];
+                    if (!selectedItem || selectedItem.is_available) {
+                        hideCollectionFeedback();
+                        return;
+                    }
+
+                    this.close();
+                    this.clear(true);
+                    showCollectionFeedback('Stok buku tidak tersedia. Koleksi ini tidak dapat dipilih untuk transaksi peminjaman.');
+                }
             });
 
             // Dynamically clear placeholder on focus, restore on blur if empty
@@ -501,6 +581,22 @@
                     tsBook.control_input.placeholder = "Cari judul koleksi, penulis, atau jenis arsip...";
                 }
             });
+            tsBook.on('type', function () {
+                hideCollectionFeedback();
+            });
+            tsBook.on('clear', function () {
+                hideCollectionFeedback();
+            });
+
+            if (collectionTypeSelect) {
+                collectionTypeSelect.addEventListener('change', function () {
+                    tsBook.clear(true);
+                    tsBook.clearOptions();
+                    hideCollectionFeedback();
+                    tsBook.control_input.value = '';
+                    tsBook.refreshOptions(false);
+                });
+            }
         });
     </script>
 </body>

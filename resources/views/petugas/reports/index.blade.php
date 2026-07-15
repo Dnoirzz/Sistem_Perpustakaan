@@ -225,17 +225,26 @@
                         <span class="material-symbols-outlined text-[32px]">inventory_2</span>
                     </div>
                     <h2 class="font-headline-md text-on-surface text-lg mb-2">Laporan Koleksi & Aset</h2>
-                    <p class="text-xs text-outline mb-6">Rekapitulasi data seluruh inventaris perpustakaan (Buku Teks, Laporan PKL, Proposal Tugas Akhir, dan Laporan Tugas Akhir) secara komprehensif.</p>
+                    <p class="text-xs text-outline mb-6">Rekapitulasi data seluruh inventaris perpustakaan (Buku Umum, Laporan PKL, Proposal Tugas Akhir, dan Laporan Tugas Akhir) secara komprehensif.</p>
+
+                    <div class="mb-6">
+                        <label for="collection_type" class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Jenis Koleksi</label>
+                        <select id="collection_type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-secondary focus:ring-2 focus:ring-secondary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                            @foreach($collectionReportTypes as $typeValue => $typeLabel)
+                                <option value="{{ $typeValue }}">{{ $typeLabel }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="flex gap-3 border-t border-outline-variant/10 pt-6 mt-12">
-                    <a href="{{ route('petugas.reports.print-koleksi') }}" target="_blank" class="flex-1 py-3 px-4 rounded-2xl border border-secondary/20 text-secondary hover:bg-secondary/5 text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
+                    <button type="button" onclick="actionKoleksi('print')" class="flex-1 py-3 px-4 rounded-2xl border border-secondary/20 text-secondary hover:bg-secondary/5 text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">print</span>
                         Cetak Laporan
-                    </a>
-                    <a href="{{ route('petugas.reports.export-koleksi') }}" class="flex-1 py-3 px-4 rounded-2xl bg-secondary hover:bg-secondary/90 text-white text-xs font-bold transition-all shadow-md text-center flex items-center justify-center gap-2">
+                    </button>
+                    <button type="button" onclick="actionKoleksi('excel')" class="flex-1 py-3 px-4 rounded-2xl bg-secondary hover:bg-secondary/90 text-white text-xs font-bold transition-all shadow-md text-center flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">download</span>
                         Ekspor Excel
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -390,6 +399,17 @@
                 window.open(url, '_blank');
             } else if (type === 'excel') {
                 window.location.href = `{{ route('petugas.reports.export-sirkulasi') }}?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`;
+            }
+        }
+
+        function actionKoleksi(type) {
+            const collectionType = document.getElementById('collection_type').value || 'all';
+
+            if (type === 'print') {
+                const url = `{{ route('petugas.reports.print-koleksi') }}?collection_type=${collectionType}`;
+                window.open(url, '_blank');
+            } else if (type === 'excel') {
+                window.location.href = `{{ route('petugas.reports.export-koleksi') }}?collection_type=${collectionType}`;
             }
         }
 

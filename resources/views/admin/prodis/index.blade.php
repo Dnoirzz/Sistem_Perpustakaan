@@ -188,14 +188,29 @@
             </div>
         @endif
 
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-outline-variant/30 mb-8 gap-2">
+            <a href="{{ route('admin.prodis.index', ['tab' => 'prodi']) }}" 
+               class="px-6 py-3.5 font-headline-md font-bold text-sm transition-all border-b-2 flex items-center gap-2 {{ $activeTab === 'prodi' ? 'border-primary text-primary' : 'border-transparent text-outline hover:text-on-surface' }}">
+                <span class="material-symbols-outlined text-[20px]">school</span>
+                Kelola Program Studi
+            </a>
+            <a href="{{ route('admin.prodis.index', ['tab' => 'jurusan']) }}" 
+               class="px-6 py-3.5 font-headline-md font-bold text-sm transition-all border-b-2 flex items-center gap-2 {{ $activeTab === 'jurusan' ? 'border-primary text-primary' : 'border-transparent text-outline hover:text-on-surface' }}">
+                <span class="material-symbols-outlined text-[20px]">domain</span>
+                Kelola Jurusan
+            </a>
+        </div>
+
         <!-- Two Column Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- Left Column: Prodi List -->
+            <!-- Left Column: List -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Search Box -->
                 <div class="bg-white p-6 rounded-3xl border border-outline-variant/15 shadow-sm">
                     <form action="{{ route('admin.prodis.index') }}" method="GET" class="flex gap-3">
+                        <input type="hidden" name="tab" value="{{ $activeTab }}">
                         <div class="relative flex-1">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <span class="material-symbols-outlined text-[20px]">search</span>
@@ -204,7 +219,7 @@
                                    name="search" 
                                    value="{{ $search }}" 
                                    class="block w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
-                                   placeholder="Cari nama program studi..." />
+                                   placeholder="{{ $activeTab === 'prodi' ? 'Cari nama program studi...' : 'Cari nama jurusan...' }}" />
                         </div>
                         <button type="submit" 
                                 class="py-2.5 px-6 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-2xl text-sm transition duration-200 flex items-center justify-center gap-1.5 shadow-sm">
@@ -212,7 +227,7 @@
                             Cari
                         </button>
                         @if($search)
-                            <a href="{{ route('admin.prodis.index') }}" 
+                            <a href="{{ route('admin.prodis.index', ['tab' => $activeTab]) }}" 
                                class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl text-sm transition duration-200 flex items-center justify-center">
                                 Reset
                             </a>
@@ -222,116 +237,246 @@
 
                 <!-- Table Card -->
                 <div class="bg-white rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden">
-                    <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
-                        <div>
-                            <h2 class="font-headline-md text-on-surface text-lg">Daftar Program Studi</h2>
-                            <p class="text-xs text-outline mt-1">Menampilkan data program studi terdaftar.</p>
+                    @if($activeTab === 'prodi')
+                        <!-- TAB PRODI -->
+                        <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+                            <div>
+                                <h2 class="font-headline-md text-on-surface text-lg">Daftar Program Studi</h2>
+                                <p class="text-xs text-outline mt-1">Menampilkan data program studi terdaftar.</p>
+                            </div>
+                            <div class="text-xs font-bold text-outline">
+                                Total: <span class="text-primary">{{ $prodis->total() }}</span> Prodi
+                            </div>
                         </div>
-                        <div class="text-xs font-bold text-outline">
-                            Total: <span class="text-primary">{{ $prodis->total() }}</span> Prodi
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
+                                        <th class="py-4.5 px-8">Nama Program Studi</th>
+                                        <th class="py-4.5 px-6">Jurusan</th>
+                                        <th class="py-4.5 px-6 text-center">Mahasiswa</th>
+                                        <th class="py-4.5 px-6 text-center">Dosen</th>
+                                        <th class="py-4.5 px-8 text-center w-40">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-outline-variant/10 text-sm text-slate-700">
+                                    @forelse($prodis as $p)
+                                        <tr class="hover:bg-slate-50/50 transition">
+                                            <td class="py-5 px-8">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase shadow-sm">
+                                                        {{ substr($p->nama_prodi, 0, 2) }}
+                                                    </div>
+                                                    <div class="font-bold text-on-surface text-base">
+                                                        {{ $p->nama_prodi }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-5 px-6 font-semibold text-slate-800">
+                                                {{ $p->jurusan?->nama_jurusan ?? '-' }}
+                                            </td>
+                                            <td class="py-5 px-6 text-center font-semibold text-slate-800">
+                                                {{ $p->mahasiswas_count }}
+                                            </td>
+                                            <td class="py-5 px-6 text-center font-semibold text-slate-800">
+                                                {{ $p->dosens_count }}
+                                            </td>
+                                            <td class="py-5 px-8">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <!-- Edit button -->
+                                                    <a href="{{ route('admin.prodis.edit', $p->prodi_id) }}" 
+                                                       class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-700 flex items-center justify-center transition duration-200"
+                                                       title="Edit Prodi">
+                                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                                                    </a>
+                                                    
+                                                    <!-- Delete button -->
+                                                    <form action="{{ route('admin.prodis.destroy', $p->prodi_id) }}" 
+                                                          method="POST" 
+                                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus Program Studi ini?')" 
+                                                          class="inline-block">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-650 hover:text-rose-600 flex items-center justify-center transition duration-200"
+                                                                title="Hapus Prodi">
+                                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="py-12 text-center text-outline font-medium">Program studi tidak ditemukan.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
-                                    <th class="py-4.5 px-8">Nama Program Studi</th>
-                                    <th class="py-4.5 px-6 text-center">Mahasiswa</th>
-                                    <th class="py-4.5 px-6 text-center">Dosen</th>
-                                    <th class="py-4.5 px-8 text-center w-40">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-outline-variant/10 text-sm text-slate-700">
-                                @forelse($prodis as $p)
-                                    <tr class="hover:bg-slate-50/50 transition">
-                                        <td class="py-5 px-8">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase shadow-sm">
-                                                    {{ substr($p->nama_prodi, 0, 2) }}
-                                                </div>
-                                                <div class="font-bold text-on-surface text-base">
-                                                    {{ $p->nama_prodi }}
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-5 px-6 text-center font-semibold text-slate-800">
-                                            {{ $p->mahasiswas_count }}
-                                        </td>
-                                        <td class="py-5 px-6 text-center font-semibold text-slate-800">
-                                            {{ $p->dosens_count }}
-                                        </td>
-                                        <td class="py-5 px-8">
-                                            <div class="flex items-center justify-center gap-2">
-                                                <!-- Edit button -->
-                                                <a href="{{ route('admin.prodis.edit', $p->prodi_id) }}" 
-                                                   class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-700 flex items-center justify-center transition duration-200"
-                                                   title="Edit Prodi">
-                                                    <span class="material-symbols-outlined text-[20px]">edit</span>
-                                                </a>
-                                                
-                                                <!-- Delete button -->
-                                                <form action="{{ route('admin.prodis.destroy', $p->prodi_id) }}" 
-                                                      method="POST" 
-                                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus Program Studi ini?')" 
-                                                      class="inline-block">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-650 hover:text-rose-600 flex items-center justify-center transition duration-200"
-                                                            title="Hapus Prodi">
-                                                        <span class="material-symbols-outlined text-[20px]">delete</span>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="py-12 text-center text-outline font-medium">Program studi tidak ditemukan.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
 
-                    <!-- Pagination -->
-                    @if($prodis->hasPages())
-                        <div class="px-8 py-4 border-t border-outline-variant/10 bg-slate-50/50">
-                            {{ $prodis->links() }}
+                        <!-- Pagination -->
+                        @if($prodis->hasPages())
+                            <div class="px-8 py-4 border-t border-outline-variant/10 bg-slate-50/50">
+                                {{ $prodis->links() }}
+                            </div>
+                        @endif
+                    @else
+                        <!-- TAB JURUSAN -->
+                        <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+                            <div>
+                                <h2 class="font-headline-md text-on-surface text-lg">Daftar Jurusan</h2>
+                                <p class="text-xs text-outline mt-1">Menampilkan data jurusan terdaftar.</p>
+                            </div>
+                            <div class="text-xs font-bold text-outline">
+                                Total: <span class="text-primary">{{ $jurusansPage->total() }}</span> Jurusan
+                            </div>
                         </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
+                                        <th class="py-4.5 px-8">Nama Jurusan</th>
+                                        <th class="py-4.5 px-6 text-center">Jumlah Prodi</th>
+                                        <th class="py-4.5 px-8 text-center w-40">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-outline-variant/10 text-sm text-slate-700">
+                                    @forelse($jurusansPage as $j)
+                                        <tr class="hover:bg-slate-50/50 transition">
+                                            <td class="py-5 px-8">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase shadow-sm">
+                                                        {{ substr($j->nama_jurusan, 0, 2) }}
+                                                    </div>
+                                                    <div class="font-bold text-on-surface text-base">
+                                                        {{ $j->nama_jurusan }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-5 px-6 text-center font-semibold text-slate-800">
+                                                {{ $j->prodis_count }}
+                                            </td>
+                                            <td class="py-5 px-8">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <!-- Edit button -->
+                                                    <a href="{{ route('admin.jurusans.edit', $j->jurusan_id) }}" 
+                                                       class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-700 flex items-center justify-center transition duration-200"
+                                                       title="Edit Jurusan">
+                                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                                                    </a>
+                                                    
+                                                    <!-- Delete button -->
+                                                    <form action="{{ route('admin.jurusans.destroy', $j->jurusan_id) }}" 
+                                                          method="POST" 
+                                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus Jurusan ini?')" 
+                                                          class="inline-block">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-650 hover:text-rose-600 flex items-center justify-center transition duration-200"
+                                                                title="Hapus Jurusan">
+                                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="py-12 text-center text-outline font-medium">Jurusan tidak ditemukan.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        @if($jurusansPage->hasPages())
+                            <div class="px-8 py-4 border-t border-outline-variant/10 bg-slate-50/50">
+                                {{ $jurusansPage->links() }}
+                            </div>
+                        @endif
                     @endif
                 </div>
             </div>
 
             <!-- Right Column: Add Form -->
             <div class="space-y-6">
-                <div class="bg-white rounded-3xl border border-outline-variant/15 p-8 shadow-sm">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-headline-md text-on-surface text-lg">Tambah Prodi</h3>
-                        <span class="material-symbols-outlined text-primary">school</span>
-                    </div>
-                    
-                    <form action="{{ route('admin.prodis.store') }}" method="POST" class="space-y-6">
-                        @csrf
-                        <div class="space-y-2">
-                            <label for="nama_prodi" class="block text-xs font-bold text-outline uppercase tracking-wider">Nama Program Studi</label>
-                            <input type="text" 
-                                   name="nama_prodi" 
-                                   id="nama_prodi" 
-                                   placeholder="Contoh: D3 Teknologi Informasi" 
-                                   class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
-                                   value="{{ old('nama_prodi') }}" 
-                                   required/>
+                @if($activeTab === 'prodi')
+                    <!-- ADD PRODI FORM -->
+                    <div class="bg-white rounded-3xl border border-outline-variant/15 p-8 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-headline-md text-on-surface text-lg">Tambah Prodi</h3>
+                            <span class="material-symbols-outlined text-primary">school</span>
                         </div>
+                        
+                        <form action="{{ route('admin.prodis.store') }}" method="POST" class="space-y-6">
+                            @csrf
+                            <div class="space-y-2">
+                                <label for="nama_prodi" class="block text-xs font-bold text-outline uppercase tracking-wider">Nama Program Studi</label>
+                                <input type="text" 
+                                       name="nama_prodi" 
+                                       id="nama_prodi" 
+                                       placeholder="Contoh: D3 Teknologi Informasi" 
+                                       class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
+                                       value="{{ old('nama_prodi') }}" 
+                                       required/>
+                            </div>
 
-                        <button type="submit" 
-                                class="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
-                            <span class="material-symbols-outlined text-[18px]">save</span>
-                            Simpan Program Studi
-                        </button>
-                    </form>
-                </div>
+                            <div class="space-y-2">
+                                <label for="jurusan_id" class="block text-xs font-bold text-outline uppercase tracking-wider">Jurusan</label>
+                                <select name="jurusan_id" 
+                                        id="jurusan_id" 
+                                        class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
+                                        required>
+                                    <option value="" disabled selected>-- Pilih Jurusan --</option>
+                                    @foreach($jurusans as $j)
+                                        <option value="{{ $j->jurusan_id }}" {{ old('jurusan_id') == $j->jurusan_id ? 'selected' : '' }}>
+                                            {{ $j->nama_jurusan }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <button type="submit" 
+                                    class="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
+                                <span class="material-symbols-outlined text-[18px]">save</span>
+                                Simpan Program Studi
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <!-- ADD JURUSAN FORM -->
+                    <div class="bg-white rounded-3xl border border-outline-variant/15 p-8 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-headline-md text-on-surface text-lg">Tambah Jurusan</h3>
+                            <span class="material-symbols-outlined text-primary">domain</span>
+                        </div>
+                        
+                        <form action="{{ route('admin.jurusans.store') }}" method="POST" class="space-y-6">
+                            @csrf
+                            <div class="space-y-2">
+                                <label for="nama_jurusan" class="block text-xs font-bold text-outline uppercase tracking-wider">Nama Jurusan</label>
+                                <input type="text" 
+                                       name="nama_jurusan" 
+                                       id="nama_jurusan" 
+                                       placeholder="Contoh: Teknik Elektro" 
+                                       class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
+                                       value="{{ old('nama_jurusan') }}" 
+                                       required/>
+                            </div>
+
+                            <button type="submit" 
+                                    class="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
+                                <span class="material-symbols-outlined text-[18px]">save</span>
+                                Simpan Jurusan
+                            </button>
+                        </form>
+                    </div>
+                @endif
             </div>
 
         </div>

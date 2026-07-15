@@ -144,136 +144,160 @@
     <!-- Judul Laporan -->
     <div class="title-section">
         <h4>Laporan Rekapitulasi Koleksi & Aset Perpustakaan</h4>
+        <p>Jenis Koleksi: <b>{{ $selectedCollectionTypeLabel }}</b></p>
         <p>Tanggal Cetak: <b>{{ now()->translatedFormat('d F Y') }}</b></p>
     </div>
 
-    <!-- 1. Buku Teks -->
-    <div class="sub-section-title">I. KOLEKSI BUKU TEKS</div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 35%;">Judul Buku</th>
-                <th style="width: 15%;">Kategori</th>
-                <th style="width: 20%;">Penulis / Pengarang</th>
-                <th style="width: 15%;">Penerbit</th>
-                <th style="width: 5%;">Tahun</th>
-                <th style="width: 5%;">Stok</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($books as $index => $book)
-                <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td><b>{{ $book->judul }}</b></td>
-                    <td>{{ $book->category?->kategori_name ?: '-' }}</td>
-                    <td>{{ $book->penulis ?: '-' }}</td>
-                    <td>{{ $book->penerbit ?: '-' }}</td>
-                    <td class="text-center">{{ $book->tahun_terbit ?: '-' }}</td>
-                    <td class="text-center">{{ $book->stock }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="7" class="text-center">Belum ada koleksi buku terdaftar.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+    @php
+        $showBooks = $selectedCollectionType === 'all' || $selectedCollectionType === 'book';
+        $showPkls = $selectedCollectionType === 'all' || $selectedCollectionType === 'laporan_pkl';
+        $showPtas = $selectedCollectionType === 'all' || $selectedCollectionType === 'proposal_ta';
+        $showTas = $selectedCollectionType === 'all' || $selectedCollectionType === 'laporan_ta';
+        $printedSections = 0;
+    @endphp
 
-    <div class="page-break"></div>
+    @if($showBooks)
+        <div class="sub-section-title">{{ $printedSections === 0 ? 'I' : 'II' }}. KOLEKSI BUKU UMUM</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 35%;">Judul Buku</th>
+                    <th style="width: 15%;">Kategori</th>
+                    <th style="width: 20%;">Penulis / Pengarang</th>
+                    <th style="width: 15%;">Penerbit</th>
+                    <th style="width: 5%;">Tahun</th>
+                    <th style="width: 5%;">Stok</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($books as $index => $book)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td><b>{{ $book->judul }}</b></td>
+                        <td>{{ $book->category?->kategori_name ?: '-' }}</td>
+                        <td>{{ $book->penulis ?: '-' }}</td>
+                        <td>{{ $book->penerbit ?: '-' }}</td>
+                        <td class="text-center">{{ $book->tahun_terbit ?: '-' }}</td>
+                        <td class="text-center">{{ $book->stock }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-center">Belum ada koleksi buku terdaftar.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        @php($printedSections++)
+    @endif
 
-    <!-- 2. Laporan PKL -->
-    <div class="sub-section-title">II. ARSIP DIGITAL - LAPORAN PRAKTIK KERJA LAPANGAN (PKL)</div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 40%;">Judul Laporan PKL</th>
-                <th style="width: 20%;">Nama Mahasiswa / NIM</th>
-                <th style="width: 15%;">Program Studi</th>
-                <th style="width: 15%;">Pembimbing</th>
-                <th style="width: 5%;">Tahun</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($pkls as $index => $pkl)
+    @if($showPkls)
+        @if($printedSections > 0)
+            <div class="page-break"></div>
+        @endif
+        <div class="sub-section-title">{{ $printedSections === 0 ? 'I' : ($printedSections === 1 ? 'II' : ($printedSections === 2 ? 'III' : 'IV')) }}. ARSIP DIGITAL - LAPORAN PRAKTIK KERJA LAPANGAN (PKL)</div>
+        <table>
+            <thead>
                 <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td><b>{{ $pkl->judul_pkl }}</b></td>
-                    <td>{{ $pkl->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $pkl->mahasiswa?->nim ?: '-' }}</small></td>
-                    <td>{{ $pkl->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
-                    <td>{{ $pkl->pembimbing ?: '-' }}</td>
-                    <td class="text-center">{{ $pkl->tahun }}</td>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 40%;">Judul Laporan PKL</th>
+                    <th style="width: 20%;">Nama Mahasiswa / NIM</th>
+                    <th style="width: 15%;">Program Studi</th>
+                    <th style="width: 15%;">Pembimbing</th>
+                    <th style="width: 5%;">Tahun</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="text-center">Belum ada arsip Laporan PKL.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse($pkls as $index => $pkl)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td><b>{{ $pkl->judul_pkl }}</b></td>
+                        <td>{{ $pkl->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $pkl->mahasiswa?->nim ?: '-' }}</small></td>
+                        <td>{{ $pkl->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
+                        <td>{{ $pkl->pembimbing ?: '-' }}</td>
+                        <td class="text-center">{{ $pkl->tahun }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center">Belum ada arsip Laporan PKL.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        @php($printedSections++)
+    @endif
 
-    <!-- 3. Proposal TA -->
-    <div class="sub-section-title">III. ARSIP DIGITAL - PROPOSAL TUGAS AKHIR</div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 40%;">Judul Proposal Tugas Akhir</th>
-                <th style="width: 20%;">Nama Mahasiswa / NIM</th>
-                <th style="width: 15%;">Program Studi</th>
-                <th style="width: 15%;">Pembimbing</th>
-                <th style="width: 5%;">Tahun</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($ptas as $index => $pta)
+    @if($showPtas)
+        @if($printedSections > 0)
+            <div class="page-break"></div>
+        @endif
+        <div class="sub-section-title">{{ $printedSections === 0 ? 'I' : ($printedSections === 1 ? 'II' : ($printedSections === 2 ? 'III' : 'IV')) }}. ARSIP DIGITAL - PROPOSAL TUGAS AKHIR</div>
+        <table>
+            <thead>
                 <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td><b>{{ $pta->judul_proposal }}</b></td>
-                    <td>{{ $pta->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $pta->mahasiswa?->nim ?: '-' }}</small></td>
-                    <td>{{ $pta->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
-                    <td>{{ $pta->pembimbing ?: '-' }}</td>
-                    <td class="text-center">{{ $pta->tahun }}</td>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 40%;">Judul Proposal Tugas Akhir</th>
+                    <th style="width: 20%;">Nama Mahasiswa / NIM</th>
+                    <th style="width: 15%;">Program Studi</th>
+                    <th style="width: 15%;">Pembimbing</th>
+                    <th style="width: 5%;">Tahun</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="text-center">Belum ada arsip Proposal Tugas Akhir.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse($ptas as $index => $pta)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td><b>{{ $pta->judul_proposal }}</b></td>
+                        <td>{{ $pta->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $pta->mahasiswa?->nim ?: '-' }}</small></td>
+                        <td>{{ $pta->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
+                        <td>{{ $pta->pembimbing ?: '-' }}</td>
+                        <td class="text-center">{{ $pta->tahun }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center">Belum ada arsip Proposal Tugas Akhir.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        @php($printedSections++)
+    @endif
 
-    <!-- 4. Laporan TA -->
-    <div class="sub-section-title">IV. ARSIP DIGITAL - LAPORAN TUGAS AKHIR (TA)</div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 40%;">Judul Laporan Tugas Akhir</th>
-                <th style="width: 20%;">Nama Mahasiswa / NIM</th>
-                <th style="width: 15%;">Program Studi</th>
-                <th style="width: 15%;">Pembimbing</th>
-                <th style="width: 5%;">Tahun</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($tas as $index => $ta)
+    @if($showTas)
+        @if($printedSections > 0)
+            <div class="page-break"></div>
+        @endif
+        <div class="sub-section-title">{{ $printedSections === 0 ? 'I' : ($printedSections === 1 ? 'II' : ($printedSections === 2 ? 'III' : 'IV')) }}. ARSIP DIGITAL - LAPORAN TUGAS AKHIR (TA)</div>
+        <table>
+            <thead>
                 <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td><b>{{ $ta->judul_tgs_akhir }}</b></td>
-                    <td>{{ $ta->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $ta->mahasiswa?->nim ?: '-' }}</small></td>
-                    <td>{{ $ta->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
-                    <td>{{ $ta->pembimbing ?: '-' }}</td>
-                    <td class="text-center">{{ $ta->tahun }}</td>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 40%;">Judul Laporan Tugas Akhir</th>
+                    <th style="width: 20%;">Nama Mahasiswa / NIM</th>
+                    <th style="width: 15%;">Program Studi</th>
+                    <th style="width: 15%;">Pembimbing</th>
+                    <th style="width: 5%;">Tahun</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="text-center">Belum ada arsip Laporan Tugas Akhir.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse($tas as $index => $ta)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td><b>{{ $ta->judul_tgs_akhir }}</b></td>
+                        <td>{{ $ta->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $ta->mahasiswa?->nim ?: '-' }}</small></td>
+                        <td>{{ $ta->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
+                        <td>{{ $ta->pembimbing ?: '-' }}</td>
+                        <td class="text-center">{{ $ta->tahun }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center">Belum ada arsip Laporan Tugas Akhir.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        @php($printedSections++)
+    @endif
 
     <!-- Tanda Tangan -->
     <div class="ttd-section">

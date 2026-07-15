@@ -27,12 +27,24 @@ class Mahasiswa extends Model
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
-    /**
-     * Relasi: Mahasiswa milik satu Prodi
-     */
     public function prodi()
     {
         return $this->belongsTo(Prodi::class, 'prodi_id', 'prodi_id');
+    }
+
+    /**
+     * Relasi: Mahasiswa milik satu Jurusan (melalui Prodi)
+     */
+    public function jurusan()
+    {
+        return $this->hasOneThrough(
+            Jurusan::class,
+            Prodi::class,
+            'prodi_id',     // FK di prodi
+            'jurusan_id',   // FK di jurusans
+            'prodi_id',     // Local key di mahasiswas
+            'jurusan_id'    // Local key di prodi
+        );
     }
 
     /**

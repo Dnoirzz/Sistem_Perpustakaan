@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Jurusan;
 use App\Models\Prodi;
 use Illuminate\Http\Request;
 
@@ -14,16 +15,34 @@ class ProdiController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $activeTab = $request->input('tab', 'prodi');
 
-        $prodis = Prodi::withCount(['mahasiswas', 'dosens'])
-            ->when($search, function ($query, $search) {
-                return $query->where('nama_prodi', 'like', "%{$search}%");
+        // Search variables localized to tab
+        $prodiSearch = $activeTab === 'prodi' ? $search : null;
+        $jurusanSearch = $activeTab === 'jurusan' ? $search : null;
+
+        // Paginated Prodi list
+        $prodis = Prodi::with(['jurusan'])->withCount(['mahasiswas', 'dosens'])
+            ->when($prodiSearch, function ($query, $prodiSearch) {
+                return $query->where('nama_prodi', 'like', "%{$prodiSearch}%");
             })
             ->orderBy('nama_prodi', 'asc')
-            ->paginate(10)
+            ->paginate(10, ['*'], 'prodi_page')
             ->withQueryString();
 
-        return view('admin.prodis.index', compact('prodis', 'search'));
+        // Paginated Jurusan list
+        $jurusansPage = Jurusan::withCount(['prodis'])
+            ->when($jurusanSearch, function ($query, $jurusanSearch) {
+                return $query->where('nama_jurusan', 'like', "%{$jurusanSearch}%");
+            })
+            ->orderBy('nama_jurusan', 'asc')
+            ->paginate(10, ['*'], 'jurusan_page')
+            ->withQueryString();
+
+        // All Jurusans for dropdown menus
+        $jurusans = Jurusan::orderBy('nama_jurusan', 'asc')->get();
+
+        return view('admin.prodis.index', compact('prodis', 'jurusansPage', 'jurusans', 'search', 'activeTab'));
     }
 
     /**
@@ -33,14 +52,18 @@ class ProdiController extends Controller
     {
         $request->validate([
             'nama_prodi' => 'required|string|max:255|unique:prodi,nama_prodi',
+            'jurusan_id' => 'required|exists:jurusans,jurusan_id',
         ], [
             'nama_prodi.required' => 'Nama program studi wajib diisi.',
             'nama_prodi.unique' => 'Nama program studi sudah terdaftar.',
             'nama_prodi.max' => 'Nama program studi tidak boleh lebih dari 255 karakter.',
+            'jurusan_id.required' => 'Jurusan wajib dipilih.',
+            'jurusan_id.exists' => 'Jurusan yang dipilih tidak valid.',
         ]);
 
         Prodi::create([
             'nama_prodi' => $request->nama_prodi,
+            'jurusan_id' => $request->jurusan_id,
         ]);
 
         return redirect()->route('admin.prodis.index')
@@ -52,7 +75,8 @@ class ProdiController extends Controller
      */
     public function edit(Prodi $prodi)
     {
-        return view('admin.prodis.edit', compact('prodi'));
+        $jurusans = \App\Models\Jurusan::orderBy('nama_jurusan', 'asc')->get();
+        return view('admin.prodis.edit', compact('prodi', 'jurusans'));
     }
 
     /**
@@ -62,14 +86,18 @@ class ProdiController extends Controller
     {
         $request->validate([
             'nama_prodi' => 'required|string|max:255|unique:prodi,nama_prodi,' . $prodi->prodi_id . ',prodi_id',
+            'jurusan_id' => 'required|exists:jurusans,jurusan_id',
         ], [
             'nama_prodi.required' => 'Nama program studi wajib diisi.',
             'nama_prodi.unique' => 'Nama program studi sudah terdaftar.',
             'nama_prodi.max' => 'Nama program studi tidak boleh lebih dari 255 karakter.',
+            'jurusan_id.required' => 'Jurusan wajib dipilih.',
+            'jurusan_id.exists' => 'Jurusan yang dipilih tidak valid.',
         ]);
 
         $prodi->update([
             'nama_prodi' => $request->nama_prodi,
+            'jurusan_id' => $request->jurusan_id,
         ]);
 
         return redirect()->route('admin.prodis.index')

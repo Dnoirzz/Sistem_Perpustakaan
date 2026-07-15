@@ -13,6 +13,13 @@ use Illuminate\Validation\ValidationException;
 
 class LoanController extends Controller
 {
+    private const COLLECTION_TYPE_OPTIONS = [
+        'book' => 'Buku Umum',
+        'laporan_pkl' => 'Laporan PKL',
+        'proposal_ta' => 'Proposal TA',
+        'laporan_ta' => 'Laporan TA',
+    ];
+
     public function index(Request $request)
     {
         Loan::syncOverdueStatuses();
@@ -71,6 +78,8 @@ class LoanController extends Controller
     {
         Loan::syncOverdueStatuses();
 
+        $collectionTypes = self::COLLECTION_TYPE_OPTIONS;
+
         $oldUserId = old('user_id');
         $members = collect();
         if ($oldUserId) {
@@ -93,7 +102,7 @@ class LoanController extends Controller
             }
         }
 
-        return view('petugas.loans.create', compact('members', 'collections'));
+        return view('petugas.loans.create', compact('members', 'collections', 'collectionTypes'));
     }
 
     public function searchMembers(Request $request)
@@ -139,12 +148,15 @@ class LoanController extends Controller
     public function searchBooks(Request $request)
     {
         $q = $request->input('q');
+        $type = $request->input('type');
         if (empty($q)) {
             return response()->json([]);
         }
 
         $collections = Collection::with(['book.category'])
-            ->where('stock', '>', 0)
+            ->when(array_key_exists($type, self::COLLECTION_TYPE_OPTIONS), function ($query) use ($type) {
+                $query->where('item_type', $type);
+            })
             ->get()
             ->filter(function (Collection $collection) use ($q) {
                 $haystack = strtolower(
@@ -161,6 +173,10 @@ class LoanController extends Controller
                 return [
                     'koleksi_id' => $collection->koleksi_id,
                     'judul' => $collection->display_title,
+                    'author' => $collection->book?->author ?? '',
+                    'type_label' => $collection->display_type_label,
+                    'stock' => $collection->stock,
+                    'is_available' => $collection->stock > 0,
                     'judul_display' => $collection->display_title . ' - ' . $collection->display_type_label . ' (Stok: ' . $collection->stock . ')',
                 ];
             });

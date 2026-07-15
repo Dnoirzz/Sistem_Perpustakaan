@@ -113,7 +113,7 @@ class Collection extends Model
     public function getDisplayTypeLabelAttribute(): string
     {
         return match ($this->item_type) {
-            'book' => 'Buku Teks',
+            'book' => 'Buku Umum',
             'laporan_pkl' => 'Laporan PKL',
             'proposal_ta' => 'Proposal TA',
             'laporan_ta' => 'Laporan TA',

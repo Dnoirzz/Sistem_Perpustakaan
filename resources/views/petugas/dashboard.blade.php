@@ -170,8 +170,8 @@
                     <div class="flex items-center gap-2 mb-4">
                         <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-widest border border-white/20">Staf Operasional</span>
                     </div>
-                    <h2 class="font-display-lg text-headline-lg mb-2">Semangat Kerja, {{ explode(' ', Auth::user()->name)[0] }}!</h2>
-                    <p class="font-body-md opacity-90 mb-8 max-w-lg">Layanan sirkulasi perpustakaan menanti Anda. Gunakan panel ini untuk memvalidasi peminjaman, memproses buku kembali, serta memantau booking aktif dari anggota.</p>
+                    <h2 class="font-display-lg text-headline-lg mb-2">Selamat Datang Di Sistem Perpustakaan PSDKU POLNEP SUKAMARA</h2>
+                    <p class="font-body-md opacity-90 mb-8 max-w-lg">Anda dapat menggunakan sistem ini untuk mengelola layanan perpustakaan, memantau ketersediaan buku dan laporan operasional perpustakaan.</p>
                     
                     <a href="{{ route('petugas.loans.index') }}" class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white text-primary font-bold shadow-lg hover:bg-slate-50 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
                         <span class="material-symbols-outlined">local_library</span>

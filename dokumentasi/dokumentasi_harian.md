@@ -408,4 +408,75 @@ Seluruh pelacakan tugas dan dokumentasi perkembangan hari ini telah disimpan den
 *   Menjalankan query dan routing via `php artisan route:list`: **sukses**
 *   Kompilasi view dan pembersihan cache aplikasi: **sukses**
 *   Uji coba fungsionalitas penyortiran dan visualisasi medali Top 1-3 di seluruh role: **sukses**
-*   Uji coba pencegahan input buku yang sedang aktif di sesi lain (baik via seleksi batch maupun input manual): **sukses**
+ *   Uji coba pencegahan input buku yang sedang aktif di sesi lain (baik via seleksi batch maupun input manual): **sukses**
+
+---
+
+## Progress Perbaikan & Penyempurnaan Sistem
+
+**Hari/Tanggal:** Kamis, 16 Juli 2026  
+**Fokus:** Penyempurnaan pencarian dan transaksi peminjaman petugas, validasi pengelolaan buku, dashboard operasional, serta filter laporan koleksi dan aset.
+
+### Fitur & Perubahan yang Diselesaikan Hari Ini ✅
+
+*   **Perbaikan Search Koleksi Pada Form Peminjaman Petugas**:
+    *   Memperbaiki pencarian koleksi pada halaman `petugas/loans/create` yang sebelumnya dapat menghilangkan hasil karena `TomSelect` hanya memfilter field judul.
+    *   Pencarian sekarang mendukung judul, penulis, jenis koleksi, dan teks tampilan koleksi melalui field `author`, `type_label`, dan `judul_display`.
+    *   Koleksi dengan stok `0` tetap ditampilkan pada hasil pencarian agar petugas dapat mengetahui koleksi tersebut tersedia di inventaris tetapi sedang habis.
+    *   Koleksi dengan stok habis tidak dapat dipilih. Saat dipilih, dropdown langsung ditutup, pilihan dibersihkan, dan sistem menampilkan pesan: `Stok buku tidak tersedia. Koleksi ini tidak dapat dipilih untuk transaksi peminjaman.`
+    *   Setelah koleksi yang tersedia dipilih, kolom hanya menampilkan judul koleksi.
+
+*   **Filter Jenis Koleksi Pada Peminjaman**:
+    *   Menambahkan dropdown `Jenis Koleksi` untuk membatasi pencarian sesuai jenis koleksi.
+    *   Pilihan yang tersedia: `Semua jenis koleksi`, `Buku Umum`, `Laporan PKL`, `Proposal TA`, dan `Laporan TA`.
+    *   Endpoint `search-books` menerima parameter `type` dan memfilter berdasarkan `item_type`.
+    *   Saat jenis koleksi diubah, pilihan serta hasil pencarian sebelumnya dibersihkan.
+
+*   **Penyeragaman Label Buku**:
+    *   Mengubah label tampilan `Buku Teks` menjadi `Buku Umum` pada model koleksi, form peminjaman, dan laporan.
+    *   Nilai teknis `item_type=book` tetap dipertahankan sehingga perubahan tidak mengganggu struktur data yang sudah ada.
+    *   Judul sheet ekspor Excel buku juga diubah menjadi `Buku Umum`.
+
+*   **Validasi Form Tambah Buku**:
+    *   Menambahkan tanda bintang wajib isi pada field `Tahun Terbit` dan `Stok Buku`.
+    *   Mengubah `Tahun Terbit` pada validasi backend dari `nullable` menjadi `required` untuk proses tambah dan edit buku.
+    *   Menghapus nilai default stok `0` pada form tambah buku agar field yang belum diisi benar-benar kosong dan dapat divalidasi.
+    *   Menambahkan pesan validasi `Tahun terbit wajib diisi.`.
+    *   Validasi server tetap menolak stok kosong dan stok bernilai negatif.
+
+*   **Penyempurnaan Pesan Stok Habis**:
+    *   Pesan stok habis pada form peminjaman diubah menjadi alert bergaya kotak error seperti pada form registrasi, lengkap dengan ikon, judul, warna latar, dan border peringatan.
+    *   Validasi client-side tambahan untuk seluruh field form peminjaman sempat diterapkan, kemudian dikembalikan sesuai kebutuhan karena halaman peminjaman tidak memerlukan validasi custom tersebut.
+    *   Fitur pencarian, filter jenis koleksi, dan pembatasan koleksi stok habis tetap dipertahankan.
+
+*   **Pembaruan Informasi Dashboard Petugas**:
+    *   Mengubah teks pengantar dashboard agar menjelaskan fungsi sistem secara lebih lengkap.
+    *   Informasi baru mencakup pengelolaan peminjaman dan pengembalian, booking anggota, pemantauan ketersediaan buku, data anggota, dan laporan operasional.
+
+*   **Filter Laporan Koleksi & Aset**:
+    *   Menambahkan dropdown filter pada kartu `Laporan Koleksi & Aset`.
+    *   Pilihan filter: `Semua Koleksi`, `Buku Umum`, `Laporan PKL`, `Proposal TA`, dan `Laporan TA`.
+    *   Tombol `Cetak Laporan` dan `Ekspor Excel` meneruskan parameter `collection_type` sesuai pilihan petugas.
+    *   Laporan cetak hanya menampilkan bagian koleksi yang dipilih dan mencantumkan jenis koleksi pada header laporan.
+    *   Ekspor Excel hanya membuat sheet yang sesuai dengan filter. Pilihan `Semua Koleksi` tetap menghasilkan seluruh sheet koleksi.
+    *   Aktivitas cetak dan ekspor mencatat jenis koleksi yang dipilih pada activity log.
+
+### Berkas yang Dimodifikasi
+
+*   `app/Http/Controllers/Petugas/LoanController.php`
+*   `resources/views/petugas/loans/create.blade.php`
+*   `app/Models/Collection.php`
+*   `app/Http/Controllers/Petugas/BookController.php`
+*   `resources/views/petugas/books/create.blade.php`
+*   `app/Http/Controllers/Petugas/ReportController.php`
+*   `resources/views/petugas/reports/index.blade.php`
+*   `resources/views/petugas/reports/print-koleksi.blade.php`
+*   `resources/views/petugas/dashboard.blade.php`
+
+### Verifikasi yang Sudah Dilakukan
+
+*   Pemeriksaan sintaks PHP pada `LoanController.php`, `BookController.php`, dan `ReportController.php`: **sukses**.
+*   Kompilasi seluruh view Blade menggunakan `php artisan view:cache`: **sukses**.
+*   Pemeriksaan route laporan menggunakan `php artisan route:list --name=petugas.reports`: **sukses**.
+*   Pemeriksaan data koleksi `Belajar Matematika` untuk memastikan penyebab koleksi tidak muncul saat stok `0`: **sukses**.
+*   Perubahan lain yang sudah ada di working tree dan tidak terkait pekerjaan hari ini tidak diubah.
