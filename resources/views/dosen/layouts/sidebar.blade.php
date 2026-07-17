@@ -1,9 +1,12 @@
 <!-- Sidebar Navigation -->
 <aside class="fixed left-0 top-0 h-full w-64 bg-white border-r border-outline-variant/30 flex flex-col z-50">
-    <div class="p-8 border-b border-outline-variant/10">
-        <div class="flex flex-col gap-1">
-            <span class="font-headline-md text-primary font-bold leading-tight">SIPUS POLNEP</span>
-            <span class="text-[10px] text-outline font-bold tracking-widest uppercase">Digital Library</span>
+    <div class="p-6 border-b border-outline-variant/10">
+        <div class="flex items-center gap-3">
+            <img src="{{ asset('img/logo_polnep.webp') }}" class="w-10 h-10 object-contain" alt="Logo POLNEP">
+            <div class="flex flex-col">
+                <span class="font-headline-md text-primary font-bold leading-none">SIPUS POLNEP</span>
+                <span class="text-[10px] text-outline font-bold tracking-widest uppercase mt-1.5">Digital Library</span>
+            </div>
         </div>
     </div>
     @php
@@ -93,3 +96,92 @@
         </button>
     </div>
 </aside>
+
+<style>
+    /* CSS overrides for dashboard responsiveness */
+    @media (max-width: 1023px) {
+        aside {
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        aside.mobile-open {
+            transform: translateX(0) !important;
+        }
+        main {
+            margin-left: 0 !important;
+            padding: 1.5rem 1rem !important;
+            padding-top: 5.5rem !important;
+        }
+        /* Page header layout adjust on mobile */
+        main > header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem !important;
+        }
+        main > header > div:last-child {
+            display: none !important;
+        }
+        
+        #mobileTopBar {
+            display: flex;
+        }
+    }
+</style>
+
+<!-- Overlay Backdrop -->
+<div class="sidebar-overlay fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-45 hidden opacity-0 transition-all duration-300" id="sidebarOverlay"></div>
+
+<!-- Mobile top bar -->
+<div class="mobile-top-bar fixed top-0 left-0 right-0 h-16 bg-white border-b border-outline-variant/30 hidden items-center justify-between px-6 z-40 shadow-sm" id="mobileTopBar">
+    <div class="flex items-center gap-3">
+        <button id="mobileMenuBtn" class="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center text-on-surface-variant active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[26px]">menu</span>
+        </button>
+        <span class="font-bold text-on-surface tracking-wide text-sm">SIPUS POLNEP</span>
+    </div>
+    <div class="flex items-center gap-2">
+        <a href="{{ route('profile.edit') }}" class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-slate-200 shadow-sm active:scale-95 transition-all">
+            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true" class="w-full h-full object-cover" alt="Avatar">
+        </a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('aside');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        
+        if (sidebar && overlay && menuBtn) {
+            menuBtn.addEventListener('click', function() {
+                sidebar.classList.add('mobile-open');
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.add('opacity-100');
+                }, 10);
+            });
+            
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => {
+                    if (!overlay.classList.contains('opacity-100')) {
+                        overlay.classList.add('hidden');
+                    }
+                }, 300);
+            });
+            
+            // Close sidebar when active link is clicked
+            sidebar.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', function() {
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('opacity-100');
+                    overlay.classList.add('hidden');
+                });
+            });
+        }
+    });
+</script>
+

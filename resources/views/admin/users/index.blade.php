@@ -223,10 +223,16 @@
                 <div class="text-sm font-semibold text-outline">
                     Menampilkan total <span class="text-primary font-bold">{{ $users->total() }}</span> user
                 </div>
-                <a href="{{ route('admin.users.create') }}" class="px-5 py-3 bg-primary hover:bg-primary/95 text-white text-sm font-bold rounded-2xl shadow-lg shadow-primary/20 transition duration-200 flex items-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0">
-                    <span class="material-symbols-outlined text-[20px]">person_add</span>
-                    Tambah User Baru
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('admin.users.import.form') }}" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition duration-200 flex items-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0">
+                        <span class="material-symbols-outlined text-[20px]">upload_file</span>
+                        Import Excel
+                    </a>
+                    <a href="{{ route('admin.users.create') }}" class="px-5 py-3 bg-primary hover:bg-primary/95 text-white text-sm font-bold rounded-2xl shadow-lg shadow-primary/20 transition duration-200 flex items-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0">
+                        <span class="material-symbols-outlined text-[20px]">person_add</span>
+                        Tambah User Baru
+                    </a>
+                </div>
             </div>
 
             <!-- Users Table -->

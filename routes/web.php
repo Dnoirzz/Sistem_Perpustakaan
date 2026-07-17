@@ -54,6 +54,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
     
     // Phase 2: User Management
+    Route::get('users-import', [\App\Http\Controllers\Admin\UserController::class, 'showImportForm'])->name('users.import.form');
+    Route::post('users-import', [\App\Http\Controllers\Admin\UserController::class, 'import'])->name('users.import');
+    Route::get('users-import/template', [\App\Http\Controllers\Admin\UserController::class, 'downloadTemplate'])->name('users.import.template');
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::resource('prodis', \App\Http\Controllers\Admin\ProdiController::class)->except(['create', 'show']);
     Route::resource('jurusans', \App\Http\Controllers\Admin\JurusanController::class)->except(['index', 'create', 'show']);

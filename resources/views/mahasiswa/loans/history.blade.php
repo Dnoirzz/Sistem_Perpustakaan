@@ -150,8 +150,8 @@
             </div>
         </header>
 
-        {{-- Tabel --}}
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
+        {{-- Tampilan Desktop Tabel --}}
+        <section class="hidden lg:block bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
@@ -228,6 +228,80 @@
                 </div>
             @endif
         </section>
+
+        {{-- Tampilan Mobile Card List --}}
+        <div class="lg:hidden space-y-4">
+            @forelse($history as $item)
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
+                    <!-- Judul Buku & Penulis -->
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-on-surface text-sm">{{ $item['judul'] }}</h4>
+                            <p class="text-xs text-outline mt-0.5">{{ $item['penulis'] }}</p>
+                        </div>
+                        <div>
+                            @if($item['tipe_riwayat'] === 'fisik')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide border border-blue-200">
+                                    Buku Fisik
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide border border-emerald-200">
+                                    Baca Online
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Info Tanggal -->
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant/10">
+                        <div>
+                            <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Tanggal Pinjam</span>
+                            <span class="text-xs font-semibold text-on-surface">
+                                @if($item['tipe_riwayat'] === 'fisik')
+                                    {{ $item['tgl_pinjam'] ? \Carbon\Carbon::parse($item['tgl_pinjam'])->translatedFormat('d M Y') : '-' }}
+                                @else
+                                    {{ $item['tgl_pinjam'] ? \Carbon\Carbon::parse($item['tgl_pinjam'])->translatedFormat('d M Y, H:i') : '-' }} WIB
+                                @endif
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Tanggal Kembali</span>
+                            <span class="text-xs font-bold text-on-surface">
+                                @if($item['tipe_riwayat'] === 'fisik')
+                                    {{ $item['tgl_kembali'] ? \Carbon\Carbon::parse($item['tgl_kembali'])->translatedFormat('d M Y') : '-' }}
+                                @else
+                                    @if($item['tgl_kembali'])
+                                        {{ \Carbon\Carbon::parse($item['tgl_kembali'])->translatedFormat('d M Y, H:i') }} WIB
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide border border-emerald-200 animate-pulse">
+                                            Membaca
+                                        </span>
+                                    @endif
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Keterangan -->
+                    <div class="pt-4 border-t border-outline-variant/10 flex flex-col gap-1">
+                        <span class="text-[10px] text-outline uppercase tracking-wider block">Keterangan</span>
+                        <span class="text-xs font-medium text-on-surface-variant">
+                            {{ $item['keterangan'] }}
+                        </span>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 text-center text-outline text-sm font-medium shadow-sm">
+                    Belum ada riwayat aktivitas peminjaman fisik maupun baca online.
+                </div>
+            @endforelse
+
+            @if($history->hasPages())
+                <div class="pt-2">
+                    {{ $history->links() }}
+                </div>
+            @endif
+        </div>
     </main>
 </body>
 </html>

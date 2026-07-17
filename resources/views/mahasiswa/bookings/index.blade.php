@@ -178,8 +178,8 @@
             </div>
         @endif
 
-        {{-- Tabel --}}
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
+        {{-- Tampilan Desktop Tabel --}}
+        <section class="hidden lg:block bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
@@ -271,6 +271,92 @@
                 </div>
             @endif
         </section>
+
+        {{-- Tampilan Mobile Card List --}}
+        <div class="lg:hidden space-y-4">
+            @forelse($bookings as $booking)
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
+                    <!-- Judul Buku & Penulis -->
+                    <div>
+                        <h4 class="font-bold text-on-surface text-sm">{{ $booking->collection?->display_title ?? 'Buku tidak ditemukan' }}</h4>
+                        <p class="text-xs text-outline mt-0.5">{{ $booking->collection?->book?->author ?? 'Penulis' }}</p>
+                    </div>
+
+                    <!-- Info Tanggal -->
+                    <div class="pt-4 border-t border-outline-variant/10">
+                        <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Tanggal Booking</span>
+                        <span class="text-xs font-semibold text-on-surface">
+                            {{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d M Y') }}
+                        </span>
+                    </div>
+
+                    <!-- Keterangan -->
+                    <div class="pt-4 border-t border-outline-variant/10 flex flex-col gap-1">
+                        <span class="text-[10px] text-outline uppercase tracking-wider block">Keterangan</span>
+                        <span class="text-xs font-medium text-on-surface-variant">
+                            @if($booking->note)
+                                <span class="text-primary font-semibold block mb-1">Catatan:</span>
+                                {{ $booking->note }}
+                            @else
+                                @if($booking->status === 'pending')
+                                    Permintaan Anda sedang ditinjau oleh staf petugas perpustakaan.
+                                @elseif($booking->status === 'disetujui')
+                                    Buku siap diambil di meja sirkulasi perpustakaan.
+                                @elseif($booking->status === 'dibatalkan')
+                                    Booking ditolak. Silakan hubungi petugas untuk informasi lebih lanjut.
+                                @else
+                                    -
+                                @endif
+                            @endif
+                        </span>
+                    </div>
+
+                    <!-- Status & Aksi -->
+                    <div class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+                        <div>
+                            @if($booking->status === 'pending')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
+                                    Menunggu Persetujuan
+                                </span>
+                            @elseif($booking->status === 'disetujui')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                                    Disetujui
+                                </span>
+                            @elseif($booking->status === 'dibatalkan')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>
+                                    Ditolak
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
+                                    {{ $booking->status }}
+                                </span>
+                            @endif
+                        </div>
+                        <div>
+                            @if(in_array($booking->status, ['pending', 'disetujui'], true))
+                                <button type="button" onclick="openCancelModal({{ $booking->booking_id }}, '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}', '{{ $booking->status }}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 transition-all shadow-sm shadow-rose-200">
+                                    <span class="material-symbols-outlined text-[16px]">cancel</span>
+                                    Batalkan
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 text-center text-outline text-sm font-medium shadow-sm">
+                    Anda belum pernah melakukan booking buku online.
+                </div>
+            @endforelse
+
+            @if($bookings->hasPages())
+                <div class="pt-2">
+                    {{ $bookings->links() }}
+                </div>
+            @endif
+        </div>
     </main>
 
     <div id="cancel-booking-modal" class="fixed inset-0 z-[999] hidden">

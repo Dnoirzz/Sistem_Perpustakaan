@@ -9,10 +9,15 @@ use App\Models\Prodi;
 use App\Models\Mahasiswa;
 use App\Models\Dosen;
 use App\Models\Petugas;
+use App\Models\ActivityLog;
+use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class UserController extends Controller
 {
@@ -240,5 +245,254 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus!');
+    }
+
+    /**
+     * Show the user import form.
+     */
+    public function showImportForm()
+    {
+        return view('admin.users.import');
+    }
+
+    /**
+     * Download the import excel template.
+     */
+    public function downloadTemplate()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Template Import');
+
+        // Panduan Pengisian di bagian atas
+        $sheet->setCellValue('A1', 'PANDUAN IMPORT USER/ANGGOTA SIPUS');
+        $sheet->setCellValue('A2', '1. Kolom "Nama Lengkap", "NIM / NIP", "Jurusan", dan "Program Studi" wajib diisi.');
+        $sheet->setCellValue('A3', '2. Kolom "Semester" diisi jika tipe user adalah MAHASISWA (misal: "Semester 1", "3", "6").');
+        $sheet->setCellValue('A4', '3. Kosongkan kolom "Semester" jika tipe user adalah DOSEN.');
+        $sheet->setCellValue('A5', '4. Nama Program Studi harus sama persis dengan yang terdaftar di sistem (case-insensitive).');
+        $sheet->setCellValue('A6', '5. Sistem otomatis membuat Akun: Email = [NIM/NIP]@sipus.polnep.ac.id | Password = sipus[NIM/NIP].');
+        
+        // Merge cells for header instruction
+        $sheet->mergeCells('A1:E1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(12);
+
+        // Header Tabel di baris 8
+        $headers = ['Nama Lengkap', 'NIM / NIP', 'Jurusan', 'Program Studi', 'Semester'];
+        $sheet->fromArray($headers, null, 'A8');
+
+        // Style header tabel
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '00A5C0'], // POLNEP Turquoise brand color
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ]
+        ];
+        $sheet->getStyle('A8:E8')->applyFromArray($headerStyle);
+
+        // Contoh Data (Baris 9 dan 10)
+        $examples = [
+            ['Rian Yulianto', '3202316109', 'Teknik Elektro', 'D3 Teknik Informatika', 'Semester 6'],
+            ['Dr. Eng. H. Muhammad, M.T.', '198005122005011002', 'Teknik Elektro', 'D3 Teknik Informatika', '']
+        ];
+        $sheet->fromArray($examples, null, 'A9');
+
+        // Auto size columns
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        
+        $filename = 'template_import_user_sipus.xlsx';
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer->save('php://output');
+        exit;
+    }
+
+    /**
+     * Import users from uploaded excel file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'], // Max 10MB
+        ]);
+
+        $file = $request->file('file');
+        
+        try {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Gagal membaca berkas Excel: ' . $e->getMessage()]);
+        }
+
+        // Cari tahu index mulai data. 
+        // Baris 1-7 adalah panduan, baris 8 adalah header, baris 9 dst adalah data.
+        $startIndex = 8; 
+        $totalRows = count($rows);
+
+        if ($totalRows <= $startIndex) {
+            return back()->withErrors(['file' => 'Berkas Excel tidak memiliki data untuk di-import.']);
+        }
+
+        $errors = [];
+        $importedCount = 0;
+        $skippedCount = 0;
+
+        // Ambil data Program Studi untuk validasi cepat
+        $prodis = Prodi::all();
+        $roleMahasiswa = Role::where('role_name', 'mahasiswa')->first();
+        $roleDosen = Role::where('role_name', 'dosen')->first();
+
+        if (!$roleMahasiswa || !$roleDosen) {
+            return back()->withErrors(['file' => 'Peran (Role) mahasiswa atau dosen tidak ditemukan di sistem.']);
+        }
+
+        // Tahap 1: Validasi format data di seluruh baris
+        for ($i = $startIndex; $i < $totalRows; $i++) {
+            $row = $rows[$i];
+            
+            // Bersihkan data spasi
+            $name = isset($row[0]) ? trim($row[0]) : '';
+            $nimNip = isset($row[1]) ? trim($row[1]) : '';
+            $jurusan = isset($row[2]) ? trim($row[2]) : '';
+            $prodiName = isset($row[3]) ? trim($row[3]) : '';
+            $semester = isset($row[4]) ? trim($row[4]) : '';
+
+            // Jika baris kosong seluruhnya, lewati
+            if (empty($name) && empty($nimNip) && empty($jurusan) && empty($prodiName) && empty($semester)) {
+                continue;
+            }
+
+            $rowNum = $i + 1;
+
+            if (empty($name)) {
+                $errors[] = "Baris {$rowNum}: Nama Lengkap wajib diisi.";
+            }
+            if (empty($nimNip)) {
+                $errors[] = "Baris {$rowNum}: NIM / NIP wajib diisi.";
+            }
+            if (empty($jurusan)) {
+                $errors[] = "Baris {$rowNum}: Jurusan wajib diisi.";
+            }
+            if (empty($prodiName)) {
+                $errors[] = "Baris {$rowNum}: Program Studi wajib diisi.";
+            } else {
+                // Cocokkan prodi case-insensitive
+                $prodiMatch = $prodis->first(function($p) use ($prodiName) {
+                    return strtolower($p->nama_prodi) === strtolower($prodiName);
+                });
+                if (!$prodiMatch) {
+                    $errors[] = "Baris {$rowNum}: Program Studi '{$prodiName}' tidak terdaftar di database.";
+                }
+            }
+        }
+
+        // Jika ada kesalahan validasi baris, batalkan import dan tampilkan error
+        if (count($errors) > 0) {
+            return back()->withInput()->with('import_errors', $errors);
+        }
+
+        // Tahap 2: Lakukan import secara transaksional
+        DB::beginTransaction();
+        try {
+            for ($i = $startIndex; $i < $totalRows; $i++) {
+                $row = $rows[$i];
+                
+                $name = isset($row[0]) ? trim($row[0]) : '';
+                $nimNip = isset($row[1]) ? trim($row[1]) : '';
+                $jurusan = isset($row[2]) ? trim($row[2]) : '';
+                $prodiName = isset($row[3]) ? trim($row[3]) : '';
+                $semester = isset($row[4]) ? trim($row[4]) : '';
+
+                if (empty($name) && empty($nimNip) && empty($jurusan) && empty($prodiName) && empty($semester)) {
+                    continue;
+                }
+
+                // Tentukan peran
+                $isMahasiswa = !empty($semester);
+                $roleId = $isMahasiswa ? $roleMahasiswa->role_id : $roleDosen->role_id;
+                $email = $nimNip . '@sipus.polnep.ac.id';
+                $password = 'sipus' . $nimNip;
+
+                // Cek keunikan NIM/NIP dan email di database untuk fitur "Abaikan / Skip"
+                $emailExists = User::where('email', $email)->exists();
+                $nimNipExists = false;
+
+                if ($isMahasiswa) {
+                    $nimNipExists = Mahasiswa::where('nim', $nimNip)->exists();
+                } else {
+                    $nimNipExists = Dosen::where('nip', $nimNip)->exists();
+                }
+
+                if ($emailExists || $nimNipExists) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // Dapatkan Prodi ID
+                $prodi = $prodis->first(function($p) use ($prodiName) {
+                    return strtolower($p->nama_prodi) === strtolower($prodiName);
+                });
+
+                // Buat User
+                $user = User::create([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => Hash::make($password),
+                    'role_id' => $roleId,
+                ]);
+
+                // Buat profil peran
+                if ($isMahasiswa) {
+                    Mahasiswa::create([
+                        'user_id' => $user->user_id,
+                        'prodi_id' => $prodi->prodi_id,
+                        'nim' => $nimNip,
+                        'semester' => $semester,
+                    ]);
+                } else {
+                    Dosen::create([
+                        'user_id' => $user->user_id,
+                        'nip' => $nimNip,
+                        'prodi_id' => $prodi->prodi_id,
+                    ]);
+                }
+
+                $importedCount++;
+            }
+
+            // Log aktivitas ke ActivityLog
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'activity' => "Melakukan import user via Excel. Berhasil: {$importedCount}, Dilewati (Duplikat): {$skippedCount}.",
+            ]);
+
+            DB::commit();
+
+            $message = "Proses import selesai. Berhasil menambahkan {$importedCount} user baru.";
+            if ($skippedCount > 0) {
+                $message .= " Sebanyak {$skippedCount} data dilewati karena NIM/NIP sudah terdaftar.";
+            }
+
+            return redirect()->route('admin.users.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['file' => 'Terjadi kesalahan sistem saat menyimpan data: ' . $e->getMessage()]);
+        }
     }
 }

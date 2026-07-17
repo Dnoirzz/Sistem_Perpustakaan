@@ -279,7 +279,9 @@
 <body>
     <div class="forgot-layout">
         <aside class="visual-pane" aria-hidden="true">
-            <div class="visual-box"></div>
+            <div style="width: min(220px, 55%); aspect-ratio: 1/1; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1.5px solid rgba(255, 255, 255, 0.25); border-radius: 24px; padding: 2rem; box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1), 0 10px 25px rgba(0, 0, 0, 0.05);">
+                <img src="{{ asset('img/logo_polnep.webp') }}" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo POLNEP">
+            </div>
             <div class="visual-text">
                 <h2>SIPUS PSDKU POLNEP</h2>
                 <p>Akses pustaka digital dan layanan akademik Sukamara dalam satu platform terpadu.</p>
@@ -340,10 +342,34 @@
                 </form>
 
                 <p class="login-note">
-                    Ingat password Anda? <a class="login-link" href="{{ route('login') }}">Log In</a>
+                    Ingat password Anda? <a class="login-link" href="{{ route('login') }}">Masuk</a>
                 </p>
             </div>
         </section>
     </div>
+
+    <script>
+        // Translate native validation error tooltips to Indonesian
+        const formInputs = document.querySelectorAll('form input');
+        formInputs.forEach(input => {
+            input.addEventListener('invalid', function (e) {
+                if (this.validity.customError) return;
+                
+                this.setCustomValidity('');
+
+                if (this.id === 'email') {
+                    if (this.validity.valueMissing) {
+                        this.setCustomValidity('Email wajib diisi');
+                    } else if (this.validity.typeMismatch) {
+                        this.setCustomValidity('Format email tidak valid');
+                    }
+                }
+            });
+
+            input.addEventListener('input', function () {
+                this.setCustomValidity('');
+            });
+        });
+    </script>
 </body>
 </html>

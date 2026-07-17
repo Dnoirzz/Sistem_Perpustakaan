@@ -43,10 +43,8 @@
                 
                 <!-- Brand / Logo -->
                 <div class="flex items-center gap-3 z-10">
-                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
+                    <div class="w-10 h-10 rounded-xl bg-white backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+                        <img src="{{ asset('img/logo_polnep.webp') }}" class="w-7 h-7 object-contain" alt="Logo POLNEP">
                     </div>
                     <div>
                         <h2 class="font-bold text-lg tracking-wide leading-none">SIPUS</h2>
@@ -58,7 +56,7 @@
                 <div class="my-auto z-10 py-12">
                     <h1 class="text-3xl font-extrabold tracking-tight leading-tight mb-4 text-white">
                         Gerbang Digital Menuju Pengetahuan.
-                    </h1>
+                     </h1>
                     <p class="text-sm text-white/80 leading-relaxed">
                         Aplikasi Perpustakaan PSDKU POLNEP Sukamara memudahkan akses pencarian buku, booking online, dan pengelolaan arsip akademik Anda secara modern.
                     </p>
@@ -74,10 +72,8 @@
             <div class="md:col-span-7 flex flex-col justify-center p-8 sm:p-10 bg-slate-900/90 relative">
                 <!-- Mobile brand logo (visible only on small screens) -->
                 <div class="flex md:hidden items-center gap-3 mb-8">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
+                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-white/10">
+                        <img src="{{ asset('img/logo_polnep.webp') }}" class="w-7 h-7 object-contain" alt="Logo POLNEP">
                     </div>
                     <div>
                         <h2 class="font-bold text-white text-lg tracking-wide leading-none">SIPUS</h2>
@@ -92,4 +88,37 @@
 
         </div>
     </body>
+    <script>
+        // Translate native validation error tooltips to Indonesian
+        const formInputs = document.querySelectorAll('form input, form select');
+        formInputs.forEach(input => {
+            input.addEventListener('invalid', function (e) {
+                if (this.validity.customError) return;
+                
+                this.setCustomValidity('');
+
+                if (this.id === 'email') {
+                    if (this.validity.valueMissing) {
+                        this.setCustomValidity('Email wajib diisi');
+                    } else if (this.validity.typeMismatch) {
+                        this.setCustomValidity('Format email tidak valid');
+                    }
+                } else if (this.id === 'password') {
+                    if (this.validity.valueMissing) {
+                        this.setCustomValidity('Password wajib diisi');
+                    }
+                } else {
+                    if (this.validity.valueMissing) {
+                        let fieldName = document.querySelector(`label[for="${this.id}"]`)?.textContent || 'kolom ini';
+                        fieldName = fieldName.replace('*', '').trim();
+                        this.setCustomValidity(`${fieldName} wajib diisi`);
+                    }
+                }
+            });
+
+            input.addEventListener('input', function () {
+                this.setCustomValidity('');
+            });
+        });
+    </script>
 </html>

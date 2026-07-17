@@ -135,11 +135,11 @@
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
-                            Login
+                            Masuk
                         </a>
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="px-6 py-2 border border-primary text-primary rounded-lg font-label-md text-label-md hover:bg-slate-50 transition-opacity">
-                                Register
+                                Daftar
                             </a>
                         @endif
                     @endauth

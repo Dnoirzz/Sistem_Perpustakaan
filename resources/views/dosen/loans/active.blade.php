@@ -150,8 +150,8 @@
             </div>
         </header>
 
-        {{-- Tabel --}}
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
+        {{-- Tampilan Desktop Tabel --}}
+        <section class="hidden lg:block bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
@@ -221,6 +221,73 @@
                 </div>
             @endif
         </section>
+
+        {{-- Tampilan Mobile Card List --}}
+        <div class="lg:hidden space-y-4">
+            @forelse($loans as $loan)
+                @php
+                    $unpaidFines = $loan->penalties->where('status', 'belum_dibayar')->sum('amount');
+                @endphp
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
+                    <!-- Judul Buku & Penulis -->
+                    <div>
+                        <h4 class="font-bold text-on-surface text-sm">{{ $loan->collection?->display_title ?? 'Koleksi tidak ditemukan' }}</h4>
+                        <p class="text-xs text-outline mt-0.5">{{ $loan->collection?->book?->author ?? 'Penulis' }}</p>
+                    </div>
+
+                    <!-- Info Tanggal -->
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant/10">
+                        <div>
+                            <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Tanggal Pinjam</span>
+                            <span class="text-xs font-semibold text-on-surface">
+                                {{ $loan->tgl_pinjam ? \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') : '-' }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Batas Waktu</span>
+                            <span class="text-xs font-bold text-on-surface">
+                                {{ $loan->bts_waktu ? \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') : '-' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Status & Denda -->
+                    <div class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+                        <div>
+                            @if($loan->status === 'terlambat' || $loan->isOverdue())
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span>
+                                    Terlambat
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
+                                    Dipinjam
+                                </span>
+                            @endif
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] text-outline uppercase tracking-wider block mb-0.5">Denda</span>
+                            @if($unpaidFines > 0)
+                                <span class="text-xs font-bold text-rose-600">Rp {{ number_format($unpaidFines, 0, ',', '.') }}</span>
+                            @else
+                                <span class="text-xs font-semibold text-outline">-</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 text-center text-outline text-sm font-medium shadow-sm">
+                    Anda tidak sedang meminjam buku fisik saat ini.
+                </div>
+            @endforelse
+
+            @if($loans->hasPages())
+                <div class="pt-2">
+                    {{ $loans->links() }}
+                </div>
+            @endif
+        </div>
     </main>
 </body>
 </html>
