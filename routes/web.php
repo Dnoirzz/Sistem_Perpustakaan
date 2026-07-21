@@ -97,6 +97,10 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
 
     // Fase 5: Arsip Digital
     Route::get('/arsip', [PetugasArsipController::class, 'index'])->name('arsip.index');
+    Route::get('/arsip-import', [PetugasArsipController::class, 'showImportForm'])->name('arsip.import.form');
+    Route::post('/arsip-import', [PetugasArsipController::class, 'import'])->name('arsip.import');
+    Route::get('/arsip-import/download-template', [PetugasArsipController::class, 'downloadTemplate'])->name('arsip.import.template');
+    
     Route::get('/arsip/{type}/{id}', [PetugasArsipController::class, 'show'])->name('arsip.show');
     Route::get('/arsip/{type}/{id}/edit', [PetugasArsipController::class, 'edit'])->name('arsip.edit');
     Route::put('/arsip/{type}/{id}', [PetugasArsipController::class, 'update'])->name('arsip.update');

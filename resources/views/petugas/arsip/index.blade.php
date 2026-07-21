@@ -207,6 +207,19 @@
             </section>
         </div>
 
+        <!-- Action Bar -->
+        <div class="flex justify-between items-center bg-white px-8 py-4 mb-6 rounded-3xl border border-outline-variant/15 shadow-sm">
+            <div class="text-sm font-semibold text-outline">
+                Menampilkan total <span class="text-primary font-bold">{{ $archives->total() }}</span> data arsip
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('petugas.arsip.import.form') }}" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition duration-200 flex items-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0">
+                    <span class="material-symbols-outlined text-[18px]">upload_file</span>
+                    Import Excel Arsip
+                </a>
+            </div>
+        </div>
+
         <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden font-body-md">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">

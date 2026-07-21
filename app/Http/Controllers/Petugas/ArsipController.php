@@ -18,7 +18,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\Role;
+use App\Models\Prodi;
+use App\Models\Mahasiswa;
+use App\Models\ActivityLog;
+use App\Models\LaporanPkl;
+use App\Models\ProposalTa;
+use App\Models\LaporanTugasAkhir;
+use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 
 class ArsipController extends Controller
 {
@@ -341,6 +353,409 @@ class ArsipController extends Controller
     {
         if ($path && Storage::disk('local')->exists($path)) {
             Storage::disk('local')->delete($path);
+        }
+    }
+
+    /**
+     * Show the archive import form.
+     */
+    public function showImportForm()
+    {
+        $typeOptions = ArsipDigital::typeOptions();
+        return view('petugas.arsip.import', compact('typeOptions'));
+    }
+
+    /**
+     * Download the import template based on archive type.
+     */
+    public function downloadTemplate(Request $request)
+    {
+        $type = $request->query('type');
+        
+        $validTypes = ['laporan-pkl', 'proposal-ta', 'laporan-ta'];
+        if (!in_array($type, $validTypes)) {
+            abort(400, 'Tipe template tidak valid.');
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $titleLabel = '';
+        $headers = [];
+        $examples = [];
+        
+        if ($type === 'laporan-pkl') {
+            $sheet->setTitle('Template Import PKL');
+            $titleLabel = 'TEMPLATE IMPORT LAPORAN PKL MAHASISWA';
+            $headers = ['No. Surat Tanda Terima', 'NIM', 'Nama Mahasiswa', 'Program Studi', 'Judul PKL', 'Tempat PKL', 'Pembimbing', 'Penguji 1', 'Penguji 2', 'Tahun'];
+            $examples = [
+                ['024', '3202316109', 'Rian Yulianto', 'D3 Teknik Informatika', 'Sistem Informasi Perpustakaan Digital', 'Kantor Walikota Sukamara', 'Herianto, M.Kom.', 'M. Fadli, M.T.', 'Indra, M.Cs.', '2025'],
+                ['025', '3202316110', 'Budi Santoso', 'D3 Teknik Informatika', 'Aplikasi E-Commerce UMKM', 'Dinas Kominfo', 'Yusuf, M.T.', 'Ahmad, M.Kom.', 'Siti, M.Cs.', '2025']
+            ];
+        } else {
+            $sheet->setTitle($type === 'proposal-ta' ? 'Template Import Proposal TA' : 'Template Import Laporan TA');
+            $titleLabel = $type === 'proposal-ta' ? 'TEMPLATE IMPORT PROPOSAL TUGAS AKHIR' : 'TEMPLATE IMPORT LAPORAN TUGAS AKHIR';
+            $headers = ['No. Surat Tanda Terima', 'NIM', 'Nama Mahasiswa', 'Program Studi', 'Judul', 'Pembimbing', 'Penguji 1', 'Penguji 2', 'Tahun'];
+            $examples = [
+                ['024', '3202316109', 'Rian Yulianto', 'D3 Teknik Informatika', 'Rancang Bangun IoT untuk Smart Agriculture', 'Herianto, M.Kom.', 'M. Fadli, M.T.', 'Indra, M.Cs.', '2026'],
+                ['025', '3202316110', 'Budi Santoso', 'D3 Teknik Informatika', 'Implementasi Deep Learning untuk Deteksi Hama', 'Yusuf, M.T.', 'Ahmad, M.Kom.', 'Siti, M.Cs.', '2026']
+            ];
+        }
+
+        // Panduan Pengisian di bagian atas
+        $sheet->setCellValue('A1', $titleLabel);
+        $sheet->setCellValue('A2', 'PANDUAN PENGISIAN TEMPLATE IMPORT ARSIP:');
+        $sheet->setCellValue('A3', '1. Kolom "No. Surat Tanda Terima" cukup diisi nomor urutnya saja (contoh: 24, 25), "NIM", "Nama Mahasiswa", "Program Studi", "Judul", dan "Tahun" wajib diisi.');
+        if ($type === 'laporan-pkl') {
+            $sheet->setCellValue('A4', '2. Kolom "Tempat PKL" wajib diisi khusus untuk tipe Laporan PKL.');
+        } else {
+            $sheet->setCellValue('A4', '2. Kolom "Pembimbing" dan "Penguji" disarankan diisi lengkap.');
+        }
+        $sheet->setCellValue('A5', '3. Nama Program Studi harus sama persis dengan nama Program Studi yang terdaftar di database.');
+        $sheet->setCellValue('A6', '4. Jika NIM Mahasiswa belum terdaftar, sistem akan otomatis membuatkan akun Alumni baru.');
+        $sheet->setCellValue('A7', '5. Sistem otomatis membuat akun: Email = [NIM]@sipus.polnep.ac.id | Password = sipus[NIM].');
+
+        $lastCol = $type === 'laporan-pkl' ? 'J' : 'I';
+        
+        // Merge cells for header instruction
+        $sheet->mergeCells("A1:{$lastCol}1");
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(12);
+
+        // Header Tabel di baris 9
+        $sheet->fromArray($headers, null, 'A9');
+
+        // Style header tabel
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '00A5C0'], // POLNEP Turquoise brand color
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ]
+        ];
+        $sheet->getStyle("A9:{$lastCol}9")->applyFromArray($headerStyle);
+
+        // Contoh Data (Baris 10 dan 11)
+        $sheet->fromArray($examples, null, 'A10');
+
+        // Auto size columns
+        foreach (range('A', $lastCol) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'template_import_' . str_replace('-', '_', $type) . '.xlsx';
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer->save('php://output');
+        exit;
+    }
+
+    /**
+     * Import archives from uploaded excel file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'type' => ['required', 'string', 'in:laporan-pkl,proposal-ta,laporan-ta'],
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'], // Max 10MB
+        ]);
+
+        $type = $request->input('type');
+        $file = $request->file('file');
+
+        try {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Gagal membaca berkas Excel: ' . $e->getMessage()]);
+        }
+
+        $startIndex = 9;
+        $totalRows = count($rows);
+
+        if ($totalRows <= $startIndex) {
+            return back()->withErrors(['file' => 'Berkas Excel tidak memiliki data untuk di-import.']);
+        }
+
+        $errors = [];
+        $prodis = Prodi::all();
+        $roleMahasiswa = Role::where('role_name', 'mahasiswa')->first();
+        if (!$roleMahasiswa) {
+            return back()->withErrors(['file' => 'Peran (Role) mahasiswa tidak ditemukan di sistem.']);
+        }
+
+        // Tahap 1: Validasi format data di seluruh baris
+        for ($i = $startIndex; $i < $totalRows; $i++) {
+            $row = $rows[$i];
+            
+            $nomorSurat = isset($row[0]) ? trim($row[0]) : '';
+            $nim = isset($row[1]) ? trim($row[1]) : '';
+            $nama = isset($row[2]) ? trim($row[2]) : '';
+            $prodiName = isset($row[3]) ? trim($row[3]) : '';
+            $judul = isset($row[4]) ? trim($row[4]) : '';
+            
+            if ($type === 'laporan-pkl') {
+                $tempatPkl = isset($row[5]) ? trim($row[5]) : '';
+                $pembimbing = isset($row[6]) ? trim($row[6]) : '';
+                $penguji1 = isset($row[7]) ? trim($row[7]) : '';
+                $penguji2 = isset($row[8]) ? trim($row[8]) : '';
+                $tahun = isset($row[9]) ? trim($row[9]) : '';
+            } else {
+                $tempatPkl = '';
+                $pembimbing = isset($row[5]) ? trim($row[5]) : '';
+                $penguji1 = isset($row[6]) ? trim($row[6]) : '';
+                $penguji2 = isset($row[7]) ? trim($row[7]) : '';
+                $tahun = isset($row[8]) ? trim($row[8]) : '';
+            }
+
+            // Jika baris kosong seluruhnya, lewati
+            if (empty($nomorSurat) && empty($nim) && empty($nama) && empty($prodiName) && empty($judul) && empty($tahun)) {
+                continue;
+            }
+
+            $rowNum = $i + 1;
+
+            // Auto-format jika nomor surat diisi angka saja (nomor urut)
+            if (!empty($nomorSurat) && preg_match('/^\d+$/', $nomorSurat) && !empty($tahun)) {
+                $formatKode = \App\Models\AppSetting::get('receipt_kode_surat', '/PL.16.A3/KM/');
+                $sequenceStr = sprintf('%03d', (int)$nomorSurat);
+                $formattedNomorSurat = $sequenceStr . $formatKode . $tahun;
+            } else {
+                $formattedNomorSurat = $nomorSurat;
+            }
+
+            if (empty($nomorSurat)) {
+                $errors[] = "Baris {$rowNum}: Nomor Surat Tanda Terima wajib diisi.";
+            } else {
+                // Check if nomor_surat already exists in the database
+                $nomorSuratExists = false;
+                if ($type === 'laporan-pkl') {
+                    $nomorSuratExists = LaporanPkl::where('nomor_surat', $formattedNomorSurat)->exists();
+                } elseif ($type === 'proposal-ta') {
+                    $nomorSuratExists = ProposalTa::where('nomor_surat', $formattedNomorSurat)->exists();
+                } elseif ($type === 'laporan-ta') {
+                    $nomorSuratExists = LaporanTugasAkhir::where('nomor_surat', $formattedNomorSurat)->exists();
+                }
+                if ($nomorSuratExists) {
+                    $errors[] = "Baris {$rowNum}: Nomor Surat Tanda Terima '{$formattedNomorSurat}' sudah terdaftar di sistem.";
+                }
+            }
+
+            if (empty($nim)) {
+                $errors[] = "Baris {$rowNum}: NIM wajib diisi.";
+            }
+            if (empty($nama)) {
+                $errors[] = "Baris {$rowNum}: Nama Mahasiswa wajib diisi.";
+            }
+            if (empty($prodiName)) {
+                $errors[] = "Baris {$rowNum}: Program Studi wajib diisi.";
+            } else {
+                // Cocokkan prodi case-insensitive
+                $prodiMatch = $prodis->first(function($p) use ($prodiName) {
+                    return strtolower($p->nama_prodi) === strtolower($prodiName);
+                });
+                if (!$prodiMatch) {
+                    $errors[] = "Baris {$rowNum}: Program Studi '{$prodiName}' tidak terdaftar di database.";
+                }
+            }
+            if (empty($judul)) {
+                $errors[] = "Baris {$rowNum}: Judul wajib diisi.";
+            }
+            if ($type === 'laporan-pkl' && empty($tempatPkl)) {
+                $errors[] = "Baris {$rowNum}: Tempat PKL wajib diisi untuk Laporan PKL.";
+            }
+            if (empty($tahun)) {
+                $errors[] = "Baris {$rowNum}: Tahun wajib diisi.";
+            } elseif (!is_numeric($tahun) || strlen($tahun) !== 4) {
+                $errors[] = "Baris {$rowNum}: Tahun harus berupa 4 digit angka.";
+            }
+        }
+
+        // Jika ada kesalahan validasi baris, batalkan import dan tampilkan error
+        if (count($errors) > 0) {
+            return back()->withInput()->with('import_errors', $errors);
+        }
+
+        // Tahap 2: Lakukan import secara transaksional
+        $importedCount = 0;
+        $skippedCount = 0;
+
+        DB::beginTransaction();
+        try {
+            for ($i = $startIndex; $i < $totalRows; $i++) {
+                $row = $rows[$i];
+                
+                $nomorSurat = isset($row[0]) ? trim($row[0]) : '';
+                $nim = isset($row[1]) ? trim($row[1]) : '';
+                $nama = isset($row[2]) ? trim($row[2]) : '';
+                $prodiName = isset($row[3]) ? trim($row[3]) : '';
+                $judul = isset($row[4]) ? trim($row[4]) : '';
+                
+                if ($type === 'laporan-pkl') {
+                    $tempatPkl = isset($row[5]) ? trim($row[5]) : '';
+                    $pembimbing = isset($row[6]) ? trim($row[6]) : '';
+                    $penguji1 = isset($row[7]) ? trim($row[7]) : '';
+                    $penguji2 = isset($row[8]) ? trim($row[8]) : '';
+                    $tahun = isset($row[9]) ? trim($row[9]) : '';
+                } else {
+                    $tempatPkl = '';
+                    $pembimbing = isset($row[5]) ? trim($row[5]) : '';
+                    $penguji1 = isset($row[6]) ? trim($row[6]) : '';
+                    $penguji2 = isset($row[7]) ? trim($row[7]) : '';
+                    $tahun = isset($row[8]) ? trim($row[8]) : '';
+                }
+
+                if (empty($nomorSurat) && empty($nim) && empty($nama) && empty($prodiName) && empty($judul) && empty($tahun)) {
+                    continue;
+                }
+
+                // Auto-format jika nomor surat diisi angka saja (nomor urut)
+                if (!empty($nomorSurat) && preg_match('/^\d+$/', $nomorSurat) && !empty($tahun)) {
+                    $formatKode = \App\Models\AppSetting::get('receipt_kode_surat', '/PL.16.A3/KM/');
+                    $sequenceStr = sprintf('%03d', (int)$nomorSurat);
+                    $formattedNomorSurat = $sequenceStr . $formatKode . $tahun;
+                } else {
+                    $formattedNomorSurat = $nomorSurat;
+                }
+
+                // 1. Cari mahasiswa berdasarkan NIM
+                $mahasiswa = Mahasiswa::where('nim', $nim)->first();
+
+                // Jika mahasiswa belum ada, buat mahasiswa & user dummy (alumni) baru
+                if (!$mahasiswa) {
+                    $prodi = $prodis->first(function($p) use ($prodiName) {
+                        return strtolower($p->nama_prodi) === strtolower($prodiName);
+                    });
+
+                    // Cek email user agar tidak bentrok
+                    $email = $nim . '@sipus.polnep.ac.id';
+                    $user = User::where('email', $email)->first();
+                    
+                    if (!$user) {
+                        $user = User::create([
+                            'name' => $nama,
+                            'email' => $email,
+                            'password' => Hash::make('sipus' . $nim),
+                            'role_id' => $roleMahasiswa->role_id,
+                        ]);
+                    }
+
+                    $mahasiswa = Mahasiswa::create([
+                        'user_id' => $user->user_id,
+                        'prodi_id' => $prodi->prodi_id,
+                        'nim' => $nim,
+                        'semester' => 'Alumni',
+                    ]);
+                }
+
+                // 2. Cek duplikasi: Mahasiswa + Tipe Arsip terpilih ATAU Nomor Surat
+                $isDuplicate = false;
+                if ($type === 'laporan-pkl') {
+                    $isDuplicate = LaporanPkl::where('mahasiswa_id', $mahasiswa->mhs_id)
+                        ->orWhere('nomor_surat', $formattedNomorSurat)
+                        ->exists();
+                } elseif ($type === 'proposal-ta') {
+                    $isDuplicate = ProposalTa::where('mahasiswa_id', $mahasiswa->mhs_id)
+                        ->orWhere('nomor_surat', $formattedNomorSurat)
+                        ->exists();
+                } elseif ($type === 'laporan-ta') {
+                    $isDuplicate = LaporanTugasAkhir::where('mahasiswa_id', $mahasiswa->mhs_id)
+                        ->orWhere('nomor_surat', $formattedNomorSurat)
+                        ->exists();
+                }
+
+                if ($isDuplicate) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // 3. Simpan data arsip
+                $archiveId = null;
+                if ($type === 'laporan-pkl') {
+                    $archive = LaporanPkl::create([
+                        'mahasiswa_id' => $mahasiswa->mhs_id,
+                        'judul_pkl' => $judul,
+                        'nama_tempat_pkl' => $tempatPkl,
+                        'pembimbing' => $pembimbing,
+                        'penguji_1' => $penguji1,
+                        'penguji_2' => $penguji2,
+                        'tahun' => $tahun,
+                        'status' => ArsipDigital::STATUS_AKTIF,
+                        'nomor_surat' => $formattedNomorSurat,
+                        'received_at' => now(),
+                    ]);
+                    $archiveId = $archive->id;
+                } elseif ($type === 'proposal-ta') {
+                    $archive = ProposalTa::create([
+                        'mahasiswa_id' => $mahasiswa->mhs_id,
+                        'judul_proposal' => $judul,
+                        'pembimbing' => $pembimbing,
+                        'penguji_1' => $penguji1,
+                        'penguji_2' => $penguji2,
+                        'tahun' => $tahun,
+                        'status' => ArsipDigital::STATUS_AKTIF,
+                        'nomor_surat' => $formattedNomorSurat,
+                        'received_at' => now(),
+                    ]);
+                    $archiveId = $archive->id;
+                } elseif ($type === 'laporan-ta') {
+                    $archive = LaporanTugasAkhir::create([
+                        'mahasiswa_id' => $mahasiswa->mhs_id,
+                        'judul_tgs_akhir' => $judul,
+                        'pembimbing' => $pembimbing,
+                        'penguji_1' => $penguji1,
+                        'penguji_2' => $penguji2,
+                        'tahun' => $tahun,
+                        'status' => ArsipDigital::STATUS_AKTIF,
+                        'nomor_surat' => $formattedNomorSurat,
+                        'received_at' => now(),
+                    ]);
+                    $archiveId = $archive->id;
+                }
+
+                // 4. Buat entri di tabel collections dengan stock = 1
+                Collection::updateOrCreate(
+                    [
+                        'item_type' => ArsipDigital::itemType($type),
+                        'item_id' => $archiveId,
+                    ],
+                    [
+                        'stock' => 1,
+                    ]
+                );
+
+                $importedCount++;
+            }
+
+            // Log aktivitas ke ActivityLog
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'activity' => "Melakukan import arsip digital ({$type}) via Excel. Berhasil: {$importedCount}, Dilewati (Duplikat): {$skippedCount}.",
+            ]);
+
+            DB::commit();
+
+            $message = "Proses import selesai. Berhasil menambahkan {$importedCount} data arsip.";
+            if ($skippedCount > 0) {
+                $message .= " Sebanyak {$skippedCount} data dilewati karena mahasiswa terkait sudah memiliki arsip dengan tipe tersebut.";
+            }
+
+            return redirect()->route('petugas.arsip.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal import arsip: ' . $e->getMessage());
+            return back()->withErrors(['file' => 'Terjadi kesalahan sistem saat menyimpan data: ' . $e->getMessage()]);
         }
     }
 }

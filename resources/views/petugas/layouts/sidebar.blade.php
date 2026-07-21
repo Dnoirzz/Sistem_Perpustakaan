@@ -130,6 +130,27 @@
 </aside>
 
 <style>
+    /* Page Load Transition */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    main {
+        opacity: 0;
+        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Cross-Document View Transitions */
+    @view-transition {
+        navigation: auto;
+    }
+
     /* CSS overrides for dashboard responsiveness */
     @media (max-width: 1023px) {
         aside {
@@ -144,6 +165,8 @@
             margin-left: 0 !important;
             padding: 1.5rem 1rem !important;
             padding-top: 5.5rem !important;
+            /* Override page load animation style since media queries can affect parsing, keeping animation active */
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         /* Page header layout adjust on mobile */
         main > header {
@@ -217,3 +240,4 @@
     });
 </script>
 
+@include('layouts.custom-confirm')
