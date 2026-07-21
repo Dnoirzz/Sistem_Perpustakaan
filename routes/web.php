@@ -90,6 +90,9 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::get('/dashboard', [PetugasDashboard::class, 'index'])->name('dashboard');
     
     // CRUD Buku & Kategori (Fase 3)
+    Route::get('/books-import', [\App\Http\Controllers\Petugas\BookController::class, 'showImportForm'])->name('books.import.form');
+    Route::post('/books-import', [\App\Http\Controllers\Petugas\BookController::class, 'import'])->name('books.import');
+    Route::get('/books-import/download-template', [\App\Http\Controllers\Petugas\BookController::class, 'downloadTemplate'])->name('books.import.template');
     Route::resource('books', \App\Http\Controllers\Petugas\BookController::class);
     Route::resource('categories', \App\Http\Controllers\Petugas\CategoryController::class);
     

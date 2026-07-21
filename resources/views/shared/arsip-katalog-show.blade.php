@@ -176,13 +176,23 @@
                 </p>
 
                 <div class="space-y-4">
-                    <a href="{{ route($rolePrefix . '.katalog-arsip.full', [$archiveType, $archive->getKey(), \Illuminate\Support\Str::slug($archiveTitle)]) }}" target="_blank" class="inline-flex items-center gap-2.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-8 py-4 text-base shadow-lg shadow-primary/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
-                        <span class="material-symbols-outlined text-[22px]">open_in_new</span>
-                        Baca Dokumen Lengkap (PDF)
-                    </a>
-                    <p class="text-xs text-outline font-medium">
-                        *Dokumen lengkap akan dibuka secara aman di tab baru browser Anda.
-                    </p>
+                    @if($archive->file_pdf)
+                        <a href="{{ route($rolePrefix . '.katalog-arsip.full', [$archiveType, $archive->getKey(), \Illuminate\Support\Str::slug($archiveTitle)]) }}" target="_blank" class="inline-flex items-center gap-2.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-8 py-4 text-base shadow-lg shadow-primary/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                            <span class="material-symbols-outlined text-[22px]">open_in_new</span>
+                            Baca Dokumen Lengkap (PDF)
+                        </a>
+                        <p class="text-xs text-outline font-medium">
+                            *Dokumen lengkap akan dibuka secara aman di tab baru browser Anda.
+                        </p>
+                    @else
+                        <div class="inline-flex items-center gap-2.5 rounded-2xl bg-slate-100 text-slate-400 font-bold px-8 py-4 text-base cursor-not-allowed border border-slate-200">
+                            <span class="material-symbols-outlined text-[22px]">lock</span>
+                            Berkas Digital Belum Diunggah
+                        </div>
+                        <p class="text-xs text-outline font-medium">
+                            *hanya tersedia koleksi fisik.
+                        </p>
+                    @endif
                 </div>
             </section>
 

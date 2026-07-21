@@ -243,7 +243,7 @@
                             <p class="text-xs text-outline mt-0.5">Sesuaikan dengan jenis berkas terpilih.</p>
                         </div>
                     </div>
-                    <a id="download-template-btn" href="{{ route('petugas.arsip.import.template') }}?type=laporan-pkl" class="w-full py-3 bg-emerald-650 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/10">
+                    <a id="download-template-btn" href="{{ route('petugas.arsip.import.template') }}?type=laporan-pkl" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-xs transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/10">
                         <span class="material-symbols-outlined text-[18px]">download</span>
                         Download Template <span id="template-type-label">Laporan PKL (.xlsx)</span>
                     </a>

@@ -5,8 +5,15 @@ namespace App\Http\Controllers\Petugas;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Collection;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class BookController extends Controller
 {
@@ -179,5 +186,233 @@ class BookController extends Controller
 
         return redirect()->route('petugas.books.index')
             ->with('success', 'Buku berhasil dihapus.');
+    }
+
+    /**
+     * Show the book import form.
+     */
+    public function showImportForm()
+    {
+        return view('petugas.books.import');
+    }
+
+    /**
+     * Download the import template for general books.
+     */
+    public function downloadTemplate()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $sheet->setTitle('Template Import Buku');
+        $titleLabel = 'TEMPLATE IMPORT INVENTARIS BUKU UMUM';
+        $headers = ['Judul Buku', 'Penulis / Pengarang', 'Penerbit', 'Tahun Terbit', 'Stok', 'Kategori'];
+        $examples = [
+            ['Laskar Pelangi', 'Andrea Hirata', 'Bentang Pustaka', '2005', '5', 'Novel'],
+            ['Algoritma dan Pemrograman', 'Rinaldi Munir', 'Informatika Bandung', '2011', '3', 'Komputer']
+        ];
+
+        // Instructions
+        $sheet->setCellValue('A1', $titleLabel);
+        $sheet->setCellValue('A2', 'PANDUAN PENGISIAN TEMPLATE IMPORT BUKU:');
+        $sheet->setCellValue('A3', '1. Kolom "Judul Buku", "Penulis / Pengarang", "Tahun Terbit", "Stok", dan "Kategori" wajib diisi.');
+        $sheet->setCellValue('A4', '2. Kolom "Tahun Terbit" harus berupa 4 digit angka (contoh: 2020) dan minimal tahun 1900.');
+        $sheet->setCellValue('A5', '3. Kolom "Stok" harus berupa angka bulat positif (>= 0).');
+        $sheet->setCellValue('A6', '4. Kategori akan dicocokkan secara otomatis (case-insensitive). Jika Kategori belum terdaftar, sistem akan membuatnya secara otomatis.');
+
+        $lastCol = 'F';
+        
+        // Merge cells for header instruction
+        $sheet->mergeCells("A1:{$lastCol}1");
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(12);
+
+        // Header Tabel di baris 8
+        $sheet->fromArray($headers, null, 'A8');
+
+        // Style header tabel
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '00A5C0'], // POLNEP Turquoise
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ]
+        ];
+        $sheet->getStyle("A8:{$lastCol}8")->applyFromArray($headerStyle);
+
+        // Contoh Data (Baris 9 dan 10)
+        $sheet->fromArray($examples, null, 'A9');
+
+        // Auto size columns
+        foreach (range('A', $lastCol) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'template_import_buku.xlsx';
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer->save('php://output');
+        exit;
+    }
+
+    /**
+     * Import books from uploaded excel file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'], // Max 10MB
+        ]);
+
+        $file = $request->file('file');
+
+        try {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Gagal membaca berkas Excel: ' . $e->getMessage()]);
+        }
+
+        $startIndex = 8; // Data dimulai dari baris 9 (index 8)
+        $totalRows = count($rows);
+
+        if ($totalRows <= $startIndex) {
+            return back()->withErrors(['file' => 'Berkas Excel tidak memiliki data untuk di-import.']);
+        }
+
+        $errors = [];
+        $categories = Category::all();
+
+        // Tahap 1: Validasi format data di seluruh baris
+        for ($i = $startIndex; $i < $totalRows; $i++) {
+            $row = $rows[$i];
+            
+            $judul = isset($row[0]) ? trim($row[0]) : '';
+            $author = isset($row[1]) ? trim($row[1]) : '';
+            $publisher = isset($row[2]) ? trim($row[2]) : '';
+            $release = isset($row[3]) ? trim($row[3]) : '';
+            $stock = isset($row[4]) ? trim($row[4]) : '';
+            $kategoriName = isset($row[5]) ? trim($row[5]) : '';
+
+            // Jika baris kosong seluruhnya, lewati
+            if (empty($judul) && empty($author) && empty($release) && empty($stock) && empty($kategoriName)) {
+                continue;
+            }
+
+            $rowNum = $i + 1;
+
+            if (empty($judul)) {
+                $errors[] = "Baris {$rowNum}: Judul Buku wajib diisi.";
+            }
+            if (empty($author)) {
+                $errors[] = "Baris {$rowNum}: Penulis / Pengarang wajib diisi.";
+            }
+            if (empty($release)) {
+                $errors[] = "Baris {$rowNum}: Tahun Terbit wajib diisi.";
+            } elseif (!is_numeric($release) || strlen($release) !== 4 || intval($release) < 1900 || intval($release) > (date('Y') + 1)) {
+                $errors[] = "Baris {$rowNum}: Tahun Terbit harus berupa 4 digit angka antara 1900 dan " . (date('Y') + 1) . ".";
+            }
+            if ($stock === '') {
+                $errors[] = "Baris {$rowNum}: Stok wajib diisi.";
+            } elseif (!is_numeric($stock) || intval($stock) < 0) {
+                $errors[] = "Baris {$rowNum}: Stok harus berupa angka bulat positif (>= 0).";
+            }
+            if (empty($kategoriName)) {
+                $errors[] = "Baris {$rowNum}: Kategori wajib diisi.";
+            }
+        }
+
+        // Jika ada kesalahan validasi baris, batalkan import dan tampilkan error
+        if (count($errors) > 0) {
+            return back()->withInput()->with('import_errors', $errors);
+        }
+
+        // Tahap 2: Lakukan import secara transaksional
+        $importedCount = 0;
+        $skippedCount = 0;
+
+        DB::beginTransaction();
+        try {
+            for ($i = $startIndex; $i < $totalRows; $i++) {
+                $row = $rows[$i];
+                
+                $judul = isset($row[0]) ? trim($row[0]) : '';
+                $author = isset($row[1]) ? trim($row[1]) : '';
+                $publisher = isset($row[2]) ? trim($row[2]) : '';
+                $release = isset($row[3]) ? trim($row[3]) : '';
+                $stock = isset($row[4]) ? trim($row[4]) : '';
+                $kategoriName = isset($row[5]) ? trim($row[5]) : '';
+
+                if (empty($judul) && empty($author) && empty($release) && empty($stock) && empty($kategoriName)) {
+                    continue;
+                }
+
+                // 1. Cek duplikasi: Judul + Penulis (case-insensitive)
+                $isDuplicate = Book::whereRaw('LOWER(judul) = ?', [strtolower($judul)])
+                    ->whereRaw('LOWER(author) = ?', [strtolower($author)])
+                    ->exists();
+
+                if ($isDuplicate) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // 2. Cari/buat Kategori secara case-insensitive
+                $category = $categories->first(function($cat) use ($kategoriName) {
+                    return strtolower($cat->kategori_name) === strtolower($kategoriName);
+                });
+
+                if (!$category) {
+                    // Buat kategori baru di DB
+                    $category = Category::create([
+                        'kategori_name' => $kategoriName
+                    ]);
+                    // Refresh koleksi local categories
+                    $categories->push($category);
+                }
+
+                // 3. Simpan data buku
+                Book::create([
+                    'judul' => $judul,
+                    'author' => $author,
+                    'publisher' => $publisher ?: null,
+                    'release' => intval($release),
+                    'stock' => intval($stock),
+                    'kategori_id' => $category->kategori_id,
+                ]);
+
+                $importedCount++;
+            }
+
+            // Log aktivitas ke ActivityLog
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'activity' => "Melakukan import data buku via Excel. Berhasil: {$importedCount}, Dilewati (Duplikat): {$skippedCount}.",
+            ]);
+
+            DB::commit();
+
+            $message = "Proses import selesai. Berhasil menambahkan {$importedCount} data buku.";
+            if ($skippedCount > 0) {
+                $message .= " Sebanyak {$skippedCount} data buku dilewati karena kombinasi Judul & Penulis sudah ada di perpustakaan.";
+            }
+
+            return redirect()->route('petugas.books.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal import buku: ' . $e->getMessage());
+            return back()->withErrors(['file' => 'Terjadi kesalahan sistem saat menyimpan data: ' . $e->getMessage()]);
+        }
     }
 }

@@ -183,10 +183,16 @@
                 </a>
             </div>
             
-            <a href="{{ route('petugas.books.create') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all">
-                <span class="material-symbols-outlined text-[18px]">add</span>
-                Tambah Buku Baru
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('petugas.books.import.form') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">upload_file</span>
+                    Import Excel
+                </a>
+                <a href="{{ route('petugas.books.create') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">add</span>
+                    Tambah Buku Baru
+                </a>
+            </div>
         </div>
 
         <!-- Filter & Search Section -->

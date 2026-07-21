@@ -229,7 +229,7 @@
                             <p class="text-xs text-outline mt-0.5">Gunakan format yang sesuai agar tidak terjadi error.</p>
                         </div>
                     </div>
-                    <a href="{{ route('admin.users.import.template') }}" class="w-full py-3 bg-emerald-650 hover:bg-emerald-700 text-white font-bold rounded-2xl text-sm transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/10">
+                    <a href="{{ route('admin.users.import.template') }}" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl text-sm transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/10">
                         <span class="material-symbols-outlined text-[18px]">download</span>
                         Download Template (.xlsx)
                     </a>
