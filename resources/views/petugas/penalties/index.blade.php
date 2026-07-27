@@ -101,7 +101,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">gavel</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Belum Bayar</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Denda Aktif</h3>
                 <div class="flex items-baseline gap-2">
@@ -114,7 +113,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">payments</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Total</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Total Nominal Belum Bayar</h3>
                 <div class="flex items-baseline gap-2">
@@ -126,7 +124,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">check_circle</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Hari Ini</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Lunas Hari Ini</h3>
                 <div class="flex items-baseline gap-2">

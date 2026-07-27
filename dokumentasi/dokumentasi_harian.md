@@ -477,6 +477,22 @@ Seluruh pelacakan tugas dan dokumentasi perkembangan hari ini telah disimpan den
 
 *   Pemeriksaan sintaks PHP pada `LoanController.php`, `BookController.php`, dan `ReportController.php`: **sukses**.
 *   Kompilasi seluruh view Blade menggunakan `php artisan view:cache`: **sukses**.
-*   Pemeriksaan route laporan menggunakan `php artisan route:list --name=petugas.reports`: **sukses**.
-*   Pemeriksaan data koleksi `Belajar Matematika` untuk memastikan penyebab koleksi tidak muncul saat stok `0`: **sukses**.
 *   Perubahan lain yang sudah ada di working tree dan tidak terkait pekerjaan hari ini tidak diubah.
+
+---
+
+## Progress Lanjutan: Multi-Select Batch Peminjaman, Validasi Bahasa Indonesia, & Proteksi Booking/Antrian Ganda
+
+**Hari/Tanggal:** Selasa, 28 Juli 2026  
+**Fokus:** Transaksi Peminjaman Batch Multi-Select, Standarisasi Datepicker & Validasi Bahasa Indonesia, Redesain Ringkasan Stok, Perapian Layout Arsip, serta Validasi Peminjaman Ganda (Booking & Antrian).
+
+### Fitur & Perbaikan yang Diselesaikan Hari Ini ✅
+
+*   **Peminjaman Batch Multi-Select**: Petugas dapat memilih dan menambahkan beberapa koleksi sekaligus (Buku & Arsip Digital) dalam 1 transaksi peminjaman. Sistem memproses transaksi secara individual di dalam `DB::transaction()` serta mengirimkan rangkuman item via WhatsApp.
+*   **Standarisasi Datepicker (`dd/mm/yyyy`)**: Mengintegrasikan Flatpickr datepicker Bahasa Indonesia dengan kalkulasi tanggal kembali otomatis (+7 hari).
+*   **Perbaikan TomSelect**: Membersihkan opsi kosong dan menambah guard null-safety untuk menghilangkan bug `undefined`.
+*   **Redesain Widget "Stok per Jenis Koleksi"**: Menampilkan 4 baris ringkasan total stok terstruktur (Buku Umum, Laporan PKL, Proposal TA, Laporan TA).
+*   **Validasi Bahasa Indonesia & Batas Tahun 2026**: Mengganti pesan validasi browser ke Bahasa Indonesia serta membatasi maksimal tahun terbit ke tahun berjalan (2026).
+*   **Perapian Tombol Import Excel Arsip**: Memindahkan tombol Import Excel di atas section filter serta menyelaraskan ukuran tombol dengan halaman Kelola Buku.
+*   **Validasi Booking & Antrian Ganda**: Menolak pengajuan booking/antrian jika anggota masih memiliki status peminjaman aktif untuk koleksi yang sama.
+

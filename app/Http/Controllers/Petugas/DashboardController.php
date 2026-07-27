@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
-use App\Models\Book;
+use App\Models\Collection;
 use App\Models\Loan;
 use App\Models\Booking;
 use App\Models\Antrian;
@@ -17,8 +17,8 @@ class DashboardController extends Controller
         Loan::syncOverdueStatuses();
 
         $stats = [
-            'total_books' => Book::count(),
-            'active_loans' => Loan::where('status', 'dipinjam')->count(),
+            'total_books' => Collection::count(),
+            'active_loans' => Loan::whereIn('status', ['dipinjam', 'terlambat'])->count(),
             'overdue_loans' => Loan::where('status', 'terlambat')->count(),
             'pending_bookings' => Booking::where('status', 'pending')->count(),
             'active_penalties' => Penalty::where('status', 'belum_dibayar')->count(),

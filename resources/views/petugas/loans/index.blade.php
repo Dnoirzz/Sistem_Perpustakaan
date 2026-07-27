@@ -170,9 +170,8 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">swap_horiz</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Aktif</span>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Sedang Dipinjam</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Peminjaman Aktif</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold text-on-surface">{{ $stats['active_loans'] }}</span>
                     <span class="text-xs text-outline font-semibold">transaksi</span>
@@ -184,9 +183,8 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">warning</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Perhatian</span>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Terlambat</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Pinjaman Terlambat</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold {{ $stats['overdue_loans'] > 0 ? 'text-rose-600' : 'text-on-surface' }}">{{ $stats['overdue_loans'] }}</span>
                     <span class="text-xs text-outline font-semibold">transaksi</span>
@@ -198,9 +196,8 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-200">
                         <span class="material-symbols-outlined">assignment_turned_in</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Hari Ini</span>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Sudah Kembali</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Buku Dikembalikan</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold text-on-surface">{{ $stats['returned_today'] }}</span>
                     <span class="text-xs text-outline font-semibold">transaksi</span>
@@ -212,12 +209,11 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">menu_book</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Siap Pinjam</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Stok Tersedia</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold text-on-surface">{{ $stats['available_books'] }}</span>
-                    <span class="text-xs text-outline font-semibold">eksemplar</span>
+                    <span class="text-xs text-outline font-semibold">item</span>
                 </div>
             </div>
         </section>
@@ -227,7 +223,7 @@
                 <form action="{{ route('petugas.loans.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" placeholder="Cari nama anggota, NIM, NIP, atau judul buku..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                     </div>
                     <div>
                         <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">

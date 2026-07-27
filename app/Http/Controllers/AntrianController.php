@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Antrian;
+use App\Models\Loan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,6 +23,16 @@ class AntrianController extends Controller
 
         $user = Auth::user();
         $koleksiId = $validated['koleksi_id'];
+
+        // Cek apakah pengguna sedang meminjam koleksi ini
+        $sedangDipinjam = Loan::where('user_id', $user->user_id)
+            ->where('koleksi_id', $koleksiId)
+            ->whereIn('status', ['dipinjam', 'terlambat'])
+            ->exists();
+
+        if ($sedangDipinjam) {
+            return back()->with('error', 'Anda sedang meminjam koleksi ini. Silakan kembalikan terlebih dahulu.');
+        }
 
         // Cek apakah sudah punya antrian aktif untuk koleksi ini
         $existingQueue = Antrian::where('user_id', $user->user_id)

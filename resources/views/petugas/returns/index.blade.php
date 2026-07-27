@@ -182,10 +182,9 @@
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
             <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-200">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">swap_horiz</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Aktif</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Peminjaman Aktif</h3>
                 <div class="flex items-baseline gap-2">
@@ -199,9 +198,8 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">warning</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Perhatian</span>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Terlambat</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Pinjaman Terlambat</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold {{ $stats['overdue_loans'] > 0 ? 'text-rose-600' : 'text-on-surface' }}">{{ $stats['overdue_loans'] }}</span>
                     <span class="text-xs text-outline font-semibold">transaksi</span>
@@ -210,10 +208,9 @@
 
             <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-200">
                         <span class="material-symbols-outlined">assignment_turned_in</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Hari Ini</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Dikembalikan Hari Ini</h3>
                 <div class="flex items-baseline gap-2">
@@ -229,7 +226,7 @@
                 <form action="{{ route('petugas.returns.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" placeholder="Cari nama anggota, NIM, NIP, atau judul buku..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                     </div>
                     <div>
                         <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">

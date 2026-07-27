@@ -55,7 +55,11 @@ class LoanController extends Controller
         }
 
         if ($status) {
-            $query->where('status', $status);
+            if ($status === 'dipinjam' || $status === 'aktif') {
+                $query->whereIn('status', ['dipinjam', 'terlambat']);
+            } else {
+                $query->where('status', $status);
+            }
         }
 
         $loans = $query
@@ -65,7 +69,7 @@ class LoanController extends Controller
             ->withQueryString();
 
         $stats = [
-            'active_loans' => Loan::where('status', 'dipinjam')->count(),
+            'active_loans' => Loan::whereIn('status', ['dipinjam', 'terlambat'])->count(),
             'overdue_loans' => Loan::where('status', 'terlambat')->count(),
             'returned_today' => Loan::whereDate('tgl_kembali', today())->count(),
             'available_books' => Collection::sum('stock'),
@@ -91,18 +95,22 @@ class LoanController extends Controller
             }
         }
 
-        $oldCollectionId = old('koleksi_id');
+        $oldCollectionIds = old('koleksi_ids', old('koleksi_id') ? [old('koleksi_id')] : []);
         $collections = collect();
-        if ($oldCollectionId) {
-            $selectedCollection = Collection::with(['book.category'])
-                ->where('koleksi_id', $oldCollectionId)
-                ->first();
-            if ($selectedCollection) {
-                $collections = collect([$selectedCollection]);
-            }
+        if (!empty($oldCollectionIds)) {
+            $collections = Collection::with(['book.category'])
+                ->whereIn('koleksi_id', (array) $oldCollectionIds)
+                ->get();
         }
 
-        return view('petugas.loans.create', compact('members', 'collections', 'collectionTypes'));
+        $stockSummary = [
+            'book' => Collection::where('item_type', 'book')->sum('stock'),
+            'laporan_pkl' => Collection::where('item_type', 'laporan_pkl')->sum('stock'),
+            'proposal_ta' => Collection::where('item_type', 'proposal_ta')->sum('stock'),
+            'laporan_ta' => Collection::where('item_type', 'laporan_ta')->sum('stock'),
+        ];
+
+        return view('petugas.loans.create', compact('members', 'collections', 'collectionTypes', 'stockSummary'));
     }
 
     public function searchMembers(Request $request)
@@ -186,21 +194,34 @@ class LoanController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $requestData = $request->all();
+        if (!$request->has('koleksi_ids') && $request->has('koleksi_id')) {
+            $requestData['koleksi_ids'] = [$request->input('koleksi_id')];
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($requestData, [
             'user_id' => ['required', 'exists:users,user_id'],
-            'koleksi_id' => ['required', 'exists:collections,koleksi_id'],
+            'koleksi_ids' => ['required', 'array', 'min:1'],
+            'koleksi_ids.*' => ['required', 'exists:collections,koleksi_id'],
             'tgl_pinjam' => ['required', 'date'],
             'bts_waktu' => ['required', 'date', 'after_or_equal:tgl_pinjam'],
         ], [
             'user_id.required' => 'Anggota peminjam wajib dipilih.',
             'user_id.exists' => 'Anggota yang dipilih tidak valid.',
-            'koleksi_id.required' => 'Koleksi yang dipinjam wajib dipilih.',
-            'koleksi_id.exists' => 'Koleksi yang dipilih tidak ditemukan.',
+            'koleksi_ids.required' => 'Minimal 1 koleksi yang dipinjam wajib dipilih.',
+            'koleksi_ids.array' => 'Daftar koleksi tidak valid.',
+            'koleksi_ids.min' => 'Minimal 1 koleksi yang dipinjam wajib dipilih.',
+            'koleksi_ids.*.exists' => 'Koleksi yang dipilih tidak ditemukan.',
             'tgl_pinjam.required' => 'Tanggal pinjam wajib diisi.',
             'bts_waktu.required' => 'Batas waktu pengembalian wajib diisi.',
             'bts_waktu.after_or_equal' => 'Batas waktu harus sama atau setelah tanggal pinjam.',
         ]);
 
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $validated = $validator->validated();
         $member = User::with('role')->findOrFail($validated['user_id']);
 
         if (!$member->role || !in_array($member->role->role_name, ['mahasiswa', 'dosen'], true)) {
@@ -209,75 +230,110 @@ class LoanController extends Controller
             ]);
         }
 
-        $loan = DB::transaction(function () use ($validated) {
-            $collection = Collection::with('book')
-                ->where('koleksi_id', $validated['koleksi_id'])
-                ->lockForUpdate()
-                ->firstOrFail();
+        $koleksiIds = array_values(array_unique($validated['koleksi_ids']));
 
-            if ($collection->stock < 1) {
-                throw ValidationException::withMessages([
-                    'koleksi_id' => 'Stok koleksi sudah habis. Silakan pilih koleksi lain atau tunggu pengembalian.',
+        $createdLoans = DB::transaction(function () use ($validated, $koleksiIds) {
+            $loans = [];
+            foreach ($koleksiIds as $koleksiId) {
+                $collection = Collection::with('book')
+                    ->where('koleksi_id', $koleksiId)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if ($collection->stock < 1) {
+                    throw ValidationException::withMessages([
+                        'koleksi_ids' => 'Stok koleksi "' . $collection->display_title . '" sudah habis. Silakan pilih koleksi lain.',
+                    ]);
+                }
+
+                $hasActiveLoan = Loan::where('user_id', $validated['user_id'])
+                    ->where('koleksi_id', $collection->koleksi_id)
+                    ->whereIn('status', ['dipinjam', 'terlambat'])
+                    ->exists();
+
+                if ($hasActiveLoan) {
+                    throw ValidationException::withMessages([
+                        'koleksi_ids' => 'Anggota ini masih memiliki peminjaman aktif untuk koleksi "' . $collection->display_title . '".',
+                    ]);
+                }
+
+                $newLoan = Loan::create([
+                    'user_id' => $validated['user_id'],
+                    'koleksi_id' => $collection->koleksi_id,
+                    'tgl_pinjam' => $validated['tgl_pinjam'],
+                    'bts_waktu' => $validated['bts_waktu'],
+                    'status' => 'dipinjam',
                 ]);
+
+                $collection->syncBackingStock(-1);
+                $loans[] = $newLoan;
             }
 
-            $hasActiveLoan = Loan::where('user_id', $validated['user_id'])
-                ->where('koleksi_id', $collection->koleksi_id)
-                ->whereIn('status', ['dipinjam', 'terlambat'])
-                ->exists();
-
-            if ($hasActiveLoan) {
-                throw ValidationException::withMessages([
-                    'koleksi_id' => 'Anggota ini masih memiliki peminjaman aktif untuk koleksi yang sama.',
-                ]);
-            }
-
-            $newLoan = Loan::create([
-                'user_id' => $validated['user_id'],
-                'koleksi_id' => $collection->koleksi_id,
-                'tgl_pinjam' => $validated['tgl_pinjam'],
-                'bts_waktu' => $validated['bts_waktu'],
-                'status' => 'dipinjam',
-            ]);
-
-            $collection->syncBackingStock(-1);
-
-            return $newLoan;
+            return $loans;
         });
 
+        $totalLoaned = count($createdLoans);
+
         // Catat Log Aktivitas (Fase 6)
+        $logDetail = $totalLoaned === 1
+            ? '"' . ($createdLoans[0]->collection?->display_title ?? 'Koleksi') . '"'
+            : $totalLoaned . ' koleksi sekaligus';
+
         \App\Models\ActivityLog::create([
             'user_id' => auth()->id(),
-            'activity' => 'Mencatat peminjaman baru untuk anggota: ' . $member->name . ' (Koleksi: "' . ($loan->collection->display_title ?? 'Koleksi') . '")',
+            'activity' => 'Mencatat peminjaman baru untuk anggota: ' . $member->name . ' (Detail: ' . $logDetail . ')',
         ]);
 
         // Kirim Notifikasi WhatsApp (Fase 6)
         try {
-            $loan->load(['user', 'collection.book']);
-            if ($loan->user && !empty($loan->user->no_hp)) {
-                $judulBuku = $loan->collection->display_title ?? 'Koleksi Perpustakaan';
-                $namaAnggota = $loan->user->name;
-                $tglPinjam = \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y');
-                $btsWaktu = \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
+            if ($member->no_hp) {
+                $namaAnggota = $member->name;
+                $tglPinjam = \Carbon\Carbon::parse($validated['tgl_pinjam'])->translatedFormat('d M Y');
+                $btsWaktu = \Carbon\Carbon::parse($validated['bts_waktu'])->translatedFormat('d M Y');
                 $senderName = \App\Models\AppSetting::get('wa_sender_name', 'Perpustakaan PSDKU POLNEP');
 
-                $message = "Halo, {$namaAnggota}! 📚\n\n" .
-                           "Peminjaman buku baru Anda telah berhasil dicatat.\n\n" .
-                           "Detail Peminjaman:\n" .
-                           "• Judul Buku: *{$judulBuku}*\n" .
-                           "• Tanggal Pinjam: {$tglPinjam}\n" .
-                           "• Batas Pengembalian: *{$btsWaktu}*\n\n" .
-                           "Mohon kembalikan tepat waktu untuk menghindari denda.\n\n" .
-                           "Terima kasih — {$senderName}";
+                if ($totalLoaned === 1) {
+                    $judulBuku = $createdLoans[0]->collection?->display_title ?? 'Koleksi Perpustakaan';
+                    $message = "Halo, {$namaAnggota}! 📚\n\n" .
+                               "Peminjaman buku baru Anda telah berhasil dicatat.\n\n" .
+                               "Detail Peminjaman:\n" .
+                               "• Judul Buku: *{$judulBuku}*\n" .
+                               "• Tanggal Pinjam: {$tglPinjam}\n" .
+                               "• Batas Pengembalian: *{$btsWaktu}*\n\n" .
+                               "Mohon kembalikan tepat waktu untuk menghindari denda.\n\n" .
+                               "Terima kasih — {$senderName}";
+                } else {
+                    $bookListLines = [];
+                    foreach ($createdLoans as $idx => $l) {
+                        $l->load('collection');
+                        $num = $idx + 1;
+                        $title = $l->collection?->display_title ?? 'Koleksi';
+                        $bookListLines[] = "{$num}. *{$title}*";
+                    }
+                    $bookListText = implode("\n", $bookListLines);
 
-                \App\Services\WhatsAppService::send($loan->user->no_hp, $message);
+                    $message = "Halo, {$namaAnggota}! 📚\n\n" .
+                               "Peminjaman {$totalLoaned} koleksi baru Anda telah berhasil dicatat.\n\n" .
+                               "Daftar Koleksi Dipinjam:\n" .
+                               "{$bookListText}\n\n" .
+                               "• Tanggal Pinjam: {$tglPinjam}\n" .
+                               "• Batas Pengembalian: *{$btsWaktu}*\n\n" .
+                               "Mohon kembalikan tepat waktu untuk menghindari denda.\n\n" .
+                               "Terima kasih — {$senderName}";
+                }
+
+                \App\Services\WhatsAppService::send($member->no_hp, $message);
             }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning("Gagal mengirim WA Peminjaman Baru: " . $e->getMessage());
         }
 
+        $successMsg = $totalLoaned === 1
+            ? 'Transaksi peminjaman baru berhasil disimpan.'
+            : "Transaksi peminjaman baru sebanyak {$totalLoaned} koleksi berhasil disimpan.";
+
         return redirect()
             ->route('petugas.loans.index')
-            ->with('success', 'Transaksi peminjaman baru berhasil disimpan.');
+            ->with('success', $successMsg);
     }
 }

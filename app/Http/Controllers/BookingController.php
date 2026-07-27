@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Loan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,16 @@ class BookingController extends Controller
 
         $user = Auth::user();
         $koleksiId = $validated['koleksi_id'];
+
+        // Cek apakah pengguna sedang meminjam koleksi ini
+        $sedangDipinjam = Loan::where('user_id', $user->user_id)
+            ->where('koleksi_id', $koleksiId)
+            ->whereIn('status', ['dipinjam', 'terlambat'])
+            ->exists();
+
+        if ($sedangDipinjam) {
+            return back()->with('error', 'Anda sedang meminjam koleksi ini. Silakan kembalikan terlebih dahulu.');
+        }
 
         // Cek apakah sudah punya booking aktif untuk koleksi ini
         $existingBooking = Booking::where('user_id', $user->user_id)

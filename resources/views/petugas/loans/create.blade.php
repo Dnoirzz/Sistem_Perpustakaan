@@ -15,6 +15,9 @@
     <!-- Tom Select CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
 
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -242,6 +245,23 @@
         .ts-wrapper.single.placeholder .ts-control input {
             opacity: 1 !important;
         }
+
+        /* Custom styling overlay for Flatpickr */
+        .flatpickr-calendar {
+            border-radius: 1.25rem !important;
+            border: 1px solid rgba(199, 196, 216, 0.4) !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+            font-family: 'Inter', sans-serif !important;
+            padding: 0.5rem !important;
+        }
+        .flatpickr-day.selected, .flatpickr-day.selected:hover {
+            background: #00a5c0 !important;
+            border-color: #00a5c0 !important;
+        }
+        .flatpickr-input[readonly] {
+            background-color: #ffffff !important;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -322,28 +342,39 @@
                             </select>
                         </div>
 
+                        <!-- Cari & Tambah Koleksi -->
                         <div class="space-y-2 md:col-span-2">
-                            <label for="koleksi_id"
-                                class="block text-xs font-bold text-outline uppercase tracking-wider">Koleksi yang
-                                Dipinjam</label>
-                            <select name="koleksi_id" id="koleksi_id" class="w-full" required>
-                                @foreach($collections as $collection)
-                                    <option value="{{ $collection->koleksi_id }}" {{ old('koleksi_id') == $collection->koleksi_id ? 'selected' : '' }}>
-                                        {{ $collection->display_title }} - {{ $collection->display_type_label }} (Stok: {{ $collection->stock }})
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label for="koleksi_picker"
+                                class="block text-xs font-bold text-outline uppercase tracking-wider">Cari & Tambah Koleksi yang Dipinjam</label>
+                            <select id="koleksi_picker" class="w-full"></select>
                             <div id="koleksi_search_feedback"
                                 class="hidden rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 shadow-sm shadow-rose-50">
                                 <div class="flex items-start gap-3">
                                     <span class="material-symbols-outlined text-rose-600 text-[20px] leading-none mt-0.5">error</span>
                                     <div>
-                                        <p class="font-semibold">Koleksi tidak dapat dipilih.</p>
+                                        <p class="font-semibold">Koleksi tidak dapat ditambahkan.</p>
                                         <p id="koleksi_search_feedback_text" class="mt-1 text-xs text-rose-700"></p>
                                     </div>
                                 </div>
                             </div>
-                            @error('koleksi_id')
+                        </div>
+
+                        <!-- Daftar Koleksi Terpilih (Batch List) -->
+                        <div class="space-y-3 md:col-span-2">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-xs font-bold text-outline uppercase tracking-wider">Daftar Koleksi Dipinjam</label>
+                                <span id="selected_count_badge" class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">0 Item Dipilih</span>
+                            </div>
+
+                            <div id="selected_books_list" class="space-y-2 min-h-[100px]">
+                                <!-- Dynamic items rendered by JS -->
+                            </div>
+                            <div id="hidden_koleksi_inputs"></div>
+
+                            @error('koleksi_ids')
+                                <p class="text-xs text-error font-medium">{{ $message }}</p>
+                            @enderror
+                            @error('koleksi_ids.*')
                                 <p class="text-xs text-error font-medium">{{ $message }}</p>
                             @enderror
                         </div>
@@ -395,48 +426,83 @@
                     </div>
                     <div class="space-y-4 text-sm text-on-surface-variant">
                         <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/10">
-                            Pilih hanya anggota berstatus mahasiswa atau dosen yang benar-benar hadir dan sudah
-                            diverifikasi.
+                            Anda dapat menambahkan <strong>beberapa koleksi sekaligus</strong> untuk satu anggota dalam 1 kali transaksi.
                         </div>
                         <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/10">
-                            Sistem akan otomatis mengurangi stok koleksi yang tersedia setelah transaksi berhasil disimpan.
-                        </div>
-                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/10">
-                            Anggota tidak bisa meminjam koleksi yang sama jika masih memiliki pinjaman aktif
-                            sebelumnya.
+                            Sistem akan otomatis mengurangi stok masing-masing koleksi setelah transaksi berhasil disimpan.
                         </div>
                     </div>
                 </section>
 
                 <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
                     <div class="flex items-center justify-between mb-5">
-                        <h2 class="font-headline-md text-on-surface text-lg">Ketersediaan Saat Ini</h2>
-                        <span class="material-symbols-outlined text-primary">library_books</span>
+                        <h2 class="font-headline-md text-on-surface text-lg">Stok Tersedia</h2>
+                        <span class="material-symbols-outlined text-primary">inventory_2</span>
                     </div>
-                    <div class="space-y-3 max-h-[420px] overflow-y-auto pr-1">
-                        @forelse($collections->take(8) as $book)
-                            <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div>
-                                        <p class="text-sm font-bold text-on-surface leading-snug">{{ $book->display_title }}</p>
-                                        <p class="text-[11px] text-outline mt-1">{{ $book->display_type_label }}
-                                            @if($book->book?->author)
-                                                • {{ $book->book->author }}
-                                            @endif
-                                        </p>
-                                    </div>
-                                    <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
-                                        {{ $book->stock }} tersedia
-                                    </span>
+                    <div class="space-y-3">
+                        <!-- Buku Umum -->
+                        <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">auto_stories</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-on-surface">Buku Umum</p>
+                                    <p class="text-[11px] text-outline">Katalog buku teks & referensi</p>
                                 </div>
                             </div>
-                        @empty
-                            <div
-                                class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 text-sm text-outline">
-                                Belum ada buku dengan stok tersedia untuk dipinjam.
+                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
+                                {{ $stockSummary['book'] ?? 0 }} item
+                            </span>
+                        </div>
+
+                        <!-- Laporan PKL -->
+                        <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">assignment</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-on-surface">Laporan PKL</p>
+                                    <p class="text-[11px] text-outline">Arsip Praktek Kerja Lapangan</p>
+                                </div>
                             </div>
-                        @endforelse
+                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
+                                {{ $stockSummary['laporan_pkl'] ?? 0 }} item
+                            </span>
+                        </div>
+
+                        <!-- Proposal TA -->
+                        <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">description</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-on-surface">Proposal TA</p>
+                                    <p class="text-[11px] text-outline">Arsip Proposal Tugas Akhir</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
+                                {{ $stockSummary['proposal_ta'] ?? 0 }} item
+                            </span>
+                        </div>
+
+                        <!-- Laporan TA -->
+                        <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">article</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-on-surface">Laporan TA</p>
+                                    <p class="text-[11px] text-outline">Arsip Laporan Tugas Akhir</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
+                                {{ $stockSummary['laporan_ta'] ?? 0 }} item
+                            </span>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -445,14 +511,95 @@
 
     <!-- Tom Select JS -->
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-        <script>
+    <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Initialize Tom Select for Member Selection (AJAX dynamic search)
+            // Batch books state management
+            var selectedBooks = [
+                @foreach($collections as $col)
+                {
+                    koleksi_id: "{{ $col->koleksi_id }}",
+                    judul: {!! json_encode($col->display_title) !!},
+                    author: {!! json_encode($col->book?->author ?? '') !!},
+                    type_label: {!! json_encode($col->display_type_label) !!},
+                    stock: {{ $col->stock }},
+                    is_available: {{ $col->stock > 0 ? 'true' : 'false' }}
+                },
+                @endforeach
+            ];
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                return String(text)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function renderSelectedBooks() {
+                var listContainer = document.getElementById('selected_books_list');
+                var inputsContainer = document.getElementById('hidden_koleksi_inputs');
+                var badge = document.getElementById('selected_count_badge');
+
+                if (!listContainer || !inputsContainer) return;
+
+                listContainer.innerHTML = '';
+                inputsContainer.innerHTML = '';
+
+                badge.textContent = selectedBooks.length + ' Item Dipilih';
+
+                if (selectedBooks.length === 0) {
+                    listContainer.innerHTML = '<div class="p-6 rounded-2xl border-2 border-dashed border-outline-variant/30 text-center text-outline">'
+                        + '<span class="material-symbols-outlined text-3xl mb-1 text-outline/60">library_add</span>'
+                        + '<p class="text-xs font-medium">Belum ada koleksi yang dipilih.</p>'
+                        + '<p class="text-[11px] text-outline/80 mt-0.5">Cari judul atau penulis buku untuk menambahkannya ke daftar peminjaman.</p>'
+                        + '</div>';
+                    return;
+                }
+
+                selectedBooks.forEach(function(item, idx) {
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'koleksi_ids[]';
+                    hiddenInput.value = item.koleksi_id;
+                    inputsContainer.appendChild(hiddenInput);
+
+                    var card = document.createElement('div');
+                    card.className = 'p-4 rounded-2xl border border-outline-variant/20 bg-slate-50 flex items-center justify-between gap-4 transition-all hover:bg-white hover:shadow-sm';
+                    card.innerHTML = '<div class="flex items-center gap-3 min-w-0">'
+                        + '<div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">' + (idx + 1) + '</div>'
+                        + '<div class="min-w-0">'
+                        + '<p class="text-sm font-bold text-on-surface truncate">' + escapeHtml(item.judul) + '</p>'
+                        + '<p class="text-xs text-outline mt-0.5">' + escapeHtml(item.type_label) + (item.author ? ' • ' + escapeHtml(item.author) : '') + '</p>'
+                        + '</div>'
+                        + '</div>'
+                        + '<div class="flex items-center gap-3 shrink-0">'
+                        + '<span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold">Stok: ' + item.stock + '</span>'
+                        + '<button type="button" data-index="' + idx + '" class="remove-book-btn w-8 h-8 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white flex items-center justify-center transition-colors">'
+                        + '<span class="material-symbols-outlined text-[18px]">delete</span>'
+                        + '</button>'
+                        + '</div>';
+
+                    listContainer.appendChild(card);
+                });
+
+                document.querySelectorAll('.remove-book-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var indexToRemove = parseInt(this.getAttribute('data-index'));
+                        selectedBooks.splice(indexToRemove, 1);
+                        renderSelectedBooks();
+                    });
+                });
+            }
+
+            renderSelectedBooks();
+
+            // Initialize Tom Select for Member Selection
             var tsMember = new TomSelect('#user_id', {
                 valueField: 'user_id',
                 labelField: 'name_display',
                 searchField: ['name'],
-                // fetch remote data
                 load: function(query, callback) {
                     if (!query.length) return callback();
                     var url = '/petugas/loans/search-members?q=' + encodeURIComponent(query);
@@ -466,18 +613,18 @@
                 },
                 render: {
                     option: function(item, escape) {
+                        if (!item || !item.name_display) return '';
                         return '<div class="py-1">' + escape(item.name_display) + '</div>';
                     },
                     item: function(item, escape) {
-                        return '<div>' + escape(item.name_display) + '</div>';
+                        return '<div>' + escape((item && item.name_display) ? item.name_display : (item ? (item.text || '') : '')) + '</div>';
                     }
                 },
-                placeholder: "Cari Berdasarkan Nama, NIP atau NIM",
+                placeholder: "Cari berdasarkan Nama, NIP atau NIM",
                 allowEmptyOption: true,
                 create: false
             });
 
-            // Dynamically clear placeholder on focus, restore on blur if empty
             tsMember.on('focus', function () {
                 tsMember.control_input.placeholder = "";
             });
@@ -487,33 +634,27 @@
                 }
             });
 
-            // Initialize Tom Select for Book Selection (AJAX dynamic search)
+            // Initialize Tom Select for Book Picker (Batch Loan)
             var collectionTypeSelect = document.getElementById('collection_type');
             var collectionFeedback = document.getElementById('koleksi_search_feedback');
             var collectionFeedbackText = document.getElementById('koleksi_search_feedback_text');
-            function showCollectionFeedback(message) {
-                if (!collectionFeedback || !collectionFeedbackText) {
-                    return;
-                }
 
+            function showCollectionFeedback(message) {
+                if (!collectionFeedback || !collectionFeedbackText) return;
                 collectionFeedbackText.textContent = message;
                 collectionFeedback.classList.remove('hidden');
             }
 
             function hideCollectionFeedback() {
-                if (!collectionFeedback || !collectionFeedbackText) {
-                    return;
-                }
-
+                if (!collectionFeedback || !collectionFeedbackText) return;
                 collectionFeedbackText.textContent = '';
                 collectionFeedback.classList.add('hidden');
             }
 
-            var tsBook = new TomSelect('#koleksi_id', {
+            var tsBook = new TomSelect('#koleksi_picker', {
                 valueField: 'koleksi_id',
                 labelField: 'judul',
                 searchField: ['judul', 'author', 'type_label', 'judul_display'],
-                // fetch remote data
                 load: function(query, callback) {
                     if (!query.length) return callback();
                     var params = new URLSearchParams({ q: query });
@@ -532,6 +673,9 @@
                 },
                 render: {
                     option: function(item, escape) {
+                        if (!item || !item.judul) {
+                            return '';
+                        }
                         var stockClass = item.is_available
                             ? 'bg-emerald-50 text-emerald-700'
                             : 'bg-rose-50 text-rose-700';
@@ -541,14 +685,14 @@
 
                         return '<div class="py-2">'
                             + '<div class="font-semibold text-sm text-on-surface">' + escape(item.judul) + '</div>'
-                            + '<div class="mt-1 text-xs text-outline">' + escape(item.type_label)
+                            + '<div class="mt-1 text-xs text-outline">' + escape(item.type_label || '')
                             + (item.author ? ' • ' + escape(item.author) : '')
                             + '</div>'
                             + '<div class="mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ' + stockClass + '">' + stockLabel + '</div>'
                             + '</div>';
                     },
                     item: function(item, escape) {
-                        return '<div>' + escape(item.judul) + '</div>';
+                        return '<div>' + escape((item && item.judul) ? item.judul : (item ? (item.text || '') : '')) + '</div>';
                     }
                 },
                 placeholder: "Cari berdasarkan judul atau penulis",
@@ -561,24 +705,48 @@
                     }
 
                     var selectedItem = this.options[value];
-                    if (!selectedItem || selectedItem.is_available) {
-                        hideCollectionFeedback();
+                    if (!selectedItem) return;
+
+                    if (!selectedItem.is_available) {
+                        this.close();
+                        this.clear(true);
+                        showCollectionFeedback('Stok koleksi tidak tersedia. Koleksi ini tidak dapat ditambahkan.');
                         return;
                     }
 
+                    var exists = selectedBooks.some(function(b) {
+                        return String(b.koleksi_id) === String(selectedItem.koleksi_id);
+                    });
+
+                    if (exists) {
+                        this.close();
+                        this.clear(true);
+                        showCollectionFeedback('Koleksi "' + selectedItem.judul + '" sudah ada di dalam daftar peminjaman.');
+                        return;
+                    }
+
+                    selectedBooks.push({
+                        koleksi_id: selectedItem.koleksi_id,
+                        judul: selectedItem.judul,
+                        author: selectedItem.author || '',
+                        type_label: selectedItem.type_label || 'Koleksi',
+                        stock: selectedItem.stock,
+                        is_available: true
+                    });
+
                     this.close();
                     this.clear(true);
-                    showCollectionFeedback('Stok buku tidak tersedia. Koleksi ini tidak dapat dipilih untuk transaksi peminjaman.');
+                    hideCollectionFeedback();
+                    renderSelectedBooks();
                 }
             });
 
-            // Dynamically clear placeholder on focus, restore on blur if empty
             tsBook.on('focus', function () {
                 tsBook.control_input.placeholder = "";
             });
             tsBook.on('blur', function () {
                 if (!tsBook.getValue()) {
-                    tsBook.control_input.placeholder = "Cari judul koleksi, penulis, atau jenis arsip...";
+                    tsBook.control_input.placeholder = "Cari judul koleksi atau penulis untuk menambahkan";
                 }
             });
             tsBook.on('type', function () {
@@ -597,6 +765,40 @@
                     tsBook.refreshOptions(false);
                 });
             }
+
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (selectedBooks.length === 0) {
+                    e.preventDefault();
+                    showCollectionFeedback('Silakan pilih minimal 1 koleksi untuk ditambahkan ke daftar peminjaman.');
+                }
+            });
+        });
+    </script>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var dateConfig = {
+                altInput: true,
+                altFormat: "d/m/Y",
+                dateFormat: "Y-m-d",
+                locale: "id",
+                disableMobile: "true"
+            };
+
+            var fpBts = flatpickr("#bts_waktu", Object.assign({}, dateConfig));
+
+            var fpPinjam = flatpickr("#tgl_pinjam", Object.assign({}, dateConfig, {
+                onChange: function(selectedDates) {
+                    if (selectedDates[0]) {
+                        var btsDate = new Date(selectedDates[0]);
+                        btsDate.setDate(btsDate.getDate() + 7);
+                        fpBts.setDate(btsDate, true);
+                    }
+                }
+            }));
         });
     </script>
 </body>

@@ -196,7 +196,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
                         <span class="material-symbols-outlined">auto_stories</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Aktif</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Pinjaman Aktif</h3>
                 <div class="flex items-baseline gap-2">
@@ -210,7 +209,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">event_available</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Booking</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Booking Saya</h3>
                 <span class="text-4xl font-bold text-on-surface">{{ $stats['total_bookings'] }}</span>
@@ -222,11 +220,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white shadow-lg shadow-red-200">
                         <span class="material-symbols-outlined">warning</span>
                     </div>
-                    @if($stats['late_loans'] > 0)
-                        <div class="px-2 py-1 bg-red-50 rounded-lg text-red-600 text-[10px] font-bold">Terlambat</div>
-                    @else
-                        <div class="px-2 py-1 bg-green-50 rounded-lg text-green-600 text-[10px] font-bold">Aman</div>
-                    @endif
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Buku Terlambat</h3>
                 <div class="flex items-baseline gap-2">
@@ -241,11 +234,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-200">
                         <span class="material-symbols-outlined">payments</span>
                     </div>
-                    @if($stats['unpaid_fines'] > 0)
-                        <div class="px-2 py-1 bg-red-50 rounded-lg text-red-600 text-[10px] font-bold">Harus Dibayar</div>
-                    @else
-                        <div class="px-2 py-1 bg-green-50 rounded-lg text-green-600 text-[10px] font-bold">Lunas</div>
-                    @endif
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Denda yang Harus Dibayar</h3>
                 <span class="text-2xl font-bold {{ $stats['unpaid_fines'] > 0 ? 'text-rose-600' : 'text-on-surface' }}">Rp{{ number_format($stats['unpaid_fines'], 0, ',', '.') }}</span>

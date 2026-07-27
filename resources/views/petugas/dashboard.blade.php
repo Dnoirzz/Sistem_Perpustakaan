@@ -196,12 +196,11 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
                         <span class="material-symbols-outlined">menu_book</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Koleksi</span>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Total Judul</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Koleksi Perpustakaan</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold text-on-surface">{{ $stats['total_books'] }}</span>
-                    <span class="text-xs text-outline font-semibold">buku</span>
+                    <span class="text-xs text-outline font-semibold">item</span>
                 </div>
             </div>
             
@@ -211,9 +210,8 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">swap_horiz</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Pinjam</span>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Dipinjam</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Peminjaman Aktif</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold text-on-surface">{{ $stats['active_loans'] }}</span>
                     <span class="text-xs text-outline font-semibold">transaksi</span>
@@ -226,11 +224,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white shadow-lg shadow-red-200">
                         <span class="material-symbols-outlined">warning</span>
                     </div>
-                    @if($stats['overdue_loans'] > 0)
-                        <div class="px-2 py-1 bg-red-50 rounded-lg text-red-600 text-[10px] font-bold">Tindak Lanjut</div>
-                    @else
-                        <div class="px-2 py-1 bg-green-50 rounded-lg text-green-600 text-[10px] font-bold">Aman</div>
-                    @endif
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Terlambat</h3>
                 <div class="flex items-baseline gap-2">
@@ -245,11 +238,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">hourglass_empty</span>
                     </div>
-                    @if($stats['pending_bookings'] > 0)
-                        <div class="px-2 py-1 bg-amber-50 rounded-lg text-amber-600 text-[10px] font-bold">Baru</div>
-                    @else
-                        <div class="px-2 py-1 bg-slate-50 rounded-lg text-outline text-[10px] font-bold">Kosong</div>
-                    @endif
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Booking Pending</h3>
                 <div class="flex items-baseline gap-2">
@@ -264,7 +252,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-200">
                         <span class="material-symbols-outlined">payments</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Keuangan</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Denda Aktif</h3>
                 <div class="flex items-baseline gap-2">

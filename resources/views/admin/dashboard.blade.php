@@ -196,7 +196,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
                         <span class="material-symbols-outlined">group</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Pengguna</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Total Pengguna</h3>
                 <div class="flex items-baseline gap-2">
@@ -211,7 +210,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">school</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Mahasiswa</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Mahasiswa Terdaftar</h3>
                 <div class="flex items-baseline gap-2">
@@ -226,7 +224,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">co_present</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Dosen</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Dosen Terdaftar</h3>
                 <div class="flex items-baseline gap-2">
@@ -241,7 +238,6 @@
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">badge</span>
                     </div>
-                    <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Petugas</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Petugas Perpustakaan</h3>
                 <div class="flex items-baseline gap-2">

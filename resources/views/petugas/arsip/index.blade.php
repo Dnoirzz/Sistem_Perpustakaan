@@ -170,55 +170,49 @@
             </div>
         @endif
 
-        <div class="mb-8 flex flex-col gap-4">
-            <section class="mb-8 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
-                <form action="{{ route('petugas.arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-4">
-                    <div class="relative flex items-center">
-                        <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" value="{{ $search }}" placeholder="Cari judul, NIM, mahasiswa..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
-                    </div>
-                    <div>
-                        <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                            <option value="">Semua Jenis</option>
-                            @foreach($typeOptions as $option)
-                                <option value="{{ $option['value'] }}" @selected($selectedType === $option['value'])>{{ $option['label'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                            <option value="">Semua Status</option>
-                            @foreach($statusOptions as $value => $label)
-                                <option value="{{ $value }}" @selected($selectedStatus === $value)>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex gap-2">
-                        <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all text-center">
-                            Terapkan Filter
-                        </button>
-                        @if($search !== '' || $selectedType !== '' || $selectedStatus !== '')
-                            <a href="{{ route('petugas.arsip.index') }}" class="rounded-2xl border border-outline-variant/30 px-6 py-3 text-center text-xs font-bold text-on-surface-variant transition-all hover:bg-slate-50 flex items-center justify-center">
-                                Reset
-                            </a>
-                        @endif
-                    </div>
-                </form>
-            </section>
+        <!-- Top Action Button -->
+        <div class="flex justify-end items-center mb-6">
+            <a href="{{ route('petugas.arsip.import.form') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all">
+                <span class="material-symbols-outlined text-[18px]">upload_file</span>
+                Import Excel
+            </a>
         </div>
 
-        <!-- Action Bar -->
-        <div class="flex justify-between items-center bg-white px-8 py-4 mb-6 rounded-3xl border border-outline-variant/15 shadow-sm">
-            <div class="text-sm font-semibold text-outline">
-                Menampilkan total <span class="text-primary font-bold">{{ $archives->total() }}</span> data arsip
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ route('petugas.arsip.import.form') }}" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-2xl shadow-lg shadow-emerald-600/20 transition duration-200 flex items-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0">
-                    <span class="material-symbols-outlined text-[18px]">upload_file</span>
-                    Import Excel Arsip
-                </a>
-            </div>
-        </div>
+        <!-- Filter Section -->
+        <section class="mb-6 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+            <form action="{{ route('petugas.arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-4">
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari judul, NIM, mahasiswa..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
+                </div>
+                <div>
+                    <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                        <option value="">Semua Jenis</option>
+                        @foreach($typeOptions as $option)
+                            <option value="{{ $option['value'] }}" @selected($selectedType === $option['value'])>{{ $option['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                        <option value="">Semua Status</option>
+                        @foreach($statusOptions as $value => $label)
+                            <option value="{{ $value }}" @selected($selectedStatus === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all text-center">
+                        Terapkan Filter
+                    </button>
+                    @if($search !== '' || $selectedType !== '' || $selectedStatus !== '')
+                        <a href="{{ route('petugas.arsip.index') }}" class="rounded-2xl border border-outline-variant/30 px-6 py-3 text-center text-xs font-bold text-on-surface-variant transition-all hover:bg-slate-50 flex items-center justify-center">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </section>
 
         <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden font-body-md">
             <div class="overflow-x-auto">

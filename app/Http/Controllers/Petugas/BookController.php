@@ -75,7 +75,7 @@ class BookController extends Controller
             'judul' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'publisher' => 'nullable|string|max:255',
-            'release' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'release' => 'required|integer|min:1900|max:' . date('Y'),
             'stock' => 'required|integer|min:0',
             'kategori_id' => 'required|exists:categories,kategori_id',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -136,7 +136,7 @@ class BookController extends Controller
             'judul' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'publisher' => 'nullable|string|max:255',
-            'release' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'release' => 'required|integer|min:1900|max:' . date('Y'),
             'stock' => 'required|integer|min:0',
             'kategori_id' => 'required|exists:categories,kategori_id',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -319,8 +319,8 @@ class BookController extends Controller
             }
             if (empty($release)) {
                 $errors[] = "Baris {$rowNum}: Tahun Terbit wajib diisi.";
-            } elseif (!is_numeric($release) || strlen($release) !== 4 || intval($release) < 1900 || intval($release) > (date('Y') + 1)) {
-                $errors[] = "Baris {$rowNum}: Tahun Terbit harus berupa 4 digit angka antara 1900 dan " . (date('Y') + 1) . ".";
+            } elseif (!is_numeric($release) || strlen($release) !== 4 || intval($release) < 1900 || intval($release) > date('Y')) {
+                $errors[] = "Baris {$rowNum}: Tahun Terbit harus berupa 4 digit angka antara 1900 dan " . date('Y') . ".";
             }
             if ($stock === '') {
                 $errors[] = "Baris {$rowNum}: Stok wajib diisi.";
