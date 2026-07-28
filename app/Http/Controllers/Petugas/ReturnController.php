@@ -226,16 +226,8 @@ class ReturnController extends Controller
                 ]);
             }
 
-            if ($shouldRestock) {
-                $nextInQueue = Antrian::where('koleksi_id', $loan->koleksi_id)
-                    ->where('status', 'menunggu')
-                    ->orderBy('no_antrian', 'asc')
-                    ->first();
-
-                if ($nextInQueue) {
-                    $nextInQueue->update(['status' => 'tersedia']);
-                    $notifiableQueue = $nextInQueue;
-                }
+            if ($shouldRestock && $loan->koleksi_id) {
+                Antrian::checkAndNotifyAvailableQueue($loan->koleksi_id);
             }
         });
 
@@ -245,26 +237,6 @@ class ReturnController extends Controller
             'activity' => 'Memproses pengembalian koleksi "' . ($loan->collection->display_title ?? 'Koleksi') . '" oleh anggota: ' . $loan->user->name,
         ]);
 
-        // Kirim Notifikasi WhatsApp Antrian Tersedia (Fase 6)
-        if ($notifiableQueue) {
-            try {
-                $notifiableQueue->load(['user', 'collection.book']);
-                if ($notifiableQueue->user && !empty($notifiableQueue->user->no_hp)) {
-                    $judulBuku = $notifiableQueue->collection?->display_title ?? 'Koleksi Perpustakaan';
-                    $namaAnggota = $notifiableQueue->user->name;
-                    $senderName = \App\Models\AppSetting::get('wa_sender_name', 'Perpustakaan PSDKU POLNEP');
-
-                    $message = "Halo, {$namaAnggota}! 📚\n\n" .
-                               "Kabar baik! Buku *{$judulBuku}* yang Anda tunggu di antrian kini sudah *TERSEDIA* untuk dipinjam.\n\n" .
-                               "Silakan datang ke perpustakaan untuk memproses peminjaman buku tersebut.\n\n" .
-                               "Terima kasih — {$senderName}";
-
-                    \App\Services\WhatsAppService::send($notifiableQueue->user->no_hp, $message);
-                }
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::warning("Gagal mengirim WA Antrian Tersedia: " . $e->getMessage());
-            }
-        }
 
         $bookTitle = $loan->collection?->display_title ?? 'koleksi';
         $message = "Pengembalian \"{$bookTitle}\" oleh {$loan->user->name} berhasil diproses.";

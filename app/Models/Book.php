@@ -27,16 +27,24 @@ class Book extends Model
     protected static function booted()
     {
         static::created(function ($book) {
-            Collection::create([
+            $collection = Collection::create([
                 'item_type' => 'book',
                 'item_id' => $book->buku_id,
                 'stock' => $book->stock,
             ]);
+
+            if ($collection && $collection->stock > 0) {
+                Antrian::checkAndNotifyAvailableQueue($collection->koleksi_id);
+            }
         });
 
         static::updated(function ($book) {
             if ($book->isDirty('stock')) {
                 $book->collection()->update(['stock' => $book->stock]);
+                $collection = $book->collection;
+                if ($collection && $collection->stock > 0) {
+                    Antrian::checkAndNotifyAvailableQueue($collection->koleksi_id);
+                }
             }
         });
 
@@ -44,6 +52,7 @@ class Book extends Model
             $book->collection()->delete();
         });
     }
+
 
     /**
      * Relasi: Book milik satu Category

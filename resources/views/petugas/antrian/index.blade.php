@@ -215,7 +215,7 @@
                 <form action="{{ route('petugas.antrian.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" placeholder="Cari nama anggota, NIM, NIP, atau judul buku..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                     </div>
                     <div>
                         <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
@@ -307,24 +307,27 @@
                                 </td>
                                 <td class="px-8 py-5 text-center">
                                     @if($antrian->status === 'menunggu')
-                                        <form action="{{ route('petugas.antrian.mark-available', $antrian->antrian_id) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-200">
-                                                <span class="material-symbols-outlined text-[14px]">check</span>
-                                                Tandai Tersedia
-                                            </button>
-                                        </form>
+                                        <button type="button" disabled title="Stok fisik belum tersedia" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs cursor-not-allowed border border-slate-200/80 shadow-none">
+                                            <span class="material-symbols-outlined text-[16px]">book</span>
+                                            Proses Peminjaman
+                                        </button>
                                     @elseif($antrian->status === 'tersedia')
-                                        <form action="{{ route('petugas.antrian.mark-done', $antrian->antrian_id) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition-all shadow-sm shadow-primary/20">
-                                                <span class="material-symbols-outlined text-[14px]">done_all</span>
-                                                Tandai Diambil / Selesai
-                                            </button>
-                                        </form>
+                                        <div class="flex items-center justify-center gap-2">
+                                            <a href="{{ route('petugas.loans.create', ['user_id' => $antrian->user_id, 'koleksi_id' => $antrian->koleksi_id]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200">
+                                                <span class="material-symbols-outlined text-[16px]">book</span>
+                                                Proses Peminjaman
+                                            </a>
+                                            <form action="{{ route('petugas.antrian.mark-done', $antrian->antrian_id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" title="Tandai Selesai" class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                                                    <span class="material-symbols-outlined text-[18px]">done</span>
+                                                </button>
+                                            </form>
+                                        </div>
                                     @else
                                         <span class="text-xs text-outline font-medium">Selesai diproses</span>
                                     @endif
+
                                 </td>
                             </tr>
                         @empty

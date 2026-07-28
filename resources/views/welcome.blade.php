@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html class="light" lang="id">
+<html class="light scroll-smooth" lang="id">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Beranda - SIPUS PSDKU POLNEP</title>
     
-    <!-- Tailwind CSS with CDN for dynamic theme compilation (Matching exact reference) -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <!-- Google Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     
+    <!-- Tailwind CSS with CDN for dynamic theme compilation -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
@@ -81,6 +84,7 @@
                     "container-max": "1280px"
             },
             "fontFamily": {
+                    "sans": ["Outfit", "sans-serif"],
                     "display-lg-mobile": ["Outfit"],
                     "label-sm": ["Outfit"],
                     "headline-lg": ["Outfit"],
@@ -114,24 +118,34 @@
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen text-on-surface">
-    <!-- TopNavBar -->
-    <nav class="w-full top-0 sticky z-50 bg-surface border-b border-subtle">
+<body class="flex flex-col min-h-screen text-on-surface bg-surface">
+    <!-- TopNavBar (Menggunakan background surface & button style asli) -->
+    <nav class="w-full top-0 sticky z-50 bg-surface/95 backdrop-blur-md border-b border-border-subtle">
         <div class="flex justify-between items-center max-w-container-max mx-auto px-margin-desktop h-16">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('img/logo_polnep.webp') }}" class="w-9 h-9 object-contain" alt="Logo POLNEP">
                 <span class="text-headline-md font-headline-md font-bold text-primary">POLNEP Digital Library</span>
             </div>
-            <div class="hidden md:flex items-center gap-8">
-                <a class="text-primary border-b-2 border-primary font-bold pb-1 font-body-md text-body-md" href="#">Koleksi</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Peminjaman</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Panduan</a>
+            <div class="hidden md:flex items-center gap-8 font-body-md text-body-md">
+                <a class="text-primary border-b-2 border-primary font-bold pb-1" href="#katalog">Koleksi</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#layanan">Layanan</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#panduan">Panduan</a>
             </div>
             
             <div class="flex items-center gap-3">
                 @if (Route::has('login'))
                     @auth
-                        <a href="{{ route('dashboard') }}" class="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
-                            Dashboard
+                        @php
+                            $user = Auth::user();
+                            $dashboardRoute = route('dashboard');
+                            if ($user->isAdmin()) $dashboardRoute = route('admin.dashboard');
+                            elseif ($user->isPetugas()) $dashboardRoute = route('petugas.dashboard');
+                            elseif ($user->isDosen()) $dashboardRoute = route('dosen.dashboard');
+                            elseif ($user->isMahasiswa()) $dashboardRoute = route('mahasiswa.dashboard');
+                        @endphp
+                        <a href="{{ $dashboardRoute }}" class="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">dashboard</span>
+                            <span>Dashboard</span>
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
@@ -149,120 +163,177 @@
     </nav>
 
     <main class="flex-grow">
-        <!-- Hero Section -->
-        <section class="py-20 bg-surface-container-low">
-            <div class="max-w-container-max mx-auto px-margin-desktop text-center">
-                <h1 class="font-display-lg text-display-lg mb-6 text-primary">Perpustakaan Digital PSDKU POLNEP</h1>
-                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
-                    Akses literasi dan sumber daya akademik terpadu untuk civitas akademika Politeknik Negeri Pontianak.
-                </p>
-                <div class="max-w-3xl mx-auto relative group">
-                    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                        <span class="material-symbols-outlined text-outline">search</span>
+        <!-- Hero Section 2 Kolom (Headline + Ilustrasi Vektor Modern) -->
+        <section class="py-16 md:py-20 bg-surface-container-low overflow-hidden">
+            <div class="max-w-container-max mx-auto px-margin-desktop">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Left Column: Content & Badges -->
+                    <div class="lg:col-span-7 space-y-6 text-left">
+                        
+                        <!-- Badge Jam Operasional & Status -->
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-border-subtle shadow-sm">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-xs font-bold text-on-surface-variant">Jam Operasional Perpustakaan: Senin – Jumat (08:00 – 14:00 WIB)</span>
+                        </div>
+
+                        <!-- Headline & Subtitle -->
+                        <h1 class="font-display-lg text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-primary leading-tight">
+                            Perpustakaan Digital PSDKU POLNEP
+                        </h1>
+                        <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl leading-relaxed">
+                            Pusat akses literasi terpadu, koleksi buku teks perkuliahan, dan repositori karya ilmiah digital untuk civitas akademika Politeknik Negeri Pontianak.
+                        </p>
+
+                        <!-- Feature Highlights (3 Key Badges - Opsi A) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+                            <div class="p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
+                                <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[22px]">bolt</span>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-bold text-xs text-on-surface">Fitur Reservasi Buku</h4>
+                                    <p class="text-[11px] text-outline">Booking &amp; Antrian Peminjaman Buku</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
+                                <div class="w-10 h-10 rounded-lg bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[22px]">chat</span>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-bold text-xs text-on-surface">Notifikasi WhatsApp</h4>
+                                    <p class="text-[11px] text-outline">Update Otomatis Informasi via WA</p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
+                                <div class="w-10 h-10 rounded-lg bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[22px]">school</span>
+                                </div>
+                                <div class="text-left">
+                                    <h4 class="font-bold text-xs text-on-surface">Karya Ilmiah</h4>
+                                    <p class="text-[11px] text-outline">Arsip Karya Ilmiah Mahasiswa</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-                    <input class="w-full pl-12 pr-32 py-4 bg-white border border-subtle rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all text-body-md" placeholder="Cari judul buku, pengarang, atau nomor ISBN..." type="text">
-                    <button class="absolute right-2 top-2 bottom-2 px-6 bg-secondary-container text-on-secondary-container font-label-md text-label-md rounded-lg hover:bg-secondary-fixed transition-colors">
-                        Cari Koleksi
-                    </button>
+
+                    <!-- Right Column: Hero Illustration Graphic -->
+                    <div class="lg:col-span-5 flex items-center justify-center">
+                        <div class="relative w-full max-w-md">
+                            <!-- Background Decorative Glow -->
+                            <div class="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/20 via-secondary/15 to-primary-container/20 blur-2xl opacity-70"></div>
+                            
+                            <!-- Main Illustration Card -->
+                            <div class="relative bg-white border border-border-subtle rounded-3xl p-4 shadow-xl overflow-hidden">
+                                <img src="{{ asset('img/digital_library_hero.png') }}" 
+                                     alt="Ilustrasi Perpustakaan Digital POLNEP" 
+                                     class="w-full h-auto object-cover rounded-2xl">
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
 
-        <!-- Statistics Section -->
-        <section class="py-12 border-b border-subtle bg-white">
+        <!-- Statistics Section (Background putih & Border asli) -->
+        <section class="py-12 border-b border-border-subtle bg-white">
             <div class="max-w-container-max mx-auto px-margin-desktop">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter text-center">
                     <div class="flex flex-col items-center">
-                        <span class="font-display-lg text-display-lg text-primary">12.450+</span>
-                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider">Koleksi Buku</span>
+                        <span class="font-display-lg text-display-lg text-primary">{{ number_format($totalBooks) }}</span>
+                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider mt-1">Koleksi Buku</span>
                     </div>
-                    <div class="flex flex-col items-center border-x-0 md:border-x border-subtle">
-                        <span class="font-display-lg text-display-lg text-primary">3.200+</span>
-                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider">Anggota Aktif</span>
+                    <div class="flex flex-col items-center border-x-0 md:border-x border-border-subtle">
+                        <span class="font-display-lg text-display-lg text-primary">{{ number_format($totalMembers) }}</span>
+                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider mt-1">Anggota Aktif</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="font-display-lg text-display-lg text-primary">8.900+</span>
-                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider">Unduhan Digital</span>
+                        <span class="font-display-lg text-display-lg text-primary">{{ number_format($totalArchives) }}</span>
+                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider mt-1">Arsip Digital</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Featured Collection -->
-        <section class="py-16">
+        <!-- Featured Collection (Dynamic Data Real + Style Card Asli) -->
+        <section id="katalog" class="py-16">
             <div class="max-w-container-max mx-auto px-margin-desktop">
                 <div class="flex justify-between items-end mb-8">
                     <div>
                         <h2 class="font-headline-lg text-headline-lg text-on-surface">Koleksi Unggulan</h2>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Buku-buku terbaru dan paling sering dipinjam bulan ini.</p>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Buku-buku terbaru yang tersedia di perpustakaan.</p>
                     </div>
-                    <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline" href="#">
-                        Lihat Semua <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                    </a>
+                    @auth
+                        @php
+                            $searchRoute = route('mahasiswa.books.index');
+                            if (Auth::user()->isDosen()) $searchRoute = route('dosen.books.index');
+                            elseif (Auth::user()->isPetugas()) $searchRoute = route('petugas.books.index');
+                        @endphp
+                        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline font-bold" href="{{ $searchRoute }}">
+                            Lihat Semua <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    @else
+                        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline font-bold" href="{{ route('login') }}">
+                            Lihat Semua <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    @endauth
                 </div>
                 
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                    <!-- Book Card 1 -->
-                    <div class="group bg-white border border-subtle rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-                        <div class="aspect-[3/4] overflow-hidden bg-surface-container-highest">
-                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Algoritma & Pemrograman C++" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbgeGr5KDK4gakRIl2MI1XtSJW22Q2rhHKlGN4dUG_H8j12CwxyoGfFXNSA-cf_NpI1LQ_HGmv8ItrJQ0LAdVvlG3RGkfhSBJ1sXthMoDTqIqXVXRuKvPeNBVmkLz8Pb2WDZoCGG5EXrRJxlNcXVSU52Kvz7OlTwCQQJlbeJXupJCI_Pl06Zngj02Frtk9ZFGFGMcCVY2nSnm096JyW5RGdGAm-0MOq4PPvC5wNZt9JxpupTk9BUWgNqkbomg9cQYNA7hqY3rK3MY">
+                    @forelse($featuredBooks as $book)
+                        @php
+                            $totalStock = $book->stock ?? ($book->collection?->stock ?? 0);
+                        @endphp
+                        <div class="group bg-white border border-border-subtle rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+                            <div class="aspect-[3/4] overflow-hidden bg-surface-container-highest flex items-center justify-center relative">
+                                @if($book->cover_image)
+                                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $book->judul }}" src="{{ Storage::url($book->cover_image) }}">
+                                @else
+                                    <div class="w-full h-full flex flex-col items-center justify-center p-4 text-outline">
+                                        <span class="material-symbols-outlined text-[48px] mb-2 text-outline-variant">book</span>
+                                        <span class="text-[10px] font-bold uppercase tracking-widest text-center">No Cover</span>
+                                    </div>
+                                @endif
+                                
+                                @if($totalStock > 0)
+                                    <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                        Stok: {{ $totalStock }}
+                                    </span>
+                                @else
+                                    <span class="absolute top-2 right-2 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                        Diantri
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="p-4 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold text-primary uppercase mb-1 block">{{ $book->category?->name ?? 'Umum' }}</span>
+                                    <h3 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-1" title="{{ $book->judul }}">{{ $book->judul }}</h3>
+                                    <p class="text-[12px] text-outline truncate">{{ $book->author ?? 'Penulis tidak diketahui' }}</p>
+                                </div>
+                                <div class="mt-4 pt-2 border-t border-border-subtle flex items-center justify-between">
+                                    <a href="{{ route('login') }}" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                                        <span>Pinjam</span>
+                                        <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-4">
-                            <span class="text-[10px] font-bold text-primary uppercase mb-1 block">Teknologi</span>
-                            <h3 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-1">Algoritma &amp; Pemrograman C++</h3>
-                            <p class="text-[12px] text-outline">Dr. Eng. Hermawan</p>
+                    @empty
+                        <div class="col-span-full py-12 text-center text-outline font-medium">
+                            Belum ada koleksi buku yang ditampilkan.
                         </div>
-                    </div>
-                    <!-- Book Card 2 -->
-                    <div class="group bg-white border border-subtle rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-                        <div class="aspect-[3/4] overflow-hidden bg-surface-container-highest">
-                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Manajemen Strategis Bisnis" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOz1Jr3I9jChJLsMH__roOE4K2XpjiuAOC2TDR2SaIVapMXBhVZKMUVntxMeW4deU2-PbzCk8qZ1Y3PzMh6NDhFoaKa7nGU2sF8y36ofWxGxZfviz5Caesh95-AMWxIMqgo-LfPo0TOTfeJo1RJOqx-ldCRA6fJ-Ls35g2WpfTz2pbW_YAwIEBov4hkaPLp2ikrwbtczVIEWR69Wk6we0P83ZHMHsB_wEJLgxN872z3XcaQG6ig821XCl5UgmruAT92UxgWZjjci4">
-                        </div>
-                        <div class="p-4">
-                            <span class="text-[10px] font-bold text-primary uppercase mb-1 block">Manajemen</span>
-                            <h3 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-1">Manajemen Strategis Bisnis</h3>
-                            <p class="text-[12px] text-outline">Prof. Susi Susanti</p>
-                        </div>
-                    </div>
-                    <!-- Book Card 3 -->
-                    <div class="group bg-white border border-subtle rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-                        <div class="aspect-[3/4] overflow-hidden bg-surface-container-highest">
-                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Metodologi Penelitian Sains" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4hjwHCKaH5mlIIeUdP2JOehrDryZXcG0fuI8aPKfCVrX2Kbeq-exbOUr4x5NGretuIzIDWCi-ITqQ_jVnQaYma90idSk629d5bGVCp-HnMV26mwzEawea6xPt0Yo3sKqOzRWYC6CsHxTFib9mnp-AWLjTMJYJplUk6MLKkpF4ym1Is4Mk5GDwgJ3FIX2AaSVIT7u8AIBm5fNJ4q6wD8PSZLuZiJwCio-kDT0w_gect-r8Zx0V6SdAocNXN7iope24SDtoAzumlrI">
-                        </div>
-                        <div class="p-4">
-                            <span class="text-[10px] font-bold text-primary uppercase mb-1 block">Sains</span>
-                            <h3 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-1">Metodologi Penelitian Sains</h3>
-                            <p class="text-[12px] text-outline">Budi Santoso, Ph.D</p>
-                        </div>
-                    </div>
-                    <!-- Book Card 4 -->
-                    <div class="group bg-white border border-subtle rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-                        <div class="aspect-[3/4] overflow-hidden bg-surface-container-highest">
-                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Desain Struktur Bangunan Modern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTJfrBI8mMtDUgMCJtJ2797HNhxgfwdNIwePsiNLMZvzHcnk4gZunhUTi3i-0XlFcc6-4mpgOBGtcEUQZbARc7q3eRGY-BU1SH_NOFL5TKGpBlQUjFKh12sJxNFWnE3ZMFVmfuinB-k91AwL0Ww2pJPwDvwCc05kS_b3yQC-gpWW5xy3v01VsGgVSUdQ4RNDRg11YlV8piqZZr7PoB508q07LZ2RrBsEdeubMLZj6mwIzuwbIYAQsvBKSoMExuy1u_8QyT46NM1_g">
-                        </div>
-                        <div class="p-4">
-                            <span class="text-[10px] font-bold text-primary uppercase mb-1 block">Arsitektur</span>
-                            <h3 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-1">Desain Struktur Bangunan Modern</h3>
-                            <p class="text-[12px] text-outline">Ir. Ahmad Dahlan</p>
-                        </div>
-                    </div>
-                    <!-- Book Card 5 -->
-                    <div class="group bg-white border border-subtle rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-                        <div class="aspect-[3/4] overflow-hidden bg-surface-container-highest">
-                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Etika Profesi & Hukum Digital" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVCQTyUTUsPS7deoAFXmfh9HKilzHjtDBFiSXp3R8u5bMY8Fvy8gJaSQwTaPK6dH2PpCU7VXQaV3JzoAC4UMZNLzKtHNQI2acdgfB9NeXOZwWR4cRp09xZWTDk7izXyRmr7AK4EpgbJvRu_GhG4eRA_F9UALl1d7uWcO0YTYXtyxoqw0xhSjkRAkYyI7Y_mnXiUim2385Csrr0F3AbSg_-cJH2aR3YrJ_0qT_Sv3CWHVCzuAsc23pUT91Cwt2xRZCI_xiUWyJ1LUc">
-                        </div>
-                        <div class="p-4">
-                            <span class="text-[10px] font-bold text-primary uppercase mb-1 block">Hukum</span>
-                            <h3 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-1">Etika Profesi &amp; Hukum Digital</h3>
-                            <p class="text-[12px] text-outline">Siti Aminah, M.H.</p>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
         </section>
 
-        <!-- Core Services -->
-        <section class="py-16 bg-surface-container">
+        <!-- Core Services (Background surface-container asli) -->
+        <section id="layanan" class="py-16 bg-surface-container">
             <div class="max-w-container-max mx-auto px-margin-desktop">
                 <div class="text-center mb-12">
                     <h2 class="font-headline-lg text-headline-lg text-on-surface">Layanan Perpustakaan</h2>
@@ -270,7 +341,7 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
                     <!-- Service 1 -->
-                    <div class="p-8 bg-white border border-subtle rounded-xl flex flex-col items-center text-center">
+                    <div class="p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
                         <div class="w-16 h-16 bg-primary-container/10 text-primary rounded-full flex items-center justify-center mb-6">
                             <span class="material-symbols-outlined text-[32px]">auto_stories</span>
                         </div>
@@ -278,61 +349,107 @@
                         <p class="font-body-md text-body-md text-on-surface-variant">Akses ribuan judul buku elektronik dan jurnal internasional terakreditasi secara gratis.</p>
                     </div>
                     <!-- Service 2 -->
-                    <div class="p-8 bg-white border border-subtle rounded-xl flex flex-col items-center text-center">
+                    <div class="p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
                         <div class="w-16 h-16 bg-secondary-container/10 text-secondary rounded-full flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-[32px]">laptop_mac</span>
+                            <span class="material-symbols-outlined text-[32px]">local_library</span>
                         </div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Ruang Multimedia</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Fasilitas komputer dan internet berkecepatan tinggi untuk menunjang riset mahasiswa.</p>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Ruang Baca Nyaman</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Fasilitas area baca yang tenang, bersih, dan kondusif untuk menunjang kegiatan membaca serta belajar mahasiswa.</p>
                     </div>
                     <!-- Service 3 -->
-                    <div class="p-8 bg-white border border-subtle rounded-xl flex flex-col items-center text-center">
+                    <div class="p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
                         <div class="w-16 h-16 bg-tertiary-container/10 text-tertiary rounded-full flex items-center justify-center mb-6">
                             <span class="material-symbols-outlined text-[32px]">history_edu</span>
                         </div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Pengecekan Plagiasi</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Layanan verifikasi orisinalitas karya ilmiah menggunakan software standar industri.</p>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Repositori &amp; Karya Ilmiah</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Akses penuh Laporan PKL, Skripsi/TA, dan verifikasi orisinalitas karya ilmiah mahasiswa.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panduan Peminjaman (Background surface-container-low) -->
+        <section id="panduan" class="py-16 bg-surface-container-low border-t border-border-subtle">
+            <div class="max-w-container-max mx-auto px-margin-desktop">
+                <div class="text-center mb-12">
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface">3 Langkah Mudah Meminjam Buku</h2>
+                    <p class="font-body-md text-body-md text-on-surface-variant">Alur peminjaman buku di Perpustakaan Digital POLNEP.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter text-center">
+                    <div class="p-6 bg-white border border-border-subtle rounded-xl">
+                        <div class="w-12 h-12 rounded-full bg-primary text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">1</div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Cari Buku</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Gunakan kolom pencarian untuk menemukan koleksi buku yang dibutuhkan.</p>
+                    </div>
+                    <div class="p-6 bg-white border border-border-subtle rounded-xl">
+                        <div class="w-12 h-12 rounded-full bg-primary text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">2</div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Booking / Antrian</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Lakukan booking jika stok tersedia, atau masuk antrian otomatis via WhatsApp jika stok habis.</p>
+                    </div>
+                    <div class="p-6 bg-white border border-border-subtle rounded-xl">
+                        <div class="w-12 h-12 rounded-full bg-primary text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">3</div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Ambil Buku</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Tunjukkan kode booking ke petugas perpustakaan untuk mengambil fisik buku.</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="w-full mt-auto bg-surface-container-low border-t border-subtle">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-container-max mx-auto px-margin-desktop py-12">
-            <div>
-                <span class="font-headline-md text-headline-md font-bold text-on-surface mb-4 block">POLNEP Library</span>
-                <p class="font-label-md text-label-md text-on-surface-variant max-w-md mb-6">
-                    Mencerdaskan kehidupan bangsa melalui penyediaan sumber informasi berkualitas dan aksesibilitas literasi yang inklusif.
-                </p>
-                <div class="flex gap-4">
-                    <a class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white" href="#"><span class="material-symbols-outlined text-sm">public</span></a>
-                    <a class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white" href="#"><span class="material-symbols-outlined text-sm">mail</span></a>
+    <!-- Footer Biru (Sesuai Pilihan Warna User) -->
+    <footer class="w-full bg-[#2d80c5] text-white/90 border-t border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                
+                <!-- Col 1: Brand Info -->
+                <div class="md:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ asset('img/logo_polnep.webp') }}" class="w-10 h-10 object-contain drop-shadow-md" alt="Logo POLNEP">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-lg text-white tracking-tight leading-none">SIPUS POLNEP</span>
+                            <span class="text-[10px] text-white/80 uppercase tracking-widest mt-1">Digital Library System</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-white/85 max-w-md leading-relaxed">
+                        Perpustakaan Digital Politeknik Negeri Pontianak berkomitmen mencerdaskan civitas akademika melalui penyediaan literasi inklusif, buku teks berkualitas, dan repositori ilmiah terpadu.
+                    </p>
                 </div>
-            </div>
-            <div class="grid grid-cols-2 gap-8">
+
+                <!-- Col 2: Navigation Links -->
                 <div>
-                    <h4 class="font-label-md text-label-md font-bold text-on-surface mb-4 uppercase">Informasi</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">Kontak</a></li>
-                        <li><a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">Peta Situs</a></li>
-                        <li><a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">Kebijakan Privasi</a></li>
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Navigasi Utama</h4>
+                    <ul class="space-y-2.5 text-xs text-white/85">
+                        <li><a href="#katalog" class="hover:text-white hover:underline transition-all">Koleksi Terbaru</a></li>
+                        <li><a href="#layanan" class="hover:text-white hover:underline transition-all">Layanan &amp; Fitur</a></li>
+                        <li><a href="#panduan" class="hover:text-white hover:underline transition-all">Panduan Peminjaman</a></li>
+                        <li><a href="{{ route('login') }}" class="hover:text-white hover:underline transition-all">Masuk Anggota</a></li>
                     </ul>
                 </div>
+
+                <!-- Col 3: Contact Info -->
                 <div>
-                    <h4 class="font-label-md text-label-md font-bold text-on-surface mb-4 uppercase">Akademik</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">Aksesibilitas</a></li>
-                        <li><a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">Repositori</a></li>
-                        <li><a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors" href="#">E-Journal</a></li>
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Kontak &amp; Lokasi</h4>
+                    <ul class="space-y-3 text-xs text-white/85">
+                        <li class="flex items-start gap-2.5">
+                            <span class="material-symbols-outlined text-[18px] text-white shrink-0 mt-0.5">location_on</span>
+                            <span>Jl. Tjilik Riwut, Natai Sedawak, Kec. Sukamara, Kabupaten Sukamara, Kalimantan Tengah 74171</span>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <span class="material-symbols-outlined text-[18px] text-white shrink-0">call</span>
+                            <span>0561 736180</span>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <span class="material-symbols-outlined text-[18px] text-white shrink-0">mail</span>
+                            <span>kampus@polnep.ac.id</span>
+                        </li>
                     </ul>
                 </div>
+
             </div>
-        </div>
-        <div class="border-t border-subtle">
-            <div class="max-w-container-max mx-auto px-margin-desktop py-6 text-center">
-                <p class="font-label-md text-label-md text-on-surface-variant">© 2026 Politeknik Negeri Pontianak. All rights reserved.</p>
+
+            <!-- Bottom Copyright -->
+            <div class="mt-12 pt-8 border-t border-white/20 text-center text-xs text-white/75">
+                <p>&copy; 2026 Politeknik Negeri Pontianak. All rights reserved.</p>
             </div>
         </div>
     </footer>

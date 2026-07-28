@@ -59,29 +59,10 @@ class AntrianController extends Controller
     }
 
     /**
-     * Tandai antrian sebagai tersedia.
-     */
-    public function markAvailable($antrian_id)
-    {
-        $antrian = Antrian::findOrFail($antrian_id);
-
-        if ($antrian->status !== 'menunggu') {
-            return redirect()
-                ->route('petugas.antrian.index')
-                ->with('error', 'Antrian ini tidak dalam status menunggu.');
-        }
-
-        $antrian->update(['status' => 'tersedia']);
-
-        return redirect()
-            ->route('petugas.antrian.index')
-            ->with('success', 'Antrian berhasil ditandai sebagai tersedia.');
-    }
-
-    /**
      * Tandai antrian sebagai selesai.
      */
     public function markDone($antrian_id)
+
     {
         $antrian = Antrian::findOrFail($antrian_id);
 

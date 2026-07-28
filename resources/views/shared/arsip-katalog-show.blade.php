@@ -137,13 +137,15 @@
     </style>
 </head>
 <body class="font-body-md text-body-md antialiased min-h-screen">
-    @include($rolePrefix . '.layouts.sidebar')
+    @if(Auth::check())
+        @include($rolePrefix . '.layouts.sidebar')
+    @endif
     
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="{{ Auth::check() ? 'ml-64' : 'max-w-7xl mx-auto' }} p-margin-desktop bg-[#f8faff] min-h-screen">
         <!-- Top Bar / Header Info -->
         <header class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-4">
-                <a href="{{ route($rolePrefix . '.katalog-arsip.index') }}" class="w-10 h-10 rounded-xl bg-white text-slate-650 hover:bg-slate-100 transition duration-200 flex items-center justify-center border border-outline-variant/15 shadow-sm">
+                <a href="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.index') : route('katalog-arsip.index') }}" class="w-10 h-10 rounded-xl bg-white text-slate-650 hover:bg-slate-100 transition duration-200 flex items-center justify-center border border-outline-variant/15 shadow-sm">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </a>
                 <div>
@@ -152,13 +154,25 @@
                 </div>
             </div>
             <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">Role: {{ ucfirst($rolePrefix) }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
-                </div>
+                @auth
+                    <div class="text-right hidden sm:block">
+                        <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-outline font-medium uppercase tracking-wide">Role: {{ ucfirst($rolePrefix) }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                        <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
+                    </div>
+                @else
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('login') }}" class="px-5 py-2.5 bg-primary text-white font-bold rounded-2xl text-xs shadow-md shadow-primary/20 hover:bg-primary/95 transition-all flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">login</span>
+                            <span>Masuk</span>
+                        </a>
+                        <a href="{{ route('katalog-arsip.index') }}" class="px-4 py-2.5 border border-outline-variant/40 text-on-surface-variant font-bold rounded-2xl text-xs hover:bg-white transition-all">
+                            Kembali ke Katalog
+                        </a>
+                    </div>
+                @endauth
             </div>
         </header>
 
@@ -177,13 +191,23 @@
 
                 <div class="space-y-4">
                     @if($archive->file_pdf)
-                        <a href="{{ route($rolePrefix . '.katalog-arsip.full', [$archiveType, $archive->getKey(), \Illuminate\Support\Str::slug($archiveTitle)]) }}" target="_blank" class="inline-flex items-center gap-2.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-8 py-4 text-base shadow-lg shadow-primary/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
-                            <span class="material-symbols-outlined text-[22px]">open_in_new</span>
-                            Baca Dokumen Lengkap (PDF)
-                        </a>
-                        <p class="text-xs text-outline font-medium">
-                            *Dokumen lengkap akan dibuka secara aman di tab baru browser Anda.
-                        </p>
+                        @auth
+                            <a href="{{ route($rolePrefix . '.katalog-arsip.full', [$archiveType, $archive->getKey(), \Illuminate\Support\Str::slug($archiveTitle)]) }}" target="_blank" class="inline-flex items-center gap-2.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-8 py-4 text-base shadow-lg shadow-primary/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                                <span class="material-symbols-outlined text-[22px]">open_in_new</span>
+                                Baca Dokumen Lengkap (PDF)
+                            </a>
+                            <p class="text-xs text-outline font-medium">
+                                *Dokumen lengkap akan dibuka secara aman di tab baru browser Anda.
+                            </p>
+                        @else
+                            <a href="{{ route('login') }}" class="inline-flex items-center gap-2.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-8 py-4 text-base shadow-lg shadow-primary/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                                <span class="material-symbols-outlined text-[22px]">lock_open</span>
+                                Masuk untuk Baca PDF Lengkap
+                            </a>
+                            <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 font-medium max-w-md mx-auto">
+                                💡 Pratinjau &amp; Informasi karya ilmiah ini dapat diakses secara publik. Silakan masuk menggunakan akun mahasiswa/dosen untuk membaca naskah PDF lengkap.
+                            </p>
+                        @endauth
                     @else
                         <div class="inline-flex items-center gap-2.5 rounded-2xl bg-slate-100 text-slate-400 font-bold px-8 py-4 text-base cursor-not-allowed border border-slate-200">
                             <span class="material-symbols-outlined text-[22px]">lock</span>
@@ -242,7 +266,7 @@
                 <section class="rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
                     <h2 class="mb-4 text-lg font-bold text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[22px]">swap_horizontal_circle</span> 
-                        Booking Peminjaman Dokumen Fisik
+                        Peminjaman Dokumen Fisik
                     </h2>
                     
                     <div class="border-t border-outline-variant/10 pt-4">

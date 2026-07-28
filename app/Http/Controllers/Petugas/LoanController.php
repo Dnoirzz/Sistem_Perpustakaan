@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
+use App\Models\Antrian;
 use App\Models\Collection;
 use App\Models\Loan;
 use App\Models\User;
@@ -78,16 +79,16 @@ class LoanController extends Controller
         return view('petugas.loans.index', compact('loans', 'stats', 'search', 'status'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         Loan::syncOverdueStatuses();
 
         $collectionTypes = self::COLLECTION_TYPE_OPTIONS;
 
-        $oldUserId = old('user_id');
+        $selectedUserId = old('user_id', $request->input('user_id'));
         $members = collect();
-        if ($oldUserId) {
-            $selectedMember = User::where('user_id', $oldUserId)
+        if ($selectedUserId) {
+            $selectedMember = User::where('user_id', $selectedUserId)
                 ->with(['role', 'mahasiswa.prodi', 'dosen.prodi'])
                 ->first();
             if ($selectedMember) {
@@ -95,13 +96,15 @@ class LoanController extends Controller
             }
         }
 
-        $oldCollectionIds = old('koleksi_ids', old('koleksi_id') ? [old('koleksi_id')] : []);
+        $reqKoleksiId = $request->input('koleksi_id');
+        $oldCollectionIds = old('koleksi_ids', old('koleksi_id') ? [old('koleksi_id')] : ($reqKoleksiId ? [$reqKoleksiId] : []));
         $collections = collect();
         if (!empty($oldCollectionIds)) {
             $collections = Collection::with(['book.category'])
                 ->whereIn('koleksi_id', (array) $oldCollectionIds)
                 ->get();
         }
+
 
         $stockSummary = [
             'book' => Collection::where('item_type', 'book')->sum('stock'),
@@ -264,6 +267,12 @@ class LoanController extends Controller
                     'bts_waktu' => $validated['bts_waktu'],
                     'status' => 'dipinjam',
                 ]);
+
+                // Tandai antrian aktif milik anggota ini untuk koleksi tersebut sebagai 'selesai'
+                Antrian::where('user_id', $validated['user_id'])
+                    ->where('koleksi_id', $collection->koleksi_id)
+                    ->whereIn('status', ['menunggu', 'tersedia'])
+                    ->update(['status' => 'selesai']);
 
                 $collection->syncBackingStock(-1);
                 $loans[] = $newLoan;

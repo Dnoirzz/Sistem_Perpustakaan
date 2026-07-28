@@ -39,7 +39,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users', 'user_id')->onDelete('cascade');
             $table->foreignId('koleksi_id')->constrained('collections', 'koleksi_id')->onDelete('cascade');
             $table->integer('no_antrian');
-            $table->enum('status', ['menunggu', 'tersedia', 'selesai'])->default('menunggu');
+            $table->enum('status', ['menunggu', 'tersedia', 'selesai', 'dibatalkan'])->default('menunggu');
             $table->timestamps();
         });
 

@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\AppSetting;
+use App\Models\Collection;
+
 class Antrian extends Model
 {
     use HasFactory;
@@ -34,4 +37,46 @@ class Antrian extends Model
     {
         return $this->belongsTo(Collection::class, 'koleksi_id', 'koleksi_id');
     }
+
+    /**
+     * Cek dan alokasikan antrian berikutnya menjadi 'tersedia' jika stok koleksi > 0.
+     * Mengirim notifikasi WhatsApp otomatis jika terkonfigurasi.
+     */
+    public static function checkAndNotifyAvailableQueue($koleksiId)
+    {
+        $collection = Collection::find($koleksiId);
+        if (! $collection || $collection->stock < 1) {
+            return null;
+        }
+
+        $nextInQueue = static::where('koleksi_id', $koleksiId)
+            ->where('status', 'menunggu')
+            ->orderBy('no_antrian', 'asc')
+            ->first();
+
+        if ($nextInQueue) {
+            $nextInQueue->update(['status' => 'tersedia']);
+
+            try {
+                $nextInQueue->load(['user', 'collection.book']);
+                if ($nextInQueue->user && ! empty($nextInQueue->user->no_hp)) {
+                    $judulBuku = $nextInQueue->collection?->display_title ?? 'Koleksi Perpustakaan';
+                    $namaAnggota = $nextInQueue->user->name;
+                    $senderName = AppSetting::get('wa_sender_name', 'Perpustakaan PSDKU POLNEP');
+
+                    $message = "Halo, {$namaAnggota}! 📚\n\n".
+                               "Kabar baik! Buku *{$judulBuku}* yang Anda tunggu di antrian kini sudah *TERSEDIA* untuk dipinjam.\n\n".
+                               "Silakan datang ke perpustakaan untuk memproses peminjaman buku tersebut.\n\n".
+                               "Terima kasih — {$senderName}";
+
+                    \App\Services\WhatsAppService::send($nextInQueue->user->no_hp, $message);
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Gagal mengirim WA Antrian Tersedia: '.$e->getMessage());
+            }
+        }
+
+        return $nextInQueue;
+    }
 }
+

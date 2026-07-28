@@ -17,8 +17,19 @@ use App\Http\Controllers\Mahasiswa\ArsipController as MahasiswaArsipController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    $totalBooks = \App\Models\Book::count();
+    $totalMembers = \App\Models\User::whereHas('role', function ($query) {
+        $query->whereIn('role_name', ['mahasiswa', 'dosen']);
+    })->count();
+    $totalArchives = \App\Models\LaporanPkl::count() + \App\Models\LaporanTugasAkhir::count() + \App\Models\ProposalTa::count();
+
+    $featuredBooks = \App\Models\Book::with(['category', 'collection'])
+        ->latest()
+        ->take(10)
+        ->get();
+
+    return view('welcome', compact('totalBooks', 'totalMembers', 'totalArchives', 'featuredBooks'));
+})->name('welcome');
 
 // Main dashboard router based on role
 Route::get('/dashboard', function () {
@@ -132,8 +143,8 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
 
     // Antrian (Fase 4)
     Route::get('/antrian', [PetugasAntrianController::class, 'index'])->name('antrian.index');
-    Route::post('/antrian/{antrian}/mark-available', [PetugasAntrianController::class, 'markAvailable'])->name('antrian.mark-available');
     Route::post('/antrian/{antrian}/mark-done', [PetugasAntrianController::class, 'markDone'])->name('antrian.mark-done');
+
 
     // Denda & Sanksi (Fase 4)
     Route::get('/penalties', [PetugasPenaltyController::class, 'index'])->name('penalties.index');
@@ -192,6 +203,7 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     Route::post('/bookings/{booking}/cancel', [\App\Http\Controllers\BookingController::class, 'cancel'])->name('bookings.cancel');
     Route::post('/antrian', [\App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store');
     Route::get('/antrian', [\App\Http\Controllers\AntrianController::class, 'myAntrian'])->name('antrian.my');
+    Route::post('/antrian/{antrian}/cancel', [\App\Http\Controllers\AntrianController::class, 'cancel'])->name('antrian.cancel');
 
     // Member Loans & History (Rak Pinjam)
     Route::get('/loans', [\App\Http\Controllers\MemberLoanController::class, 'activeLoans'])->name('loans.active');
@@ -235,6 +247,7 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
     Route::post('/bookings/{booking}/cancel', [\App\Http\Controllers\BookingController::class, 'cancel'])->name('bookings.cancel');
     Route::post('/antrian', [\App\Http\Controllers\AntrianController::class, 'store'])->name('antrian.store');
     Route::get('/antrian', [\App\Http\Controllers\AntrianController::class, 'myAntrian'])->name('antrian.my');
+    Route::post('/antrian/{antrian}/cancel', [\App\Http\Controllers\AntrianController::class, 'cancel'])->name('antrian.cancel');
 
     // Member Loans & History (Rak Pinjam)
     Route::get('/loans', [\App\Http\Controllers\MemberLoanController::class, 'activeLoans'])->name('loans.active');

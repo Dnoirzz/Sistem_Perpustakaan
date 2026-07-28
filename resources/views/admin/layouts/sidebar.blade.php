@@ -9,6 +9,7 @@
             </div>
         </div>
     </div>
+
     @php
         $settingsMenuOpen = request()->routeIs('admin.settings.*');
     @endphp
@@ -127,7 +128,7 @@
 </style>
 
 <!-- Overlay Backdrop -->
-<div class="sidebar-overlay fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-45 hidden opacity-0 transition-all duration-300" id="sidebarOverlay"></div>
+<div class="sidebar-overlay fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-[45] hidden opacity-0 transition-all duration-300" style="z-index: 45;" id="sidebarOverlay"></div>
 
 <!-- Mobile top bar -->
 <div class="mobile-top-bar fixed top-0 left-0 right-0 h-16 bg-white border-b border-outline-variant/30 hidden items-center justify-between px-6 z-40 shadow-sm" id="mobileTopBar">
@@ -149,6 +150,19 @@
         const sidebar = document.querySelector('aside');
         const overlay = document.getElementById('sidebarOverlay');
         const menuBtn = document.getElementById('mobileMenuBtn');
+        const closeBtn = document.getElementById('mobileCloseSidebarBtn');
+
+        function closeSidebar() {
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) {
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => {
+                    if (!overlay.classList.contains('opacity-100')) {
+                        overlay.classList.add('hidden');
+                    }
+                }, 300);
+            }
+        }
         
         if (sidebar && overlay && menuBtn) {
             menuBtn.addEventListener('click', function() {
@@ -159,23 +173,15 @@
                 }, 10);
             });
             
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('mobile-open');
-                overlay.classList.remove('opacity-100');
-                setTimeout(() => {
-                    if (!overlay.classList.contains('opacity-100')) {
-                        overlay.classList.add('hidden');
-                    }
-                }, 300);
-            });
+            overlay.addEventListener('click', closeSidebar);
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeSidebar);
+            }
             
-            // Close sidebar when active link is clicked
+            // Close sidebar when link inside sidebar is clicked
             sidebar.querySelectorAll('nav a').forEach(link => {
-                link.addEventListener('click', function() {
-                    sidebar.classList.remove('mobile-open');
-                    overlay.classList.remove('opacity-100');
-                    overlay.classList.add('hidden');
-                });
+                link.addEventListener('click', closeSidebar);
             });
         }
     });

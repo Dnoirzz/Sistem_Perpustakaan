@@ -160,6 +160,7 @@
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Nomor Antrian</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Keterangan</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant/10">
@@ -192,6 +193,11 @@
                                             <span class="w-1.5 h-1.5 rounded-full bg-slate-500 mr-1.5"></span>
                                             Selesai
                                         </span>
+                                    @elseif($antrian->status === 'dibatalkan')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>
+                                            Dibatalkan
+                                        </span>
                                     @else
                                         <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
                                             {{ $antrian->status }}
@@ -200,19 +206,44 @@
                                 </td>
                                 <td class="px-8 py-5 text-xs text-on-surface-variant font-medium">
                                     @if($antrian->status === 'menunggu')
-                                        Mohon bersabar, Anda berada dalam daftar antrian untuk buku ini.
+                                        @if(($antrian->people_ahead ?? 0) === 0)
+                                            <span class="text-amber-700 font-bold flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-[16px]">priority_high</span>
+                                                Selanjutnya giliran anda saat stok tersedia.
+                                            </span>
+                                        @else
+                                            Mohon bersabar, ada <strong class="text-primary font-bold">{{ $antrian->people_ahead }} orang</strong> di depan Anda dalam daftar antrian buku ini.
+                                        @endif
                                     @elseif($antrian->status === 'tersedia')
-                                        Buku telah dikembalikan dan siap untuk dipinjam oleh Anda. Silakan hubungi petugas perpustakaan.
+                                        <span class="text-emerald-700 font-bold flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                            Buku telah dikembalikan dan siap dipinjam oleh Anda. Silakan hubungi petugas perpustakaan.
+                                        </span>
                                     @elseif($antrian->status === 'selesai')
                                         Transaksi peminjaman buku selesai dilakukan.
+                                    @elseif($antrian->status === 'dibatalkan')
+                                        Antrian ini telah Anda batalkan.
                                     @else
                                         -
+                                    @endif
+                                </td>
+                                <td class="px-8 py-5 text-center">
+                                    @if(in_array($antrian->status, ['menunggu', 'tersedia'], true))
+                                        <form action="{{ route('dosen.antrian.cancel', $antrian->antrian_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan antrian buku ini?')">
+                                            @csrf
+                                            <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 font-bold text-xs hover:bg-rose-100 transition-all shadow-sm">
+                                                <span class="material-symbols-outlined text-[14px]">cancel</span>
+                                                Batalkan
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-xs text-outline font-medium">-</span>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-8 py-12 text-center text-outline font-medium">
+                                <td colspan="5" class="px-8 py-12 text-center text-outline font-medium">
                                     Anda tidak memiliki riwayat antrian buku.
                                 </td>
                             </tr>
@@ -248,9 +279,13 @@
                         <span class="text-[10px] text-outline uppercase tracking-wider block">Keterangan</span>
                         <span class="text-xs font-medium text-on-surface-variant">
                             @if($antrian->status === 'menunggu')
-                                Mohon bersabar, Anda berada dalam daftar antrian untuk buku ini.
+                                @if(($antrian->people_ahead ?? 0) === 0)
+                                    <span class="text-amber-700 font-bold">Selanjutnya giliran anda saat stok tersedia.</span>
+                                @else
+                                    Mohon bersabar, ada <strong class="text-primary font-bold">{{ $antrian->people_ahead }} orang</strong> di depan Anda.
+                                @endif
                             @elseif($antrian->status === 'tersedia')
-                                Buku telah dikembalikan dan siap untuk dipinjam oleh Anda. Silakan hubungi petugas perpustakaan.
+                                <span class="text-emerald-700 font-bold">Buku telah dikembalikan dan siap dipinjam oleh Anda. Silakan hubungi petugas perpustakaan.</span>
                             @elseif($antrian->status === 'selesai')
                                 Transaksi peminjaman buku selesai dilakukan.
                             @else
@@ -259,27 +294,43 @@
                         </span>
                     </div>
 
-                    <!-- Status -->
-                    <div class="pt-4 border-t border-outline-variant/10">
-                        @if($antrian->status === 'menunggu')
-                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wide">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
-                                Menunggu Stok
-                            </span>
-                        @elseif($antrian->status === 'tersedia')
-                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                Buku Tersedia
-                            </span>
-                        @elseif($antrian->status === 'selesai')
-                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
-                                <span class="w-1.5 h-1.5 rounded-full bg-slate-500 mr-1.5"></span>
-                                Selesai
-                            </span>
-                        @else
-                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
-                                {{ $antrian->status }}
-                            </span>
+                    <!-- Status & Aksi -->
+                    <div class="pt-4 border-t border-outline-variant/10 flex items-center justify-between gap-3">
+                        <div>
+                            @if($antrian->status === 'menunggu')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
+                                    Menunggu Stok
+                                </span>
+                            @elseif($antrian->status === 'tersedia')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                                    Buku Tersedia
+                                </span>
+                            @elseif($antrian->status === 'selesai')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500 mr-1.5"></span>
+                                    Selesai
+                                </span>
+                            @elseif($antrian->status === 'dibatalkan')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>
+                                    Dibatalkan
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
+                                    {{ $antrian->status }}
+                                </span>
+                            @endif
+                        </div>
+                        @if(in_array($antrian->status, ['menunggu', 'tersedia'], true))
+                            <form action="{{ route('dosen.antrian.cancel', $antrian->antrian_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan antrian buku ini?')">
+                                @csrf
+                                <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 font-bold text-xs hover:bg-rose-100 transition-all shadow-sm">
+                                    <span class="material-symbols-outlined text-[14px]">cancel</span>
+                                    Batalkan
+                                </button>
+                            </form>
                         @endif
                     </div>
                 </div>

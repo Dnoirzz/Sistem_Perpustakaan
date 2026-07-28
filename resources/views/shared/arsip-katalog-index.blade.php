@@ -137,28 +137,42 @@
     </style>
 </head>
 <body class="font-body-md text-body-md antialiased min-h-screen">
-    @include($rolePrefix . '.layouts.sidebar')
+    @if(Auth::check())
+        @include($rolePrefix . '.layouts.sidebar')
+    @endif
     
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="{{ Auth::check() ? 'ml-64' : 'max-w-7xl mx-auto' }} p-margin-desktop bg-[#f8faff] min-h-screen">
         <!-- Top Bar / Header Info -->
         <header class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-4">
-                <a href="{{ route($rolePrefix . '.books.index') }}" class="w-10 h-10 rounded-xl bg-white text-slate-650 hover:bg-slate-100 transition duration-200 flex items-center justify-center border border-outline-variant/15 shadow-sm">
+                <a href="{{ Auth::check() ? route($rolePrefix . '.books.index') : route('welcome') }}" class="w-10 h-10 rounded-xl bg-white text-slate-650 hover:bg-slate-100 transition duration-200 flex items-center justify-center border border-outline-variant/15 shadow-sm">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </a>
                 <div>
-                    <h1 class="font-headline-md text-on-surface">Katalog Arsip Digital</h1>
+                    <h1 class="font-headline-md text-on-surface">Katalog Arsip Digital Publik</h1>
                     <p class="text-sm text-outline">Jelajahi arsip karya tulis mahasiswa yang sudah diverifikasi perpustakaan.</p>
                 </div>
             </div>
             <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">Role: {{ ucfirst($rolePrefix) }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
-                </div>
+                @auth
+                    <div class="text-right hidden sm:block">
+                        <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-outline font-medium uppercase tracking-wide">Role: {{ ucfirst($rolePrefix) }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                        <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
+                    </div>
+                @else
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('login') }}" class="px-5 py-2.5 bg-primary text-white font-bold rounded-2xl text-xs shadow-md shadow-primary/20 hover:bg-primary/95 transition-all flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">login</span>
+                            <span>Masuk</span>
+                        </a>
+                        <a href="{{ route('welcome') }}" class="px-4 py-2.5 border border-outline-variant/40 text-on-surface-variant font-bold rounded-2xl text-xs hover:bg-white transition-all">
+                            Beranda
+                        </a>
+                    </div>
+                @endauth
             </div>
         </header>
 
@@ -176,7 +190,7 @@
         @endif
 
         <section class="mb-8 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
-            <form action="{{ route($rolePrefix . '.katalog-arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-4">
+            <form action="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.index') : route('katalog-arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-4">
                 <div class="relative flex items-center">
                     <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, pembimbing, mahasiswa..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
@@ -240,7 +254,7 @@
                         </div>
                     </div>
                     <div class="mt-6 border-t border-outline-variant/10 pt-4">
-                        <a href="{{ route($rolePrefix . '.katalog-arsip.show', [$item['type'], $item['id']]) }}" class="w-full inline-flex items-center justify-center gap-1.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-5 py-3.5 text-sm shadow-lg shadow-primary/15 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                        <a href="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.show', [$item['type'], $item['id']]) : route('katalog-arsip.show', [$item['type'], $item['id']]) }}" class="w-full inline-flex items-center justify-center gap-1.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-5 py-3.5 text-sm shadow-lg shadow-primary/15 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                             Lihat Detail
                         </a>
