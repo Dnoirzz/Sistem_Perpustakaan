@@ -24,29 +24,29 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-AUTH-01 | Login dengan kredensial valid (Admin) | Email & password Admin yang benar | Diarahkan ke dashboard Admin | ⬜ |
-| TC-AUTH-02 | Login dengan kredensial valid (Petugas) | Email & password Petugas yang benar | Diarahkan ke dashboard Petugas | ⬜ |
-| TC-AUTH-03 | Login dengan kredensial valid (Dosen) | Email & password Dosen yang benar | Diarahkan ke dashboard Dosen | ⬜ |
-| TC-AUTH-04 | Login dengan kredensial valid (Mahasiswa) | Email & password Mahasiswa yang benar | Diarahkan ke dashboard Mahasiswa | ⬜ |
-| TC-AUTH-05 | Login dengan password salah | Email valid + password salah | Muncul pesan error "kredensial tidak cocok" | ⬜ |
-| TC-AUTH-06 | Login dengan email tidak terdaftar | Email tidak ada + password sembarang | Muncul pesan error | ⬜ |
-| TC-AUTH-07 | Login dengan field kosong | Semua field dibiarkan kosong | Muncul validasi "field wajib diisi" | ⬜ |
-| TC-AUTH-08 | Login dengan format email tidak valid | `bukanemail` di field email | Muncul validasi format email | ⬜ |
+| TC-AUTH-01 | Login dengan kredensial valid (Admin) | Email & password Admin yang benar | Diarahkan ke dashboard Admin | ✅ |
+| TC-AUTH-02 | Login dengan kredensial valid (Petugas) | Email & password Petugas yang benar | Diarahkan ke dashboard Petugas | ✅ |
+| TC-AUTH-03 | Login dengan kredensial valid (Dosen) | Email & password Dosen yang benar | Diarahkan ke dashboard Dosen | ✅ |
+| TC-AUTH-04 | Login dengan kredensial valid (Mahasiswa) | Email & password Mahasiswa yang benar | Diarahkan ke dashboard Mahasiswa | ✅ |
+| TC-AUTH-05 | Login dengan password salah | Email valid + password salah | Muncul pesan error "kredensial tidak cocok" | ✅ |
+| TC-AUTH-06 | Login dengan email tidak terdaftar | Email tidak ada + password sembarang | Muncul pesan error | ✅ |
+| TC-AUTH-07 | Login dengan field kosong | Semua field dibiarkan kosong | Muncul validasi "field wajib diisi" | ✅ |
+| TC-AUTH-08 | Login dengan format email tidak valid | `bukanemail` di field email | Muncul validasi format email | ✅ |
 
 ### 1.2 Logout
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-AUTH-09 | Logout dari sesi aktif | Klik tombol Logout | Session dihapus, diarahkan ke halaman login | ⬜ |
-| TC-AUTH-10 | Akses halaman dashboard setelah logout | URL dashboard diakses langsung | Diarahkan ke halaman login | ⬜ |
+| TC-AUTH-09 | Logout dari sesi aktif | Klik tombol Logout | Session dihapus, diarahkan ke halaman login | ✅ |
+| TC-AUTH-10 | Akses halaman dashboard setelah logout | URL dashboard diakses langsung | Diarahkan ke halaman login | ✅ |
 
 ### 1.3 Kontrol Akses Role (Authorization)
 
 | ID | Skenario Uji | Aktor | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-AUTH-11 | Mahasiswa akses URL admin | Login Mahasiswa, akses `/admin/dashboard` | Ditolak (403 Forbidden) | ⬜ |
-| TC-AUTH-12 | Dosen akses URL petugas | Login Dosen, akses `/petugas/loans` | Ditolak (403 Forbidden) | ⬜ |
-| TC-AUTH-13 | Petugas akses URL admin | Login Petugas, akses `/admin/users` | Ditolak (403 Forbidden) | ⬜ |
+| TC-AUTH-11 | Mahasiswa akses URL admin | Login Mahasiswa, akses `/admin/dashboard` | Ditolak (403 Forbidden) | ✅ |
+| TC-AUTH-12 | Dosen akses URL petugas | Login Dosen, akses `/petugas/loans` | Ditolak (403 Forbidden) | ✅ |
+| TC-AUTH-13 | Petugas akses URL admin | Login Petugas, akses `/admin/users` | Ditolak (403 Forbidden) | ✅ |
 
 ---
 

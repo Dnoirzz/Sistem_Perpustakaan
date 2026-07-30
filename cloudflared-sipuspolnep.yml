@@ -1,0 +1,16 @@
+tunnel: c437e0bc-c520-42cb-8889-047d22c85674
+credentials-file: C:\Users\ASUS\.cloudflared\c437e0bc-c520-42cb-8889-047d22c85674.json
+
+ingress:
+  - hostname: sipus-polnep.my.id
+    path: /api/*
+    service: http://localhost:8000
+
+  - hostname: sipus-polnep.my.id
+    path: /storage/*
+    service: http://localhost:8000
+
+  - hostname: sipus-polnep.my.id
+    service: http://localhost:8000
+
+  - service: http_status:404

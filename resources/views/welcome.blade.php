@@ -119,20 +119,26 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen text-on-surface bg-surface">
-    <!-- TopNavBar (Menggunakan background surface & button style asli) -->
+    <!-- TopNavBar (Responsive Mobile & Desktop) -->
     <nav class="w-full top-0 sticky z-50 bg-surface/95 backdrop-blur-md border-b border-border-subtle">
-        <div class="flex justify-between items-center max-w-container-max mx-auto px-margin-desktop h-16">
-            <div class="flex items-center gap-3">
-                <img src="{{ asset('img/logo_polnep.webp') }}" class="w-9 h-9 object-contain" alt="Logo POLNEP">
-                <span class="text-headline-md font-headline-md font-bold text-primary">POLNEP Digital Library</span>
+        <div class="flex justify-between items-center max-w-container-max mx-auto px-4 md:px-margin-desktop h-16">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <img src="{{ asset('img/logo_polnep.webp') }}" class="w-8 h-8 sm:w-9 sm:h-9 object-contain" alt="Logo POLNEP">
+                <span class="text-sm sm:text-headline-md font-headline-md font-bold text-primary truncate max-w-[170px] sm:max-w-none">
+                    Perpustakaan
+                <br>
+                    PSDKU POLNEP SUKAMARA
+                </span>
             </div>
+
+            <!-- Desktop Nav Links -->
             <div class="hidden md:flex items-center gap-8 font-body-md text-body-md">
                 <a class="text-primary border-b-2 border-primary font-bold pb-1" href="#katalog">Koleksi</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#layanan">Layanan</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#panduan">Panduan</a>
             </div>
             
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 @if (Route::has('login'))
                     @auth
                         @php
@@ -143,51 +149,65 @@
                             elseif ($user->isDosen()) $dashboardRoute = route('dosen.dashboard');
                             elseif ($user->isMahasiswa()) $dashboardRoute = route('mahasiswa.dashboard');
                         @endphp
-                        <a href="{{ $dashboardRoute }}" class="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity flex items-center gap-2">
+                        <a href="{{ $dashboardRoute }}" class="px-3 sm:px-6 py-1.5 sm:py-2 bg-primary text-on-primary rounded-lg font-label-md text-xs sm:text-label-md hover:opacity-90 transition-opacity flex items-center gap-1.5 sm:gap-2">
                             <span class="material-symbols-outlined text-[18px]">dashboard</span>
                             <span>Dashboard</span>
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
+                        <a href="{{ route('login') }}" class="px-3.5 sm:px-6 py-1.5 sm:py-2 bg-primary text-on-primary rounded-lg font-label-md text-xs sm:text-label-md hover:opacity-90 transition-opacity">
                             Masuk
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="px-6 py-2 border border-primary text-primary rounded-lg font-label-md text-label-md hover:bg-slate-50 transition-opacity">
+                            <a href="{{ route('register') }}" class="px-3.5 sm:px-6 py-1.5 sm:py-2 border border-primary text-primary rounded-lg font-label-md text-xs sm:text-label-md hover:bg-slate-50 transition-opacity">
                                 Daftar
                             </a>
                         @endif
                     @endauth
                 @endif
+
+                <!-- Mobile Hamburger Button -->
+                <button id="mobile-menu-btn" type="button" class="md:hidden p-1.5 text-on-surface-variant hover:text-primary rounded-lg focus:outline-none" aria-label="Toggle Navigation">
+                    <span class="material-symbols-outlined text-2xl" id="menu-icon">menu</span>
+                </button>
             </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-border-subtle bg-surface px-4 py-3 space-y-2 shadow-lg">
+            <a class="block font-medium text-primary font-bold py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#katalog" onclick="toggleMobileMenu()">Koleksi</a>
+            <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#layanan" onclick="toggleMobileMenu()">Layanan</a>
+            <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#panduan" onclick="toggleMobileMenu()">Panduan</a>
         </div>
     </nav>
 
     <main class="flex-grow">
         <!-- Hero Section 2 Kolom (Headline + Ilustrasi Vektor Modern) -->
-        <section class="py-16 md:py-20 bg-surface-container-low overflow-hidden">
-            <div class="max-w-container-max mx-auto px-margin-desktop">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <section class="py-12 md:py-20 bg-surface-container-low overflow-hidden">
+            <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                     
                     <!-- Left Column: Content & Badges -->
-                    <div class="lg:col-span-7 space-y-6 text-left">
+                    <div class="lg:col-span-7 space-y-5 sm:space-y-6 text-left">
                         
                         <!-- Badge Jam Operasional & Status -->
-                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-border-subtle shadow-sm">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-xs font-bold text-on-surface-variant">Jam Operasional Perpustakaan: Senin – Jumat (08:00 – 14:00 WIB)</span>
+                        <div class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white border border-border-subtle shadow-sm max-w-full">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                            <span class="text-[11px] sm:text-xs font-bold text-on-surface-variant leading-tight">Jam Operasional Perpustakaan: Senin – Jumat (08:00 – 14:00 WIB)</span>
                         </div>
 
                         <!-- Headline & Subtitle -->
-                        <h1 class="font-display-lg text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-primary leading-tight">
-                            Perpustakaan Digital PSDKU POLNEP
+                        <h1 class="font-display-lg text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-primary leading-tight">
+                            Perpustakaan 
+                            <br>
+                            PSDKU POLNEP SUKAMARA
                         </h1>
-                        <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl leading-relaxed">
-                            Pusat akses literasi terpadu, koleksi buku teks perkuliahan, dan repositori karya ilmiah digital untuk civitas akademika Politeknik Negeri Pontianak.
+                        <p class="font-body-lg text-sm sm:text-body-lg text-on-surface-variant max-w-xl leading-relaxed">
+                            Pusat akses literasi terpadu, koleksi buku teks perkuliahan, dan repositori karya ilmiah digital untuk civitas akademika PSDKU Politeknik Negeri Pontianak Sukamara
                         </p>
 
                         <!-- Feature Highlights (3 Key Badges - Opsi A) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-                            <div class="p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-2 sm:pt-4">
+                            <div class="p-3.5 sm:p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
                                 <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[22px]">bolt</span>
                                 </div>
@@ -197,7 +217,7 @@
                                 </div>
                             </div>
 
-                            <div class="p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
+                            <div class="p-3.5 sm:p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
                                 <div class="w-10 h-10 rounded-lg bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[22px]">chat</span>
                                 </div>
@@ -207,7 +227,7 @@
                                 </div>
                             </div>
 
-                            <div class="p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
+                            <div class="p-3.5 sm:p-4 bg-white/80 border border-border-subtle rounded-xl flex items-center gap-3 shadow-sm">
                                 <div class="w-10 h-10 rounded-lg bg-tertiary-container/20 text-tertiary flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[22px]">school</span>
                                 </div>
@@ -221,15 +241,15 @@
                     </div>
 
                     <!-- Right Column: Hero Illustration Graphic -->
-                    <div class="lg:col-span-5 flex items-center justify-center">
+                    <div class="lg:col-span-5 flex items-center justify-center mt-4 lg:mt-0">
                         <div class="relative w-full max-w-md">
                             <!-- Background Decorative Glow -->
                             <div class="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/20 via-secondary/15 to-primary-container/20 blur-2xl opacity-70"></div>
                             
                             <!-- Main Illustration Card -->
-                            <div class="relative bg-white border border-border-subtle rounded-3xl p-4 shadow-xl overflow-hidden">
-                                <img src="{{ asset('img/digital_library_hero.png') }}" 
-                                     alt="Ilustrasi Perpustakaan Digital POLNEP" 
+                            <div class="relative bg-white border border-border-subtle rounded-3xl p-3 sm:p-4 shadow-xl overflow-hidden">
+                                <img src="{{ asset('img/foto_perpus.png') }}" 
+                                     alt="Foto Perpustakaan POLNEP" 
                                      class="w-full h-auto object-cover rounded-2xl">
                             </div>
                         </div>
@@ -240,32 +260,32 @@
         </section>
 
         <!-- Statistics Section (Background putih & Border asli) -->
-        <section class="py-12 border-b border-border-subtle bg-white">
-            <div class="max-w-container-max mx-auto px-margin-desktop">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter text-center">
+        <section class="py-10 sm:py-12 border-b border-border-subtle bg-white">
+            <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-gutter text-center">
                     <div class="flex flex-col items-center">
-                        <span class="font-display-lg text-display-lg text-primary">{{ number_format($totalBooks) }}</span>
-                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider mt-1">Koleksi Buku</span>
+                        <span class="font-display-lg text-3xl sm:text-display-lg text-primary">{{ number_format($totalBooks) }}</span>
+                        <span class="font-label-md text-xs sm:text-label-md text-outline uppercase tracking-wider mt-1">Koleksi Buku</span>
                     </div>
-                    <div class="flex flex-col items-center border-x-0 md:border-x border-border-subtle">
-                        <span class="font-display-lg text-display-lg text-primary">{{ number_format($totalMembers) }}</span>
-                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider mt-1">Anggota Aktif</span>
+                    <div class="flex flex-col items-center border-y md:border-y-0 md:border-x border-border-subtle py-4 md:py-0">
+                        <span class="font-display-lg text-3xl sm:text-display-lg text-primary">{{ number_format($totalMembers) }}</span>
+                        <span class="font-label-md text-xs sm:text-label-md text-outline uppercase tracking-wider mt-1">Anggota Aktif</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="font-display-lg text-display-lg text-primary">{{ number_format($totalArchives) }}</span>
-                        <span class="font-label-md text-label-md text-outline uppercase tracking-wider mt-1">Arsip Digital</span>
+                        <span class="font-display-lg text-3xl sm:text-display-lg text-primary">{{ number_format($totalArchives) }}</span>
+                        <span class="font-label-md text-xs sm:text-label-md text-outline uppercase tracking-wider mt-1">Arsip Digital</span>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Featured Collection (Dynamic Data Real + Style Card Asli) -->
-        <section id="katalog" class="py-16">
-            <div class="max-w-container-max mx-auto px-margin-desktop">
-                <div class="flex justify-between items-end mb-8">
+        <section id="katalog" class="py-12 sm:py-16">
+            <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
+                <div class="flex justify-between items-end mb-6 sm:mb-8">
                     <div>
-                        <h2 class="font-headline-lg text-headline-lg text-on-surface">Koleksi Unggulan</h2>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Buku-buku terbaru yang tersedia di perpustakaan.</p>
+                        <h2 class="font-headline-lg text-2xl sm:text-headline-lg text-on-surface">Koleksi Unggulan</h2>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Buku-buku terbaru yang tersedia di perpustakaan.</p>
                     </div>
                     @auth
                         @php
@@ -273,17 +293,17 @@
                             if (Auth::user()->isDosen()) $searchRoute = route('dosen.books.index');
                             elseif (Auth::user()->isPetugas()) $searchRoute = route('petugas.books.index');
                         @endphp
-                        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline font-bold" href="{{ $searchRoute }}">
+                        <a class="text-primary font-label-md text-xs sm:text-label-md flex items-center gap-1 hover:underline font-bold shrink-0" href="{{ $searchRoute }}">
                             Lihat Semua <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </a>
                     @else
-                        <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline font-bold" href="{{ route('login') }}">
+                        <a class="text-primary font-label-md text-xs sm:text-label-md flex items-center gap-1 hover:underline font-bold shrink-0" href="{{ route('login') }}">
                             Lihat Semua <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </a>
                     @endauth
                 </div>
                 
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
                     @forelse($featuredBooks as $book)
                         @php
                             $totalStock = $book->stock ?? ($book->collection?->stock ?? 0);
@@ -294,28 +314,28 @@
                                     <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $book->judul }}" src="{{ Storage::url($book->cover_image) }}">
                                 @else
                                     <div class="w-full h-full flex flex-col items-center justify-center p-4 text-outline">
-                                        <span class="material-symbols-outlined text-[48px] mb-2 text-outline-variant">book</span>
-                                        <span class="text-[10px] font-bold uppercase tracking-widest text-center">No Cover</span>
+                                        <span class="material-symbols-outlined text-[36px] sm:text-[48px] mb-2 text-outline-variant">book</span>
+                                        <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-center">No Cover</span>
                                     </div>
                                 @endif
                                 
                                 @if($totalStock > 0)
-                                    <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full">
                                         Stok: {{ $totalStock }}
                                     </span>
                                 @else
-                                    <span class="absolute top-2 right-2 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    <span class="absolute top-2 right-2 bg-amber-600 text-white text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full">
                                         Diantri
                                     </span>
                                 @endif
                             </div>
-                            <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
                                 <div>
-                                    <span class="text-[10px] font-bold text-primary uppercase mb-1 block">{{ $book->category?->name ?? 'Umum' }}</span>
-                                    <h3 class="font-label-md text-label-md text-on-surface line-clamp-2 mb-1" title="{{ $book->judul }}">{{ $book->judul }}</h3>
-                                    <p class="text-[12px] text-outline truncate">{{ $book->author ?? 'Penulis tidak diketahui' }}</p>
+                                    <span class="text-[9px] sm:text-[10px] font-bold text-primary uppercase mb-1 block truncate">{{ $book->category?->name ?? 'Umum' }}</span>
+                                    <h3 class="font-label-md text-xs sm:text-label-md text-on-surface line-clamp-2 mb-1" title="{{ $book->judul }}">{{ $book->judul }}</h3>
+                                    <p class="text-[11px] sm:text-[12px] text-outline truncate">{{ $book->author ?? 'Penulis tidak diketahui' }}</p>
                                 </div>
-                                <div class="mt-4 pt-2 border-t border-border-subtle flex items-center justify-between">
+                                <div class="mt-3 sm:mt-4 pt-2 border-t border-border-subtle flex items-center justify-between">
                                     <a href="{{ route('login') }}" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
                                         <span>Pinjam</span>
                                         <span class="material-symbols-outlined text-[14px]">chevron_right</span>
@@ -333,63 +353,63 @@
         </section>
 
         <!-- Core Services (Background surface-container asli) -->
-        <section id="layanan" class="py-16 bg-surface-container">
-            <div class="max-w-container-max mx-auto px-margin-desktop">
-                <div class="text-center mb-12">
-                    <h2 class="font-headline-lg text-headline-lg text-on-surface">Layanan Perpustakaan</h2>
-                    <p class="font-body-md text-body-md text-on-surface-variant">Fasilitas pendukung akademik untuk seluruh Civitas Akademika.</p>
+        <section id="layanan" class="py-12 sm:py-16 bg-surface-container">
+            <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
+                <div class="text-center mb-8 sm:mb-12">
+                    <h2 class="font-headline-lg text-2xl sm:text-headline-lg text-on-surface">Layanan Perpustakaan</h2>
+                    <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Fasilitas pendukung akademik untuk seluruh Civitas Akademika.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-gutter">
                     <!-- Service 1 -->
-                    <div class="p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
-                        <div class="w-16 h-16 bg-primary-container/10 text-primary rounded-full flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-[32px]">auto_stories</span>
+                    <div class="p-6 sm:p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-primary-container/10 text-primary rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">auto_stories</span>
                         </div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-3">E-Book &amp; Jurnal</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Akses ribuan judul buku elektronik dan jurnal internasional terakreditasi secara gratis.</p>
+                        <h3 class="font-headline-md text-lg sm:text-headline-md text-on-surface mb-2 sm:mb-3">E-Book &amp; Jurnal</h3>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Akses ribuan judul buku elektronik dan jurnal internasional terakreditasi secara gratis</p>
                     </div>
                     <!-- Service 2 -->
-                    <div class="p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
-                        <div class="w-16 h-16 bg-secondary-container/10 text-secondary rounded-full flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-[32px]">local_library</span>
+                    <div class="p-6 sm:p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-secondary-container/10 text-secondary rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">local_library</span>
                         </div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Ruang Baca Nyaman</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Fasilitas area baca yang tenang, bersih, dan kondusif untuk menunjang kegiatan membaca serta belajar mahasiswa.</p>
+                        <h3 class="font-headline-md text-lg sm:text-headline-md text-on-surface mb-2 sm:mb-3">Ruang Baca Nyaman</h3>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Fasilitas area baca yang tenang, bersih, dan kondusif untuk menunjang kegiatan membaca serta belajar</p>
                     </div>
                     <!-- Service 3 -->
-                    <div class="p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
-                        <div class="w-16 h-16 bg-tertiary-container/10 text-tertiary rounded-full flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-[32px]">history_edu</span>
+                    <div class="p-6 sm:p-8 bg-white border border-border-subtle rounded-xl flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-tertiary-container/10 text-tertiary rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                            <span class="material-symbols-outlined text-[28px] sm:text-[32px]">history_edu</span>
                         </div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-3">Repositori &amp; Karya Ilmiah</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Akses penuh Laporan PKL, Skripsi/TA, dan verifikasi orisinalitas karya ilmiah mahasiswa.</p>
+                        <h3 class="font-headline-md text-lg sm:text-headline-md text-on-surface mb-2 sm:mb-3">Repositori &amp; Karya Ilmiah</h3>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Akses penuh Laporan PKL, Skripsi/TA, dan verifikasi orisinalitas karya ilmiah mahasiswa</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Panduan Peminjaman (Background surface-container-low) -->
-        <section id="panduan" class="py-16 bg-surface-container-low border-t border-border-subtle">
-            <div class="max-w-container-max mx-auto px-margin-desktop">
-                <div class="text-center mb-12">
-                    <h2 class="font-headline-lg text-headline-lg text-on-surface">3 Langkah Mudah Meminjam Buku</h2>
-                    <p class="font-body-md text-body-md text-on-surface-variant">Alur peminjaman buku di Perpustakaan Digital POLNEP.</p>
+        <section id="panduan" class="py-12 sm:py-16 bg-surface-container-low border-t border-border-subtle">
+            <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
+                <div class="text-center mb-8 sm:mb-12">
+                    <h2 class="font-headline-lg text-2xl sm:text-headline-lg text-on-surface">3 Langkah Mudah Meminjam Buku</h2>
+                    <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Alur peminjaman buku di Perpustakaan Digital POLNEP.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter text-center">
-                    <div class="p-6 bg-white border border-border-subtle rounded-xl">
-                        <div class="w-12 h-12 rounded-full bg-primary text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">1</div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Cari Buku</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Gunakan kolom pencarian untuk menemukan koleksi buku yang dibutuhkan.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-gutter text-center">
+                    <div class="p-5 sm:p-6 bg-white border border-border-subtle rounded-xl">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary text-white font-bold text-base sm:text-lg flex items-center justify-center mx-auto mb-3 sm:mb-4">1</div>
+                        <h3 class="font-headline-md text-base sm:text-headline-md text-on-surface mb-2">Cari Buku</h3>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Gunakan kolom pencarian untuk menemukan koleksi buku yang dibutuhkan</p>
                     </div>
-                    <div class="p-6 bg-white border border-border-subtle rounded-xl">
-                        <div class="w-12 h-12 rounded-full bg-primary text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">2</div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Booking / Antrian</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Lakukan booking jika stok tersedia, atau masuk antrian otomatis via WhatsApp jika stok habis.</p>
+                    <div class="p-5 sm:p-6 bg-white border border-border-subtle rounded-xl">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary text-white font-bold text-base sm:text-lg flex items-center justify-center mx-auto mb-3 sm:mb-4">2</div>
+                        <h3 class="font-headline-md text-base sm:text-headline-md text-on-surface mb-2">Booking / Antri</h3>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Lakukan booking jika stok tersedia, atau masuk ke antrian jika stok tidak tersedia</p>
                     </div>
-                    <div class="p-6 bg-white border border-border-subtle rounded-xl">
-                        <div class="w-12 h-12 rounded-full bg-primary text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">3</div>
-                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Ambil Buku</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Tunjukkan kode booking ke petugas perpustakaan untuk mengambil fisik buku.</p>
+                    <div class="p-5 sm:p-6 bg-white border border-border-subtle rounded-xl">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary text-white font-bold text-base sm:text-lg flex items-center justify-center mx-auto mb-3 sm:mb-4">3</div>
+                        <h3 class="font-headline-md text-base sm:text-headline-md text-on-surface mb-2">Ambil Buku</h3>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Tunjukkan kode booking ke petugas perpustakaan untuk mengambil fisik buku</p>
                     </div>
                 </div>
             </div>
@@ -455,6 +475,24 @@
     </footer>
 
     <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+
+        function toggleMobileMenu() {
+            if (mobileMenu) {
+                mobileMenu.classList.toggle('hidden');
+                if (menuIcon) {
+                    menuIcon.textContent = mobileMenu.classList.contains('hidden') ? 'menu' : 'close';
+                }
+            }
+        }
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        }
+
         // Simple search interaction
         const searchInput = document.querySelector('input[type="text"]');
         if (searchInput) {

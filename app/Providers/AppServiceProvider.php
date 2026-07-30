@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Force HTTPS when behind a reverse proxy (e.g. Cloudflare Tunnel)
-        if ($this->app->environment('production', 'staging')) {
+        // Force HTTPS when behind a reverse proxy (e.g. Cloudflare Tunnel / Ngrok HTTPS)
+        if ($this->app->environment('production', 'staging') && !in_array(request()->getHost(), ['127.0.0.1', 'localhost'])) {
             URL::forceScheme('https');
         }
 
