@@ -25,6 +25,7 @@ class DashboardController extends Controller
         ];
 
         $recentLoans = Loan::with(['user', 'collection.book'])
+            ->whereIn('status', ['dipinjam', 'terlambat'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();

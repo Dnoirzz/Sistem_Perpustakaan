@@ -158,7 +158,7 @@
                         <tr class="bg-surface-container-low/50">
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tanggal Pinjam</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Waktu</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Pengembalian</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Denda Aktif</th>
                         </tr>
@@ -244,7 +244,7 @@
                             </span>
                         </div>
                         <div>
-                            <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Batas Waktu</span>
+                            <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Batas Pengembalian</span>
                             <span class="text-xs font-bold text-on-surface">
                                 {{ $loan->bts_waktu ? \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') : '-' }}
                             </span>

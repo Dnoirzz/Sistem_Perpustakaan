@@ -242,7 +242,7 @@
                             <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
                                 <th class="py-4 px-8">Judul Buku</th>
                                 <th class="py-4 px-6">Tanggal Pinjam</th>
-                                <th class="py-4 px-6">Batas Waktu</th>
+                                <th class="py-4 px-6">Batas Pengembalian</th>
                                 <th class="py-4 px-6 text-center">Status</th>
                             </tr>
                         </thead>

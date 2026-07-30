@@ -292,8 +292,8 @@
                 <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
                     <div class="p-8 border-b border-outline-variant/10 flex items-center justify-between">
                         <div>
-                            <h2 class="font-headline-md text-on-surface">Daftar Transaksi Peminjaman Terbaru</h2>
-                            <p class="text-sm text-outline">Daftar transaksi peminjaman yang terjadi belakangan ini</p>
+                            <h2 class="font-headline-md text-on-surface">Daftar Transaksi Peminjaman Aktif</h2>
+                            <p class="text-sm text-outline">Daftar peminjaman yang sedang dipinjam atau terlambat</p>
                         </div>
                         <a href="{{ route('petugas.loans.index') }}" class="text-primary font-label-md text-sm hover:underline">Lihat Semua</a>
                     </div>
@@ -304,7 +304,7 @@
                                     <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Peminjam</th>
                                     <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Judul Buku</th>
                                     <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Pinjam</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Waktu</th>
+                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Pengembalian</th>
                                     <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
                                 </tr>
                             </thead>
@@ -359,7 +359,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-8 py-8 text-center text-outline font-medium">Belum ada transaksi peminjaman buku</td>
+                                        <td colspan="5" class="px-8 py-8 text-center text-outline font-medium">Belum ada transaksi peminjaman aktif saat ini</td>
                                     </tr>
                                 @endforelse
                             </tbody>

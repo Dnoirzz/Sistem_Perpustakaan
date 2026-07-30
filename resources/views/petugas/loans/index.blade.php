@@ -184,7 +184,7 @@
                         <span class="material-symbols-outlined">warning</span>
                     </div>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Pinjaman Terlambat</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Pengembalian Terlambat</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold {{ $stats['overdue_loans'] > 0 ? 'text-rose-600' : 'text-on-surface' }}">{{ $stats['overdue_loans'] }}</span>
                     <span class="text-xs text-outline font-semibold">transaksi</span>
@@ -197,7 +197,7 @@
                         <span class="material-symbols-outlined">assignment_turned_in</span>
                     </div>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Buku Dikembalikan</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Buku Dikembalikan Hari Ini</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold text-on-surface">{{ $stats['returned_today'] }}</span>
                     <span class="text-xs text-outline font-semibold">transaksi</span>
@@ -260,7 +260,7 @@
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Anggota</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tanggal Pinjam</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Waktu</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Pengembalian</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Pengembalian</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
                         </tr>
