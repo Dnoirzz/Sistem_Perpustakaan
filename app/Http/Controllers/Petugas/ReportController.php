@@ -9,6 +9,9 @@ use App\Models\LaporanPkl;
 use App\Models\ProposalTa;
 use App\Models\LaporanTugasAkhir;
 use App\Models\ActivityLog;
+use App\Models\User;
+use App\Models\Collection;
+use App\Models\Penalty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -27,8 +30,257 @@ class ReportController extends Controller
 
     public function index()
     {
+        Loan::syncOverdueStatuses();
+
+        $stats = [
+            'total_members' => User::whereHas('role', function ($query) {
+                $query->whereIn('role_name', ['mahasiswa', 'dosen']);
+            })->count(),
+            'total_loans' => Loan::count(),
+            'active_loans' => Loan::whereIn('status', ['dipinjam', 'terlambat'])->count(),
+            'total_collections' => Collection::sum('stock'),
+            'total_books' => Book::count(),
+            'total_archives' => LaporanPkl::count() + ProposalTa::count() + LaporanTugasAkhir::count(),
+            'unpaid_penalties_amount' => Penalty::where('status', 'belum_dibayar')->sum('amount'),
+            'unpaid_penalties_count' => Penalty::where('status', 'belum_dibayar')->count(),
+        ];
+
         return view('petugas.reports.index', [
             'collectionReportTypes' => self::COLLECTION_REPORT_TYPES,
+            'stats' => $stats,
+        ]);
+    }
+
+    public function sirkulasi(Request $request)
+    {
+        Loan::syncOverdueStatuses();
+
+        $search = $request->input('search');
+        $status = $request->input('status');
+        $tglAwal = $request->input('tgl_awal');
+        $tglAkhir = $request->input('tgl_akhir');
+
+        $query = Loan::with(['user.role', 'user.mahasiswa', 'user.dosen', 'collection.book']);
+
+        if ($tglAwal && $tglAkhir) {
+            $query->whereBetween('tgl_pinjam', [$tglAwal, $tglAkhir]);
+        }
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user', function ($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%")
+                        ->orWhereHas('mahasiswa', function ($mq) use ($search) {
+                            $mq->where('nim', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('dosen', function ($dq) use ($search) {
+                            $dq->where('nip', 'like', "%{$search}%");
+                        });
+                });
+            });
+        }
+
+        $loans = $query->latest('tgl_pinjam')->paginate(15)->withQueryString();
+
+        return view('petugas.reports.sirkulasi', compact('loans', 'search', 'status', 'tglAwal', 'tglAkhir'));
+    }
+
+    public function koleksi(Request $request)
+    {
+        $selectedCollectionType = $request->input('collection_type');
+        $search = $request->input('search');
+
+        $items = collect();
+
+        if ($selectedCollectionType === 'book') {
+            $query = Book::with(['category', 'collection']);
+            if ($search) {
+                $query->where('judul', 'like', "%{$search}%")
+                    ->orWhere('author', 'like', "%{$search}%")
+                    ->orWhere('publisher', 'like', "%{$search}%");
+            }
+            $items = $query->orderBy('judul')->paginate(15)->withQueryString();
+        } elseif ($selectedCollectionType === 'laporan_pkl') {
+            $query = LaporanPkl::with(['mahasiswa.user', 'mahasiswa.prodi']);
+            if ($search) {
+                $query->where('judul_pkl', 'like', "%{$search}%")
+                    ->orWhereHas('mahasiswa.user', fn($q) => $q->where('name', 'like', "%{$search}%"));
+            }
+            $items = $query->latest()->paginate(15)->withQueryString();
+        } elseif ($selectedCollectionType === 'proposal_ta') {
+            $query = ProposalTa::with(['mahasiswa.user', 'mahasiswa.prodi']);
+            if ($search) {
+                $query->where('judul_proposal', 'like', "%{$search}%")
+                    ->orWhereHas('mahasiswa.user', fn($q) => $q->where('name', 'like', "%{$search}%"));
+            }
+            $items = $query->latest()->paginate(15)->withQueryString();
+        } elseif ($selectedCollectionType === 'laporan_ta') {
+            $query = LaporanTugasAkhir::with(['mahasiswa.user', 'mahasiswa.prodi']);
+            if ($search) {
+                $query->where('judul_tgs_akhir', 'like', "%{$search}%")
+                    ->orWhereHas('mahasiswa.user', fn($q) => $q->where('name', 'like', "%{$search}%"));
+            }
+            $items = $query->latest()->paginate(15)->withQueryString();
+        }
+
+        $collectionReportTypes = [
+            'book' => 'Buku Umum',
+            'laporan_pkl' => 'Laporan PKL',
+            'proposal_ta' => 'Proposal Tugas Akhir (TA)',
+            'laporan_ta' => 'Laporan Tugas Akhir (TA)',
+        ];
+
+        return view('petugas.reports.koleksi', compact('items', 'selectedCollectionType', 'search', 'collectionReportTypes'));
+    }
+
+    public function arsip(Request $request)
+    {
+        $jenisArsip = $request->input('jenis_arsip', 'all');
+        $tglAwal = $request->input('tgl_awal', date('Y-m-01'));
+        $tglAkhir = $request->input('tgl_akhir', date('Y-m-d'));
+
+        $tglAwalCarbon = Carbon::parse($tglAwal);
+        $tglAkhirCarbon = Carbon::parse($tglAkhir);
+
+        $archives = $this->getArchivesData($tglAwalCarbon, $tglAkhirCarbon, $jenisArsip);
+
+        return view('petugas.reports.arsip', compact('archives', 'jenisArsip', 'tglAwal', 'tglAkhir'));
+    }
+
+    public function denda(Request $request)
+    {
+        $search = $request->input('search');
+        $status = $request->input('status', 'all');
+        $type = $request->input('type', 'all');
+
+        $query = Penalty::with(['user.mahasiswa', 'user.dosen', 'loan.collection']);
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($type && $type !== 'all') {
+            $query->where('type', $type);
+        }
+
+        if ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhereHas('mahasiswa', function ($mq) use ($search) {
+                        $mq->where('nim', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('dosen', function ($dq) use ($search) {
+                        $dq->where('nip', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $penalties = $query->latest()->paginate(15)->withQueryString();
+
+        $stats = [
+            'unpaid_amount' => Penalty::where('status', 'belum_dibayar')->sum('amount'),
+            'unpaid_count' => Penalty::where('status', 'belum_dibayar')->count(),
+            'paid_amount' => Penalty::where('status', 'dibayar')->sum('amount'),
+            'paid_count' => Penalty::where('status', 'dibayar')->count(),
+        ];
+
+        return view('petugas.reports.denda', compact('penalties', 'search', 'status', 'type', 'stats'));
+    }
+
+    public function printDenda(Request $request)
+    {
+        $status = $request->input('status', 'all');
+        $type = $request->input('type', 'all');
+
+        $query = Penalty::with(['user.mahasiswa', 'user.dosen', 'loan.collection']);
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($type && $type !== 'all') {
+            $query->where('type', $type);
+        }
+
+        $penalties = $query->latest()->get();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity' => 'Mencetak laporan denda & sanksi perpustakaan',
+        ]);
+
+        return view('petugas.reports.print-denda', compact('penalties', 'status', 'type'));
+    }
+
+    public function exportDendaExcel(Request $request)
+    {
+        $status = $request->input('status', 'all');
+        $type = $request->input('type', 'all');
+
+        $query = Penalty::with(['user.mahasiswa', 'user.dosen', 'loan.collection']);
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($type && $type !== 'all') {
+            $query->where('type', $type);
+        }
+
+        $penalties = $query->latest()->get();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity' => 'Mengekspor laporan denda & sanksi Excel',
+        ]);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Laporan Denda');
+
+        $sheet->setCellValue('A1', 'LAPORAN DENDA & SANKSI PERPUSTAKAAN PSDKU POLNEP');
+        $sheet->setCellValue('A2', 'Tanggal Cetak: ' . now()->translatedFormat('d F Y H:i'));
+
+        $sheet->setCellValue('A4', 'No');
+        $sheet->setCellValue('B4', 'Nama Anggota');
+        $sheet->setCellValue('C4', 'Koleksi / Buku');
+        $sheet->setCellValue('D4', 'Jenis Sanksi');
+        $sheet->setCellValue('E4', 'Metode Penyelesaian');
+        $sheet->setCellValue('F4', 'Nominal Denda');
+        $sheet->setCellValue('G4', 'Status');
+        $sheet->setCellValue('H4', 'Keterangan');
+        $sheet->getStyle('A4:H4')->getFont()->setBold(true);
+
+        $rowNum = 5;
+        foreach ($penalties as $index => $pen) {
+            $sheet->setCellValue('A' . $rowNum, $index + 1);
+            $sheet->setCellValue('B' . $rowNum, $pen->user?->name ?: '-');
+            $sheet->setCellValue('C' . $rowNum, $pen->loan?->collection?->display_title ?: '-');
+            $sheet->setCellValue('D' . $rowNum, ucfirst($pen->type));
+            $sheet->setCellValue('E' . $rowNum, str_replace('_', ' ', ucfirst($pen->penalti_type ?? 'uang_tunai')));
+            $sheet->setCellValue('F' . $rowNum, (float) $pen->amount);
+            $sheet->getStyle('F' . $rowNum)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->setCellValue('G' . $rowNum, $pen->status === 'dibayar' ? 'LUNAS' : 'BELUM DIBAYAR');
+            $sheet->setCellValue('H' . $rowNum, $pen->description ?: '-');
+            $rowNum++;
+        }
+
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'laporan-denda-' . date('Ymd-His') . '.xlsx';
+
+        return response()->streamDownload(function() use ($writer) {
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
         ]);
     }
 

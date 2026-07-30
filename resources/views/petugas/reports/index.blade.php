@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Rekapitulasi & Laporan - SIPUS PSDKU POLNEP</title>
+    <title>Pusat Laporan & Rekapitulasi - SIPUS PSDKU POLNEP</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -36,7 +36,7 @@
                         "secondary": "#006c49",
                         "tertiary": "#95002b",
                         "tertiary-fixed": "#ffdadb",
-                        "primary": "#00a5c0", /* POLNEP Brand Turquoise */
+                        "primary": "#00a5c0",
                         "on-primary-container": "#dad7ff",
                         "surface-dim": "#d2d9f4",
                         "tertiary-container": "#bf0f3c",
@@ -110,7 +110,7 @@
             color: #131b2e;
         }
         .sidebar-active {
-            background-color: #00a5c0; /* POLNEP Turquoise */
+            background-color: #00a5c0;
             color: white;
             box-shadow: 0 4px 12px rgba(0, 165, 192, 0.2);
         }
@@ -120,11 +120,11 @@
     @include('petugas.layouts.sidebar')
     
     <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <!-- Top Bar / Header Info -->
+        <!-- Header Info -->
         <header class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="font-headline-md text-on-surface">Rekapitulasi & Laporan</h1>
-                <p class="text-sm text-outline">Tarik data rekap transaksi sirkulasi dan status aset inventaris perpustakaan.</p>
+                <h1 class="font-headline-md text-on-surface">Pusat Laporan Perpustakaan</h1>
+                <p class="text-sm text-outline">Ringkasan statistik data perpustakaan dan menu laporan terpadu.</p>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
@@ -137,342 +137,134 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Sirkulasi Report Card -->
-            <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6">
-                        <span class="material-symbols-outlined text-[32px]">sync_alt</span>
+        <!-- Container Ringkasan Data Perpustakaan (4 Metrics Cards) -->
+        <section class="mb-10">
+            <h2 class="text-xs font-bold text-outline uppercase tracking-wider mb-4">Ringkasan Total Data Perpustakaan</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 1. Total Anggota -->
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[24px]">group</span>
+                        </div>
                     </div>
-                    <h2 class="font-headline-md text-on-surface text-lg mb-2">Laporan Transaksi Sirkulasi</h2>
-                    <p class="text-xs text-outline mb-6">Rekapitulasi data transaksi peminjaman, pengembalian, dan keterlambatan buku/arsip dalam rentang waktu tertentu.</p>
-                    
-                    <form id="form-sirkulasi" class="space-y-4 mb-6">
-                        <!-- Pilihan Rentang Waktu -->
-                        <div>
-                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Rentang Laporan</label>
-                            <div class="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-on-surface-variant mb-4">
-                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                                    <input type="radio" name="filter_type" value="harian" class="text-primary focus:ring-primary/20 border-outline-variant/50" checked>
-                                    <span>Harian</span>
-                                </label>
-                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                                    <input type="radio" name="filter_type" value="bulanan" class="text-primary focus:ring-primary/20 border-outline-variant/50">
-                                    <span>Bulanan</span>
-                                </label>
-                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                                    <input type="radio" name="filter_type" value="tahunan" class="text-primary focus:ring-primary/20 border-outline-variant/50">
-                                    <span>Tahunan</span>
-                                </label>
-                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                                    <input type="radio" name="filter_type" value="custom" class="text-primary focus:ring-primary/20 border-outline-variant/50">
-                                    <span>Pilih Tanggal</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- 1. Harian Input -->
-                        <div id="container-harian">
-                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Tanggal</label>
-                            <input type="date" id="filter_hari" value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        </div>
-
-                        <!-- 2. Bulanan Input -->
-                        <div id="container-bulanan" class="hidden">
-                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Bulan</label>
-                            <input type="month" id="filter_bulan" value="{{ date('Y-m') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        </div>
-
-                        <!-- 3. Tahunan Input -->
-                        <div id="container-tahunan" class="hidden">
-                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Tahun</label>
-                            <select id="filter_tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                                @for ($y = date('Y'); $y >= 2020; $y--)
-                                    <option value="{{ $y }}">{{ $y }}</option>
-                                @endfor
-                            </select>
-                        </div>
-
-                        <!-- 4. Custom Input -->
-                        <div id="container-custom" class="grid grid-cols-2 gap-4 hidden">
-                            <div>
-                                <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Mulai Tanggal</label>
-                                <input type="date" id="tgl_awal" name="tgl_awal" value="{{ date('Y-m-01') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Sampai Tanggal</label>
-                                <input type="date" id="tgl_akhir" name="tgl_akhir" value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                            </div>
-                        </div>
-                    </form>
+                    <h3 class="text-on-surface-variant font-label-md text-xs mb-1">Total Anggota Perpustakaan</h3>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-bold text-on-surface">{{ number_format($stats['total_members'], 0, ',', '.') }}</span>
+                        <span class="text-xs text-outline font-semibold">orang</span>
+                    </div>
                 </div>
-                <div class="flex gap-3 border-t border-outline-variant/10 pt-6">
-                    <button type="button" onclick="actionSirkulasi('print')" class="flex-1 py-3 px-4 rounded-2xl border border-primary/20 text-primary hover:bg-primary/5 text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">print</span>
-                        Cetak Laporan
-                    </button>
-                    <button type="button" onclick="actionSirkulasi('excel')" class="flex-1 py-3 px-4 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-md text-center flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">download</span>
-                        Ekspor Excel
-                    </button>
+
+                <!-- 2. Total Sirkulasi / Peminjaman -->
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[24px]">swap_horiz</span>
+                        </div>
+                    </div>
+                    <h3 class="text-on-surface-variant font-label-md text-xs mb-1">Total Transaksi Peminjaman</h3>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-bold text-on-surface">{{ number_format($stats['total_loans'], 0, ',', '.') }}</span>
+                        <span class="text-xs text-outline font-semibold">transaksi</span>
+                    </div>
+                </div>
+
+                <!-- 3. Total Koleksi Perpustakaan -->
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[24px]">inventory_2</span>
+                        </div>
+                    </div>
+                    <h3 class="text-on-surface-variant font-label-md text-xs mb-1">Total Stok Koleksi Perpustakaan</h3>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-bold text-on-surface">{{ number_format($stats['total_collections'], 0, ',', '.') }}</span>
+                        <span class="text-xs text-outline font-semibold">item</span>
+                    </div>
+                </div>
+
+                <!-- 4. Total Denda Belum Dibayar -->
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[24px]">payments</span>
+                        </div>
+                    </div>
+                    <h3 class="text-on-surface-variant font-label-md text-xs mb-1">Denda Belum Dibayar</h3>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-2xl font-extrabold text-rose-600">Rp {{ number_format($stats['unpaid_penalties_amount'], 0, ',', '.') }}</span>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Inventory Report Card -->
-            <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary mb-6">
-                        <span class="material-symbols-outlined text-[32px]">inventory_2</span>
+        <!-- Navigation Section: Route Buttons ke Halaman Detail Tiap Laporan -->
+        <section class="space-y-4">
+            <h2 class="text-xs font-bold text-outline uppercase tracking-wider">Pilih Kategori Laporan Detail</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- 1. Laporan Sirkulasi -->
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/40 transition-all group">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[28px]">sync_alt</span>
+                        </div>
+                        <h3 class="font-headline-md text-on-surface text-base mb-1">Laporan Sirkulasi Peminjaman</h3>
+                        <p class="text-xs text-outline mb-6">Tampilkan tabel detail transaksi peminjaman, batas pengembalian, dan histori peminjaman anggota secara live.</p>
                     </div>
-                    <h2 class="font-headline-md text-on-surface text-lg mb-2">Laporan Koleksi & Aset</h2>
-                    <p class="text-xs text-outline mb-6">Rekapitulasi data seluruh inventaris perpustakaan (Buku Umum, Laporan PKL, Proposal Tugas Akhir, dan Laporan Tugas Akhir) secara komprehensif.</p>
+                    <a href="{{ route('petugas.reports.sirkulasi') }}" class="w-full py-3 px-4 rounded-2xl bg-primary text-white text-xs font-bold transition-all shadow-md shadow-primary/20 hover:bg-opacity-95 text-center flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        Buka Laporan Sirkulasi
+                    </a>
+                </div>
 
-                    <div class="mb-6">
-                        <label for="collection_type" class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Jenis Koleksi</label>
-                        <select id="collection_type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-secondary focus:ring-2 focus:ring-secondary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                            @foreach($collectionReportTypes as $typeValue => $typeLabel)
-                                <option value="{{ $typeValue }}">{{ $typeLabel }}</option>
-                            @endforeach
-                        </select>
+                <!-- 2. Laporan Koleksi -->
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-secondary/40 transition-all group">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[28px]">menu_book</span>
+                        </div>
+                        <h3 class="font-headline-md text-on-surface text-base mb-1">Laporan Koleksi & Inventaris</h3>
+                        <p class="text-xs text-outline mb-6">Tampilkan tabel detail inventaris katalog buku umum, stok fisik, penerbit, dan kategori buku.</p>
                     </div>
+                    <a href="{{ route('petugas.reports.koleksi') }}" class="w-full py-3 px-4 rounded-2xl bg-secondary text-white text-xs font-bold transition-all shadow-md shadow-secondary/20 hover:bg-opacity-95 text-center flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        Buka Laporan Koleksi
+                    </a>
                 </div>
-                <div class="flex gap-3 border-t border-outline-variant/10 pt-6 mt-12">
-                    <button type="button" onclick="actionKoleksi('print')" class="flex-1 py-3 px-4 rounded-2xl border border-secondary/20 text-secondary hover:bg-secondary/5 text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">print</span>
-                        Cetak Laporan
-                    </button>
-                    <button type="button" onclick="actionKoleksi('excel')" class="flex-1 py-3 px-4 rounded-2xl bg-secondary hover:bg-secondary/90 text-white text-xs font-bold transition-all shadow-md text-center flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">download</span>
-                        Ekspor Excel
-                    </button>
+
+                <!-- 3. Laporan Arsip Digital -->
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-teal-500/40 transition-all group">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[28px]">folder_shared</span>
+                        </div>
+                        <h3 class="font-headline-md text-on-surface text-base mb-1">Laporan Pengumpulan Arsip</h3>
+                        <p class="text-xs text-outline mb-6">Tampilkan tabel penerimaan dokumen karya ilmiah digital (Laporan PKL, Proposal TA, dan Laporan TA).</p>
+                    </div>
+                    <a href="{{ route('petugas.reports.arsip') }}" class="w-full py-3 px-4 rounded-2xl bg-teal-600 text-white text-xs font-bold transition-all shadow-md shadow-teal-200 hover:bg-teal-700 text-center flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        Buka Laporan Arsip
+                    </a>
                 </div>
+
+                <!-- 4. Laporan Denda & Sanksi -->
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-rose-500/40 transition-all group">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[28px]">gavel</span>
+                        </div>
+                        <h3 class="font-headline-md text-on-surface text-base mb-1">Laporan Denda & Sanksi</h3>
+                        <p class="text-xs text-outline mb-6">Tampilkan tabel rekapan kasus keterlambatan, kerusakan, kehilangan buku, serta status pelunasannya.</p>
+                    </div>
+                    <a href="{{ route('petugas.reports.denda') }}" class="w-full py-3 px-4 rounded-2xl bg-rose-600 text-white text-xs font-bold transition-all shadow-md shadow-rose-200 hover:bg-rose-700 text-center flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        Buka Laporan Denda
+                    </a>
+                </div>
+
             </div>
-
-            <!-- Digital Archive Report Card -->
-            <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
-                <div>
-                    <div class="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary mb-6">
-                        <span class="material-symbols-outlined text-[32px]">folder_shared</span>
-                    </div>
-                    <h2 class="font-headline-md text-on-surface text-lg mb-2">Laporan Pengumpulan Arsip</h2>
-                    <p class="text-xs text-outline mb-6">Rekapitulasi data penyerahan dan penerimaan dokumen fisik arsip digital (Laporan PKL, Proposal TA, Laporan TA).</p>
-                    
-                    <form id="form-arsip" class="space-y-4 mb-6">
-                        <!-- Pilihan Rentang Waktu -->
-                        <div>
-                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Rentang Laporan</label>
-                            <div class="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-on-surface-variant mb-4">
-                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                                    <input type="radio" name="arsip_filter_type" value="harian" class="text-primary focus:ring-primary/20 border-outline-variant/50" checked>
-                                    <span>Harian</span>
-                                </label>
-                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                                    <input type="radio" name="arsip_filter_type" value="bulanan" class="text-primary focus:ring-primary/20 border-outline-variant/50">
-                                    <span>Bulanan</span>
-                                </label>
-                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                                    <input type="radio" name="arsip_filter_type" value="tahunan" class="text-primary focus:ring-primary/20 border-outline-variant/50">
-                                    <span>Tahunan</span>
-                                </label>
-                                <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                                    <input type="radio" name="arsip_filter_type" value="custom" class="text-primary focus:ring-primary/20 border-outline-variant/50">
-                                    <span>Pilih Tanggal</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- 1. Harian Input -->
-                        <div id="arsip-container-harian">
-                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Tanggal</label>
-                            <input type="date" id="arsip_filter_hari" value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        </div>
-
-                        <!-- 2. Bulanan Input -->
-                        <div id="arsip-container-bulanan" class="hidden">
-                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Bulan</label>
-                            <input type="month" id="arsip_filter_bulan" value="{{ date('Y-m') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        </div>
-
-                        <!-- 3. Tahunan Input -->
-                        <div id="arsip-container-tahunan" class="hidden">
-                            <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Pilih Tahun</label>
-                            <select id="arsip_filter_tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                                @for ($y = date('Y'); $y >= 2020; $y--)
-                                    <option value="{{ $y }}">{{ $y }}</option>
-                                @endfor
-                            </select>
-                        </div>
-
-                        <!-- 4. Custom Input -->
-                        <div id="arsip-container-custom" class="grid grid-cols-2 gap-4 hidden">
-                            <div>
-                                <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Mulai Tanggal</label>
-                                <input type="date" id="arsip_tgl_awal" value="{{ date('Y-m-01') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Sampai Tanggal</label>
-                                <input type="date" id="arsip_tgl_akhir" value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                            </div>
-                        </div>
-
-                        <!-- Pilihan Jenis Arsip -->
-                        <div>
-                            <label for="arsip_jenis" class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Jenis Arsip</label>
-                            <select id="arsip_jenis" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                                <option value="all">Semua Jenis Arsip</option>
-                                <option value="laporan_pkl">Laporan PKL</option>
-                                <option value="proposal_ta">Proposal Tugas Akhir (TA)</option>
-                                <option value="laporan_ta">Laporan Tugas Akhir (TA)</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="flex gap-3 border-t border-outline-variant/10 pt-6">
-                    <button type="button" onclick="actionArsip('print')" class="flex-1 py-3 px-4 rounded-2xl border border-tertiary/20 text-tertiary hover:bg-tertiary/5 text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">print</span>
-                        Cetak Laporan
-                    </button>
-                    <button type="button" onclick="actionArsip('excel')" class="flex-1 py-3 px-4 rounded-2xl bg-tertiary hover:bg-tertiary/90 text-white text-xs font-bold transition-all shadow-md text-center flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">download</span>
-                        Ekspor Excel
-                    </button>
-                </div>
-            </div>
-        </div>
+        </section>
     </main>
-
-    <script>
-        document.querySelectorAll('input[name="filter_type"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const val = this.value;
-                document.getElementById('container-harian').classList.toggle('hidden', val !== 'harian');
-                document.getElementById('container-bulanan').classList.toggle('hidden', val !== 'bulanan');
-                document.getElementById('container-tahunan').classList.toggle('hidden', val !== 'tahunan');
-                document.getElementById('container-custom').classList.toggle('hidden', val !== 'custom');
-            });
-        });
-
-        function actionSirkulasi(type) {
-            const filterType = document.querySelector('input[name="filter_type"]:checked').value;
-            let tglAwal = '';
-            let tglAkhir = '';
-
-            if (filterType === 'harian') {
-                const dayVal = document.getElementById('filter_hari').value;
-                if (!dayVal) {
-                    alert('Silakan pilih tanggal terlebih dahulu.');
-                    return;
-                }
-                tglAwal = dayVal;
-                tglAkhir = dayVal;
-            } else if (filterType === 'bulanan') {
-                const monthVal = document.getElementById('filter_bulan').value;
-                if (!monthVal) {
-                    alert('Silakan pilih bulan terlebih dahulu.');
-                    return;
-                }
-                const parts = monthVal.split('-');
-                const year = parseInt(parts[0]);
-                const month = parseInt(parts[1]);
-                tglAwal = `${year}-${String(month).padStart(2, '0')}-01`;
-                const lastDay = new Date(year, month, 0).getDate();
-                tglAkhir = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
-            } else if (filterType === 'tahunan') {
-                const yearVal = document.getElementById('filter_tahun').value;
-                if (!yearVal) {
-                    alert('Silakan pilih tahun terlebih dahulu.');
-                    return;
-                }
-                tglAwal = `${yearVal}-01-01`;
-                tglAkhir = `${yearVal}-12-31`;
-            } else if (filterType === 'custom') {
-                tglAwal = document.getElementById('tgl_awal').value;
-                tglAkhir = document.getElementById('tgl_akhir').value;
-                if (!tglAwal || !tglAkhir) {
-                    alert('Silakan pilih rentang tanggal laporan terlebih dahulu.');
-                    return;
-                }
-            }
-
-            if (type === 'print') {
-                const url = `{{ route('petugas.reports.print-sirkulasi') }}?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`;
-                window.open(url, '_blank');
-            } else if (type === 'excel') {
-                window.location.href = `{{ route('petugas.reports.export-sirkulasi') }}?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}`;
-            }
-        }
-
-        function actionKoleksi(type) {
-            const collectionType = document.getElementById('collection_type').value || 'all';
-
-            if (type === 'print') {
-                const url = `{{ route('petugas.reports.print-koleksi') }}?collection_type=${collectionType}`;
-                window.open(url, '_blank');
-            } else if (type === 'excel') {
-                window.location.href = `{{ route('petugas.reports.export-koleksi') }}?collection_type=${collectionType}`;
-            }
-        }
-
-        document.querySelectorAll('input[name="arsip_filter_type"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const val = this.value;
-                document.getElementById('arsip-container-harian').classList.toggle('hidden', val !== 'harian');
-                document.getElementById('arsip-container-bulanan').classList.toggle('hidden', val !== 'bulanan');
-                document.getElementById('arsip-container-tahunan').classList.toggle('hidden', val !== 'tahunan');
-                document.getElementById('arsip-container-custom').classList.toggle('hidden', val !== 'custom');
-            });
-        });
-
-        function actionArsip(type) {
-            const filterType = document.querySelector('input[name="arsip_filter_type"]:checked').value;
-            const jenisArsip = document.getElementById('arsip_jenis').value;
-            let tglAwal = '';
-            let tglAkhir = '';
-
-            if (filterType === 'harian') {
-                const dayVal = document.getElementById('arsip_filter_hari').value;
-                if (!dayVal) {
-                    alert('Silakan pilih tanggal terlebih dahulu.');
-                    return;
-                }
-                tglAwal = dayVal;
-                tglAkhir = dayVal;
-            } else if (filterType === 'bulanan') {
-                const monthVal = document.getElementById('arsip_filter_bulan').value;
-                if (!monthVal) {
-                    alert('Silakan pilih bulan terlebih dahulu.');
-                    return;
-                }
-                const parts = monthVal.split('-');
-                const year = parseInt(parts[0]);
-                const month = parseInt(parts[1]);
-                tglAwal = `${year}-${String(month).padStart(2, '0')}-01`;
-                const lastDay = new Date(year, month, 0).getDate();
-                tglAkhir = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
-            } else if (filterType === 'tahunan') {
-                const yearVal = document.getElementById('arsip_filter_tahun').value;
-                if (!yearVal) {
-                    alert('Silakan pilih tahun terlebih dahulu.');
-                    return;
-                }
-                tglAwal = `${yearVal}-01-01`;
-                tglAkhir = `${yearVal}-12-31`;
-            } else if (filterType === 'custom') {
-                tglAwal = document.getElementById('arsip_tgl_awal').value;
-                tglAkhir = document.getElementById('arsip_tgl_akhir').value;
-                if (!tglAwal || !tglAkhir) {
-                    alert('Silakan pilih rentang tanggal laporan terlebih dahulu.');
-                    return;
-                }
-            }
-
-            if (type === 'print') {
-                const url = `{{ route('petugas.reports.print-arsip') }}?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}&jenis_arsip=${jenisArsip}`;
-                window.open(url, '_blank');
-            } else if (type === 'excel') {
-                window.location.href = `{{ route('petugas.reports.export-arsip') }}?tgl_awal=${tglAwal}&tgl_akhir=${tglAkhir}&jenis_arsip=${jenisArsip}`;
-            }
-        }
-    </script>
 </body>
 </html>

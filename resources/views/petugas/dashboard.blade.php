@@ -149,7 +149,7 @@
         <!-- Top Bar / Header Info -->
         <header class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="font-headline-md text-on-surface">Dashboard Petugas</h1>
+                <h1 class="font-headline-md text-on-surface">Dashboard</h1>
                 <p class="text-sm text-outline">Selamat datang kembali di panel operasional perpustakaan.</p>
             </div>
             <div class="flex items-center gap-4">
@@ -228,7 +228,7 @@
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Terlambat</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold {{ $stats['overdue_loans'] > 0 ? 'text-rose-600' : 'text-on-surface' }}">{{ $stats['overdue_loans'] }}</span>
-                    <span class="text-xs text-outline font-semibold">buku</span>
+                    <span class="text-xs text-outline font-semibold">transaksi</span>
                 </div>
             </div>
 
@@ -284,110 +284,84 @@
             </div>
         </section>
 
-        <!-- Two Column Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Left Column: Recent Loans Table -->
-            <div class="lg:col-span-2 space-y-8">
-                <!-- Active Loans Table -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-                    <div class="p-8 border-b border-outline-variant/10 flex items-center justify-between">
-                        <div>
-                            <h2 class="font-headline-md text-on-surface">Daftar Transaksi Peminjaman Aktif</h2>
-                            <p class="text-sm text-outline">Daftar peminjaman yang sedang dipinjam atau terlambat</p>
-                        </div>
-                        <a href="{{ route('petugas.loans.index') }}" class="text-primary font-label-md text-sm hover:underline">Lihat Semua</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-surface-container-low/50">
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Peminjam</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Judul Buku</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Pinjam</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Pengembalian</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-outline-variant/10">
-                                @forelse($recentLoans as $loan)
-                                    <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                        <td class="px-8 py-5">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase">
-                                                    {{ substr($loan->user->name, 0, 2) }}
-                                                </div>
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-on-surface text-sm">{{ $loan->user->name }}</span>
-                                                    <span class="text-[10px] text-outline font-semibold">Email: {{ $loan->user->email }}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-8 py-5">
-                                            <div class="flex flex-col">
-                                                <span class="font-semibold text-on-surface text-sm">
-                                                    {{ $loan->collection?->display_title ?? 'Dokumen' }}
-                                                </span>
-                                                <span class="text-[10px] text-outline font-bold uppercase tracking-tighter">
-                                                    {{ $loan->collection?->display_type_label ?? 'Koleksi' }}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                            {{ \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') }}
-                                        </td>
-                                        <td class="px-8 py-5 text-sm font-medium {{ $loan->status === 'terlambat' ? 'text-error' : 'text-on-surface-variant' }}">
-                                            {{ \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') }}
-                                        </td>
-                                        <td class="px-8 py-5">
-                                            @if($loan->status === 'terlambat')
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-red-50 text-red-600 text-[10px] font-bold uppercase tracking-wide">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse"></span>
-                                                    Terlambat
-                                                </span>
-                                            @elseif($loan->status === 'dipinjam')
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
-                                                    Dipinjam
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                                    Kembali
-                                                </span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="px-8 py-8 text-center text-outline font-medium">Belum ada transaksi peminjaman aktif saat ini</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+        <!-- Full Width Layout: Recent Loans Table -->
+        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
+            <div class="p-8 border-b border-outline-variant/10 flex items-center justify-between">
+                <div>
+                    <h2 class="font-headline-md text-on-surface">Daftar Transaksi Peminjaman Aktif</h2>
+                    <p class="text-sm text-outline">Daftar peminjamn dan buku yang sedang dipinjam atau terlambat</p>
+                </div>
+                <a href="{{ route('petugas.loans.index') }}" class="text-primary font-label-md text-sm hover:underline">Lihat Semua</a>
             </div>
-
-            <!-- Right Column: Sidebar Widgets -->
-            <div class="space-y-8">
-                <!-- Usulan Buku Info Widget -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="font-headline-md text-on-surface text-lg">Usulan Buku Baru</h2>
-                        <span class="material-symbols-outlined text-primary">rate_review</span>
-                    </div>
-                    <div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/10 flex gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex-shrink-0 flex items-center justify-center text-primary">
-                            <span class="material-symbols-outlined text-[20px]">how_to_vote</span>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-on-surface leading-tight">Pengadaan & Voting</p>
-                            <p class="text-[11px] text-outline mt-1.5">Kelola rekomendasi pengadaan buku dari mahasiswa dan dosen untuk ditambahkan ke daftar voting buku baru.</p>
-                        </div>
-                    </div>
-                </section>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-surface-container-low/50">
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Peminjam</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Judul Buku</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Pinjam</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Pengembalian</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/10">
+                        @forelse($recentLoans as $loan)
+                            <tr class="hover:bg-surface-container-low/30 transition-colors">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase">
+                                            {{ substr($loan->user->name, 0, 2) }}
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-semibold text-on-surface text-sm">{{ $loan->user->name }}</span>
+                                            <span class="text-[10px] text-outline font-semibold">Email: {{ $loan->user->email }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <div class="flex flex-col">
+                                        <span class="font-semibold text-on-surface text-sm">
+                                            {{ $loan->collection?->display_title ?? 'Dokumen' }}
+                                        </span>
+                                        <span class="text-[10px] text-outline font-bold uppercase tracking-tighter">
+                                            {{ $loan->collection?->display_type_label ?? 'Koleksi' }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5 text-sm text-on-surface-variant">
+                                    {{ \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') }}
+                                </td>
+                                <td class="px-8 py-5 text-sm font-medium {{ $loan->status === 'terlambat' ? 'text-error' : 'text-on-surface-variant' }}">
+                                    {{ \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') }}
+                                </td>
+                                <td class="px-8 py-5">
+                                    @if($loan->status === 'terlambat')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-red-50 text-red-600 text-[10px] font-bold uppercase tracking-wide">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse"></span>
+                                            Terlambat
+                                        </span>
+                                    @elseif($loan->status === 'dipinjam')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
+                                            Dipinjam
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                                            Kembali
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-8 py-8 text-center text-outline font-medium">Belum ada transaksi peminjaman aktif saat ini</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </section>
     </main>
 
     <script>

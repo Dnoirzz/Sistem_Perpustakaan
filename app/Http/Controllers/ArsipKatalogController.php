@@ -14,6 +14,7 @@ class ArsipKatalogController extends Controller
     {
         $filters = [
             'search' => request('search'),
+            'search_by' => request('search_by'),
             'prodi_id' => request('prodi_id'),
             'year' => request('year'),
         ];

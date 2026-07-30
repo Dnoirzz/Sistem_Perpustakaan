@@ -163,42 +163,42 @@
         </header>
 
         <section class="max-w-4xl rounded-3xl border border-outline-variant/10 bg-white p-8 shadow-sm">
-            <form action="{{ route('mahasiswa.arsip.update', [$archiveType, $archive->getKey()]) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="{{ route('mahasiswa.arsip.update', [$archiveType, $archive->getKey()]) }}" method="POST" enctype="multipart/form-data" class="space-y-6" onsubmit="return validatePengujiForm(this)">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="type" value="{{ $archiveType }}">
                 
                 <div>
                     <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip <span class="text-error">*</span></label>
-                    <input type="text" name="judul" value="{{ old('judul', $archiveTitle) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                    <input type="text" name="judul" value="{{ old('judul', $archiveTitle) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Judul arsip wajib diisi')" oninput="this.setCustomValidity('')">
                 </div>
                 
                 @if ($archiveType === 'laporan-pkl')
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Nama Tempat PKL <span class="text-error">*</span></label>
-                        <input type="text" name="nama_tempat_pkl" value="{{ old('nama_tempat_pkl', $archive->nama_tempat_pkl) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                        <input type="text" name="nama_tempat_pkl" value="{{ old('nama_tempat_pkl', $archive->nama_tempat_pkl) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama tempat PKL wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                 @endif
                 
                 <div class="grid gap-6 md:grid-cols-2">
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Pembimbing <span class="text-error">*</span></label>
-                        <input type="text" name="pembimbing" value="{{ old('pembimbing', $archive->pembimbing) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                        <input type="text" name="pembimbing" value="{{ old('pembimbing', $archive->pembimbing) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama dosen pembimbing wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tahun Terbit <span class="text-error">*</span></label>
-                        <input type="number" name="tahun" value="{{ old('tahun', $archive->tahun) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                        <input type="number" name="tahun" value="{{ old('tahun', $archive->tahun) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Tahun terbit wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                 </div>
                 
                 <div class="grid gap-6 md:grid-cols-2">
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 1 <span class="text-error">*</span></label>
-                        <input type="text" name="penguji_1" value="{{ old('penguji_1', $archive->penguji_1) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 1</label>
+                        <input type="text" name="penguji_1" value="{{ old('penguji_1', $archive->penguji_1) }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 2 <span class="text-error">*</span></label>
-                        <input type="text" name="penguji_2" value="{{ old('penguji_2', $archive->penguji_2) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 2</label>
+                        <input type="text" name="penguji_2" value="{{ old('penguji_2', $archive->penguji_2) }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                     </div>
                 </div>
                 
@@ -232,6 +232,37 @@
                     </button>
                 </div>
             </form>
+            
+            <script>
+                function validatePengujiForm(form) {
+                    const p1 = form.querySelector('input[name="penguji_1"]');
+                    const p2 = form.querySelector('input[name="penguji_2"]');
+                    if (!p1 || !p2) return true;
+                    
+                    if (!p1.value.trim() && !p2.value.trim()) {
+                        p1.setCustomValidity('Isikan minimal satu penguji');
+                        p1.reportValidity();
+                        return false;
+                    } else {
+                        p1.setCustomValidity('');
+                        p2.setCustomValidity('');
+                        return true;
+                    }
+                }
+                document.addEventListener('DOMContentLoaded', () => {
+                    ['penguji_1', 'penguji_2'].forEach(name => {
+                        const el = document.querySelector(`input[name="${name}"]`);
+                        if (el) {
+                            el.addEventListener('input', () => {
+                                const p1 = document.querySelector('input[name="penguji_1"]');
+                                const p2 = document.querySelector('input[name="penguji_2"]');
+                                if (p1) p1.setCustomValidity('');
+                                if (p2) p2.setCustomValidity('');
+                            });
+                        }
+                    });
+                });
+            </script>
         </section>
     </main>
 </body>

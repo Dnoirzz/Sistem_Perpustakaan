@@ -28,7 +28,7 @@ class ArsipDigital
                 'title_field' => 'judul_pkl',
                 'item_type' => 'laporan_pkl',
                 'label' => 'Laporan PKL',
-                'full_label' => 'Laporan Praktik Kerja Lapangan',
+                'full_label' => 'Laporan PKL',
                 'code' => 'PKL',
             ],
             'proposal-ta' => [
@@ -191,15 +191,36 @@ class ArsipDigital
 
                 if (! empty($filters['search'])) {
                     $search = $filters['search'];
-                    $query->where(function (Builder $builder) use ($search, $titleField) {
-                        $builder->where($titleField, 'like', "%{$search}%")
-                            ->orWhere('pembimbing', 'like', "%{$search}%")
-                            ->orWhereHas('mahasiswa.user', function (Builder $userQuery) use ($search) {
-                                $userQuery->where('name', 'like', "%{$search}%");
-                            })
-                            ->orWhereHas('mahasiswa.prodi', function (Builder $prodiQuery) use ($search) {
-                                $prodiQuery->where('nama_prodi', 'like', "%{$search}%");
+                    $searchBy = $filters['search_by'] ?? 'all';
+
+                    $query->where(function (Builder $builder) use ($search, $searchBy, $titleField) {
+                        if ($searchBy === 'judul') {
+                            $builder->where($titleField, 'like', "%{$search}%");
+                        } elseif ($searchBy === 'penulis') {
+                            $builder->whereHas('mahasiswa', function (Builder $mBuilder) use ($search) {
+                                $mBuilder->where('nim', 'like', "%{$search}%")
+                                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
                             });
+                        } elseif ($searchBy === 'pembimbing') {
+                            $builder->where('pembimbing', 'like', "%{$search}%");
+                        } elseif ($searchBy === 'penguji') {
+                            $builder->where('penguji_1', 'like', "%{$search}%")
+                                ->orWhere('penguji_2', 'like', "%{$search}%");
+                        } elseif ($searchBy === 'tempat_pkl') {
+                            $builder->where('nama_tempat_pkl', 'like', "%{$search}%");
+                        } else {
+                            $builder->where($titleField, 'like', "%{$search}%")
+                                ->orWhere('pembimbing', 'like', "%{$search}%")
+                                ->orWhere('penguji_1', 'like', "%{$search}%")
+                                ->orWhere('penguji_2', 'like', "%{$search}%")
+                                ->orWhere('nama_tempat_pkl', 'like', "%{$search}%")
+                                ->orWhereHas('mahasiswa.user', function (Builder $userQuery) use ($search) {
+                                    $userQuery->where('name', 'like', "%{$search}%");
+                                })
+                                ->orWhereHas('mahasiswa.prodi', function (Builder $prodiQuery) use ($search) {
+                                    $prodiQuery->where('nama_prodi', 'like', "%{$search}%");
+                                });
+                        }
                     });
                 }
 
@@ -224,6 +245,8 @@ class ArsipDigital
             'status' => $archive->status,
             'year' => $archive->tahun,
             'pembimbing' => $archive->pembimbing,
+            'penguji_1' => $archive->penguji_1 ?? null,
+            'penguji_2' => $archive->penguji_2 ?? null,
             'nama_tempat_pkl' => $archive->nama_tempat_pkl ?? null,
             'created_at' => $archive->created_at,
             'updated_at' => $archive->updated_at,

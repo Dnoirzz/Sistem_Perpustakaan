@@ -168,12 +168,18 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
 
     // Laporan & Ekspor Data (Fase 6)
     Route::get('/reports', [\App\Http\Controllers\Petugas\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/sirkulasi', [\App\Http\Controllers\Petugas\ReportController::class, 'sirkulasi'])->name('reports.sirkulasi');
+    Route::get('/reports/koleksi', [\App\Http\Controllers\Petugas\ReportController::class, 'koleksi'])->name('reports.koleksi');
+    Route::get('/reports/arsip', [\App\Http\Controllers\Petugas\ReportController::class, 'arsip'])->name('reports.arsip');
+    Route::get('/reports/denda', [\App\Http\Controllers\Petugas\ReportController::class, 'denda'])->name('reports.denda');
     Route::get('/reports/print-sirkulasi', [\App\Http\Controllers\Petugas\ReportController::class, 'printSirkulasi'])->name('reports.print-sirkulasi');
     Route::get('/reports/export-sirkulasi', [\App\Http\Controllers\Petugas\ReportController::class, 'exportSirkulasiExcel'])->name('reports.export-sirkulasi');
     Route::get('/reports/print-koleksi', [\App\Http\Controllers\Petugas\ReportController::class, 'printKoleksi'])->name('reports.print-koleksi');
     Route::get('/reports/export-koleksi', [\App\Http\Controllers\Petugas\ReportController::class, 'exportKoleksiExcel'])->name('reports.export-koleksi');
     Route::get('/reports/print-arsip', [\App\Http\Controllers\Petugas\ReportController::class, 'printArsip'])->name('reports.print-arsip');
     Route::get('/reports/export-arsip', [\App\Http\Controllers\Petugas\ReportController::class, 'exportArsipExcel'])->name('reports.export-arsip');
+    Route::get('/reports/print-denda', [\App\Http\Controllers\Petugas\ReportController::class, 'printDenda'])->name('reports.print-denda');
+    Route::get('/reports/export-denda', [\App\Http\Controllers\Petugas\ReportController::class, 'exportDendaExcel'])->name('reports.export-denda');
 
     // Kelola Voting Buku (Petugas View)
     Route::get('/voting/{id}/select-recommendations', [\App\Http\Controllers\Petugas\VotingController::class, 'selectRecommendations'])->name('voting.select-recommendations');

@@ -187,11 +187,11 @@
                     Form Upload Arsip
                 </h2>
                 
-                <form action="{{ route('mahasiswa.arsip.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" x-data="{ type: '{{ old('type', $typeOptions[0]['value'] ?? 'laporan-pkl') }}' }">
+                <form action="{{ route('mahasiswa.arsip.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" x-data="{ type: '{{ old('type', $typeOptions[0]['value'] ?? 'laporan-pkl') }}' }" onsubmit="return validatePengujiForm(this)">
                     @csrf
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Jenis Arsip <span class="text-error">*</span></label>
-                        <select name="type" x-model="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                        <select name="type" x-model="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Jenis arsip wajib dipilih')" oninput="this.setCustomValidity('')">
                             @foreach($typeOptions as $option)
                                 <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
                             @endforeach
@@ -201,46 +201,77 @@
                     <!-- Nama Tempat PKL (Hanya muncul jika Laporan PKL) -->
                     <div x-show="type === 'laporan-pkl'" x-transition class="space-y-2">
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Nama Tempat PKL <span class="text-error">*</span></label>
-                        <input type="text" name="nama_tempat_pkl" :required="type === 'laporan-pkl'" value="{{ old('nama_tempat_pkl') }}" placeholder="Masukkan Nama Instansi/Perusahaan Tempat PKL" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                        <input type="text" name="nama_tempat_pkl" :required="type === 'laporan-pkl'" value="{{ old('nama_tempat_pkl') }}" placeholder="Masukkan Nama Instansi/Perusahaan Tempat PKL" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" oninvalid="this.setCustomValidity('Nama tempat PKL wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip <span class="text-error">*</span></label>
-                        <input type="text" name="judul" value="{{ old('judul') }}" placeholder="Masukkan Judul Laporan" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                        <input type="text" name="judul" value="{{ old('judul') }}" placeholder="Masukkan Judul Laporan" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Judul arsip wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="grid gap-5 md:grid-cols-2">
                         <div>
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Pembimbing <span class="text-error">*</span></label>
-                            <input type="text" name="pembimbing" value="{{ old('pembimbing') }}" placeholder="Nama Pembimbing" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                            <input type="text" name="pembimbing" value="{{ old('pembimbing') }}" placeholder="Nama Pembimbing" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama dosen pembimbing wajib diisi')" oninput="this.setCustomValidity('')">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tahun Terbit <span class="text-error">*</span></label>
-                            <input type="number" name="tahun" value="{{ old('tahun') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                            <input type="number" name="tahun" value="{{ old('tahun') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Tahun terbit wajib diisi')" oninput="this.setCustomValidity('')">
                         </div>
                     </div>
                     <div class="grid gap-5 md:grid-cols-2">
                         <div>
-                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 1 <span class="text-error">*</span></label>
-                            <input type="text" name="penguji_1" value="{{ old('penguji_1') }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 1</label>
+                            <input type="text" name="penguji_1" value="{{ old('penguji_1') }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 2 <span class="text-error">*</span></label>
-                            <input type="text" name="penguji_2" value="{{ old('penguji_2') }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                            <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 2</label>
+                            <input type="text" name="penguji_2" value="{{ old('penguji_2') }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">File PDF <span class="text-error">*</span></label>
-                        <input type="file" name="file_pdf" accept="application/pdf" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required>
+                        <input type="file" name="file_pdf" accept="application/pdf" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required oninvalid="this.setCustomValidity('File PDF utama wajib diunggah')" oninput="this.setCustomValidity('')">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">File Word <span class="text-error">*</span></label>
-                        <input type="file" name="file_word" accept=".doc,.docx" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required>
+                        <input type="file" name="file_word" accept=".doc,.docx" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required oninvalid="this.setCustomValidity('File Word wajib diunggah')" oninput="this.setCustomValidity('')">
                     </div>
                     <button class="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
                         <span class="material-symbols-outlined text-[18px]">send</span>
                         Kirim Arsip Ke Perpustakaan
                     </button>
                 </form>
+
+                <script>
+                    function validatePengujiForm(form) {
+                        const p1 = form.querySelector('input[name="penguji_1"]');
+                        const p2 = form.querySelector('input[name="penguji_2"]');
+                        if (!p1 || !p2) return true;
+                        
+                        if (!p1.value.trim() && !p2.value.trim()) {
+                            p1.setCustomValidity('Isikan minimal satu penguji');
+                            p1.reportValidity();
+                            return false;
+                        } else {
+                            p1.setCustomValidity('');
+                            p2.setCustomValidity('');
+                            return true;
+                        }
+                    }
+                    document.addEventListener('DOMContentLoaded', () => {
+                        ['penguji_1', 'penguji_2'].forEach(name => {
+                            const el = document.querySelector(`input[name="${name}"]`);
+                            if (el) {
+                                el.addEventListener('input', () => {
+                                    const p1 = document.querySelector('input[name="penguji_1"]');
+                                    const p2 = document.querySelector('input[name="penguji_2"]');
+                                    if (p1) p1.setCustomValidity('');
+                                    if (p2) p2.setCustomValidity('');
+                                });
+                            }
+                        });
+                    });
+                </script>
             </section>
 
             <section class="rounded-3xl border border-outline-variant/10 bg-white p-8 shadow-sm">

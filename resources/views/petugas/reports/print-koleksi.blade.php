@@ -51,7 +51,9 @@
         }
         .title-section {
             text-align: center;
-            margin-bottom: 25px;
+            margin: 0 auto 25px auto;
+            width: 100%;
+            clear: both;
         }
         .title-section h4 {
             margin: 0;
@@ -126,17 +128,16 @@
     <div class="kop-surat">
         <table class="kop-table">
             <tr>
-                <!-- Kolom logo diset rata kiri dengan padding-left untuk memberi ruang kosong di sebelah kiri -->
-                <td style="width: 15%; text-align: left; vertical-align: middle; padding-left: 15px !important;">
-                    <img src="{{ route('receipt.logo') }}" style="height: 120px; width: auto;" alt="Logo Instansi">
+                <td style="width: 15%; text-align: center; vertical-align: middle;">
+                    <img src="{{ route('receipt.logo') }}" style="height: 140px; width: auto;" alt="Logo Instansi">
                 </td>
-                <!-- Ditambahkan padding-right 15% agar teks tetap center secara presisi terhadap kertas -->
-                <td style="text-align: center; padding-right: 15% !important;">
+                <td style="width: 75%; text-align: center; vertical-align: middle; padding-left: 25px;">
                     <h2>{!! nl2br(e(\App\Models\AppSetting::get('receipt_kop_line_1', 'KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI'))) !!}</h2>
                     <h3 class="line-2">{{ \App\Models\AppSetting::get('receipt_kop_line_2', 'POLITEKNIK NEGERI PONTIANAK') }}</h3>
                     <h3 class="line-3">{{ \App\Models\AppSetting::get('receipt_kop_line_3', 'PERPUSTAKAAN PSDKU POLNEP DI KABUPATEN SUKAMARA') }}</h3>
                     <p style="margin-top: 5px;">{!! nl2br(e(\App\Models\AppSetting::get('receipt_kop_alamat', "Jalan Jenderal Ahmad Yani - Pontianak 78124, Kalimantan Barat\nTelepon: (0561)736180, Faksimile: (0561)740143, Kotak Pos: 1286"))) !!}</p>
                 </td>
+                <td style="width: 10%;"></td>
             </tr>
         </table>
     </div>

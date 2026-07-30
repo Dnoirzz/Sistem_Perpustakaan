@@ -145,9 +145,11 @@
         <!-- Top Bar / Header Info -->
         <header class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-4">
-                <a href="{{ Auth::check() ? route($rolePrefix . '.books.index') : route('welcome') }}" class="w-10 h-10 rounded-xl bg-white text-slate-650 hover:bg-slate-100 transition duration-200 flex items-center justify-center border border-outline-variant/15 shadow-sm">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </a>
+                @guest
+                    <a href="{{ route('welcome') }}" class="w-10 h-10 rounded-xl bg-white text-slate-650 hover:bg-slate-100 transition duration-200 flex items-center justify-center border border-outline-variant/15 shadow-sm" title="Kembali ke Beranda">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </a>
+                @endguest
                 <div>
                     <h1 class="font-headline-md text-on-surface">Katalog Arsip Digital Publik</h1>
                     <p class="text-sm text-outline">Jelajahi arsip karya tulis mahasiswa yang sudah diverifikasi perpustakaan.</p>
@@ -190,10 +192,20 @@
         @endif
 
         <section class="mb-8 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
-            <form action="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.index') : route('katalog-arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-4">
+            <form action="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.index') : route('katalog-arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-5">
+                <div>
+                    <select name="search_by" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                        <option value="all" @selected(request('search_by') === 'all' || !request('search_by'))>Cari Berdasarkan</option>
+                        <option value="judul" @selected(request('search_by') === 'judul')>Judul Karya Ilmiah</option>
+                        <option value="penulis" @selected(request('search_by') === 'penulis')>Nama Mahasiswa / NIM</option>
+                        <option value="pembimbing" @selected(request('search_by') === 'pembimbing')>Dosen Pembimbing</option>
+                        <option value="penguji" @selected(request('search_by') === 'penguji')>Dosen Penguji</option>
+                        <option value="tempat_pkl" @selected(request('search_by') === 'tempat_pkl')>Tempat PKL</option>
+                    </select>
+                </div>
                 <div class="relative flex items-center">
                     <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul, pembimbing, mahasiswa..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Kata kunci pencarian" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
                 </div>
                 <div>
                     <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
@@ -229,7 +241,7 @@
                             <span class="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-primary">{{ $item['type_label'] }}</span>
                             <span class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide border
                                 {{ $item['status'] === 'aktif' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-500/15 text-amber-700 border-amber-500/20' }}">
-                                {{ $item['status'] }}
+                                {{ $item['status'] === 'aktif' ? 'Diserahkan' : 'Belum Diserahkan' }}
                             </span>
                         </div>
                         <h2 class="line-clamp-2 text-[17px] font-bold text-on-surface mb-4 leading-snug" style="font-family: Outfit, sans-serif;">{{ $item['title'] }}</h2>
@@ -251,6 +263,18 @@
                                 <span class="material-symbols-outlined text-[16px] text-primary">person</span> 
                                 Pembimbing: <span class="text-on-surface">{{ $item['pembimbing'] ?? '-' }}</span>
                             </p>
+                            @if(!empty($item['penguji_1']))
+                                <p class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">gavel</span> 
+                                    Penguji 1: <span class="text-on-surface">{{ $item['penguji_1'] }}</span>
+                                </p>
+                            @endif
+                            @if(!empty($item['penguji_2']))
+                                <p class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">gavel</span> 
+                                    Penguji 2: <span class="text-on-surface">{{ $item['penguji_2'] }}</span>
+                                </p>
+                            @endif
                         </div>
                     </div>
                     <div class="mt-6 border-t border-outline-variant/10 pt-4">
