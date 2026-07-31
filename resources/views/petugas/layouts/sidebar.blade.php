@@ -5,7 +5,7 @@
             <img src="{{ asset('img/logo_polnep.webp') }}" class="w-10 h-10 object-contain" alt="Logo POLNEP">
             <div class="flex flex-col">
                 <span class="font-headline-md text-primary font-bold leading-none">SIPUS POLNEP</span>
-                <span class="text-[10px] text-outline font-bold tracking-widest uppercase mt-1.5">Digital Library</span>
+                <span class="text-[10px] text-outline font-bold tracking-widest uppercase mt-1.5">PSDKU SUKAMARA</span>
             </div>
         </div>
     </div>
@@ -98,36 +98,11 @@
             <span class="font-label-md">Laporan & Rekap</span>
         </a>
 
-        <details class="group" {{ $settingsMenuOpen ? 'open' : '' }}>
-            <summary class="list-none flex items-center justify-between gap-3 px-4 py-3 rounded-2xl cursor-pointer {{ $settingsMenuOpen ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all">
-                <span class="flex items-center gap-3 min-w-0">
-                    <span class="material-symbols-outlined">settings</span>
-                    <span class="font-label-md">Pengaturan</span>
-                </span>
-                <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
-            </summary>
-
-            <div class="mt-2 ml-4 pl-3 border-l border-outline-variant/20 space-y-1">
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.return-settings.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.return-settings.index') }}">
-                    <span class="material-symbols-outlined text-[18px]">tune</span>
-                    <span class="text-sm">Rules Pengembalian</span>
-                </a>
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('profile.edit') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('profile.edit') }}">
-                    <span class="material-symbols-outlined text-[18px]">person</span>
-                    <span class="text-sm">Profil</span>
-                </a>
-            </div>
-        </details>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.return-settings.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.return-settings.index') }}">
+            <span class="material-symbols-outlined">tune</span>
+            <span class="font-label-md">Rules Pengembalian</span>
+        </a>
     </nav>
-    <div class="p-4 border-t border-outline-variant/10">
-        <form method="POST" action="{{ route('logout') }}" id="logout-form" class="hidden">
-            @csrf
-        </form>
-        <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-error hover:bg-error/5 transition-all">
-            <span class="material-symbols-outlined">logout</span>
-            <span class="font-label-md">Keluar</span>
-        </button>
-    </div>
 </aside>
 
 <style>

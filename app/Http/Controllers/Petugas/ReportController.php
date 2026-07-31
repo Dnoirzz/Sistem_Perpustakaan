@@ -93,36 +93,61 @@ class ReportController extends Controller
     {
         $selectedCollectionType = $request->input('collection_type');
         $search = $request->input('search');
+        $tahunRaw = $request->input('tahun', '');
+        $tahun = (is_numeric($tahunRaw) && strlen($tahunRaw) === 4) ? $tahunRaw : 'all';
 
         $items = collect();
 
         if ($selectedCollectionType === 'book') {
             $query = Book::with(['category', 'collection']);
             if ($search) {
-                $query->where('judul', 'like', "%{$search}%")
-                    ->orWhere('author', 'like', "%{$search}%")
-                    ->orWhere('publisher', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->where('judul', 'like', "%{$search}%")
+                        ->orWhere('author', 'like', "%{$search}%")
+                        ->orWhere('publisher', 'like', "%{$search}%");
+                });
+            }
+            if ($tahun && $tahun !== 'all') {
+                $query->where('release', $tahun);
             }
             $items = $query->orderBy('judul')->paginate(15)->withQueryString();
         } elseif ($selectedCollectionType === 'laporan_pkl') {
             $query = LaporanPkl::with(['mahasiswa.user', 'mahasiswa.prodi']);
             if ($search) {
-                $query->where('judul_pkl', 'like', "%{$search}%")
-                    ->orWhereHas('mahasiswa.user', fn($q) => $q->where('name', 'like', "%{$search}%"));
+                $query->where(function ($q) use ($search) {
+                    $q->where('judul_pkl', 'like', "%{$search}%")
+                        ->orWhere('nomor_surat', 'like', "%{$search}%")
+                        ->orWhereHas('mahasiswa.user', fn($uq) => $uq->where('name', 'like', "%{$search}%"));
+                });
+            }
+            if ($tahun && $tahun !== 'all') {
+                $query->where('tahun', $tahun);
             }
             $items = $query->latest()->paginate(15)->withQueryString();
         } elseif ($selectedCollectionType === 'proposal_ta') {
             $query = ProposalTa::with(['mahasiswa.user', 'mahasiswa.prodi']);
             if ($search) {
-                $query->where('judul_proposal', 'like', "%{$search}%")
-                    ->orWhereHas('mahasiswa.user', fn($q) => $q->where('name', 'like', "%{$search}%"));
+                $query->where(function ($q) use ($search) {
+                    $q->where('judul_proposal', 'like', "%{$search}%")
+                        ->orWhere('nomor_surat', 'like', "%{$search}%")
+                        ->orWhereHas('mahasiswa.user', fn($uq) => $uq->where('name', 'like', "%{$search}%"));
+                });
+            }
+            if ($tahun && $tahun !== 'all') {
+                $query->where('tahun', $tahun);
             }
             $items = $query->latest()->paginate(15)->withQueryString();
         } elseif ($selectedCollectionType === 'laporan_ta') {
             $query = LaporanTugasAkhir::with(['mahasiswa.user', 'mahasiswa.prodi']);
             if ($search) {
-                $query->where('judul_tgs_akhir', 'like', "%{$search}%")
-                    ->orWhereHas('mahasiswa.user', fn($q) => $q->where('name', 'like', "%{$search}%"));
+                $query->where(function ($q) use ($search) {
+                    $q->where('judul_tgs_akhir', 'like', "%{$search}%")
+                        ->orWhere('nomor_surat', 'like', "%{$search}%")
+                        ->orWhereHas('mahasiswa.user', fn($uq) => $uq->where('name', 'like', "%{$search}%"));
+                });
+            }
+            if ($tahun && $tahun !== 'all') {
+                $query->where('tahun', $tahun);
             }
             $items = $query->latest()->paginate(15)->withQueryString();
         }
@@ -134,21 +159,23 @@ class ReportController extends Controller
             'laporan_ta' => 'Laporan Tugas Akhir (TA)',
         ];
 
-        return view('petugas.reports.koleksi', compact('items', 'selectedCollectionType', 'search', 'collectionReportTypes'));
+        return view('petugas.reports.koleksi', compact('items', 'selectedCollectionType', 'search', 'tahun', 'collectionReportTypes'));
     }
 
     public function arsip(Request $request)
     {
         $jenisArsip = $request->input('jenis_arsip', 'all');
-        $tglAwal = $request->input('tgl_awal', date('Y-m-01'));
+        $tglAwal = $request->input('tgl_awal', date('Y-01-01'));
         $tglAkhir = $request->input('tgl_akhir', date('Y-m-d'));
+        $tahunRaw = $request->input('tahun', '');
+        $tahun = (is_numeric($tahunRaw) && strlen($tahunRaw) === 4) ? $tahunRaw : 'all';
 
         $tglAwalCarbon = Carbon::parse($tglAwal);
         $tglAkhirCarbon = Carbon::parse($tglAkhir);
 
-        $archives = $this->getArchivesData($tglAwalCarbon, $tglAkhirCarbon, $jenisArsip);
+        $archives = $this->getArchivesData($tglAwalCarbon, $tglAkhirCarbon, $jenisArsip, $tahun);
 
-        return view('petugas.reports.arsip', compact('archives', 'jenisArsip', 'tglAwal', 'tglAkhir'));
+        return view('petugas.reports.arsip', compact('archives', 'jenisArsip', 'tglAwal', 'tglAkhir', 'tahun'));
     }
 
     public function denda(Request $request)
@@ -387,16 +414,18 @@ class ReportController extends Controller
     {
         $request->validate([
             'collection_type' => 'nullable|in:all,book,laporan_pkl,proposal_ta,laporan_ta',
+            'tahun' => 'nullable',
         ]);
 
         $selectedCollectionType = $request->input('collection_type', 'all');
+        $tahun = $request->input('tahun', 'all');
         $collectionTypeLabel = self::COLLECTION_REPORT_TYPES[$selectedCollectionType] ?? self::COLLECTION_REPORT_TYPES['all'];
-        $collections = $this->getCollectionReportData($selectedCollectionType);
+        $collections = $this->getCollectionReportData($selectedCollectionType, $tahun);
 
         // Catat Log Aktivitas
         ActivityLog::create([
             'user_id' => Auth::id(),
-            'activity' => 'Mencetak laporan koleksi perpustakaan: ' . $collectionTypeLabel,
+            'activity' => 'Mencetak laporan koleksi perpustakaan: ' . $collectionTypeLabel . ($tahun && $tahun !== 'all' ? ' (Tahun ' . $tahun . ')' : ''),
         ]);
 
         return view('petugas.reports.print-koleksi', [
@@ -406,6 +435,7 @@ class ReportController extends Controller
             'tas' => $collections['tas'],
             'selectedCollectionType' => $selectedCollectionType,
             'selectedCollectionTypeLabel' => $collectionTypeLabel,
+            'tahun' => $tahun,
         ]);
     }
 
@@ -413,16 +443,17 @@ class ReportController extends Controller
     {
         $request->validate([
             'collection_type' => 'nullable|in:all,book,laporan_pkl,proposal_ta,laporan_ta',
+            'tahun' => 'nullable',
         ]);
 
         $selectedCollectionType = $request->input('collection_type', 'all');
+        $tahun = $request->input('tahun', 'all');
         $collectionTypeLabel = self::COLLECTION_REPORT_TYPES[$selectedCollectionType] ?? self::COLLECTION_REPORT_TYPES['all'];
-        $collections = $this->getCollectionReportData($selectedCollectionType);
+        $collections = $this->getCollectionReportData($selectedCollectionType, $tahun);
 
-        // Catat Log Aktivitas
         ActivityLog::create([
             'user_id' => Auth::id(),
-            'activity' => 'Mengekspor laporan koleksi Excel: ' . $collectionTypeLabel,
+            'activity' => 'Mengekspor laporan koleksi Excel: ' . $collectionTypeLabel . ($tahun && $tahun !== 'all' ? ' (Tahun ' . $tahun . ')' : ''),
         ]);
 
         $spreadsheet = new Spreadsheet();
@@ -445,9 +476,9 @@ class ReportController extends Controller
                     $sheet->setCellValue('A' . $row, $index + 1);
                     $sheet->setCellValue('B' . $row, $book->judul);
                     $sheet->setCellValue('C' . $row, $book->category?->kategori_name ?: '-');
-                    $sheet->setCellValue('D' . $row, $book->penulis ?: '-');
-                    $sheet->setCellValue('E' . $row, $book->penerbit ?: '-');
-                    $sheet->setCellValue('F' . $row, $book->tahun_terbit ?: '-');
+                    $sheet->setCellValue('D' . $row, $book->author ?: '-');
+                    $sheet->setCellValue('E' . $row, $book->publisher ?: '-');
+                    $sheet->setCellValue('F' . $row, $book->release ?: '-');
                     $sheet->setCellValue('G' . $row, $book->stock);
                     $row++;
                 }
@@ -463,29 +494,31 @@ class ReportController extends Controller
                 $sheet->setTitle('Laporan PKL');
                 $sheet->setCellValue('A1', 'LAPORAN KOLEKSI ARSIP DIGITAL - LAPORAN PKL');
                 $sheet->setCellValue('A3', 'No');
-                $sheet->setCellValue('B3', 'Judul PKL');
-                $sheet->setCellValue('C3', 'Nama Mahasiswa');
-                $sheet->setCellValue('D3', 'NIM');
-                $sheet->setCellValue('E3', 'Program Studi');
-                $sheet->setCellValue('F3', 'Dosen Pembimbing');
-                $sheet->setCellValue('G3', 'Tahun');
-                $sheet->setCellValue('H3', 'Status');
-                $sheet->getStyle('A3:H3')->getFont()->setBold(true);
+                $sheet->setCellValue('B3', 'Nomor Surat');
+                $sheet->setCellValue('C3', 'Judul PKL');
+                $sheet->setCellValue('D3', 'Nama Mahasiswa');
+                $sheet->setCellValue('E3', 'NIM');
+                $sheet->setCellValue('F3', 'Program Studi');
+                $sheet->setCellValue('G3', 'Dosen Pembimbing');
+                $sheet->setCellValue('H3', 'Tahun');
+                $sheet->setCellValue('I3', 'Status');
+                $sheet->getStyle('A3:I3')->getFont()->setBold(true);
 
                 $row = 4;
                 foreach ($collections['pkls'] as $index => $pkl) {
                     $sheet->setCellValue('A' . $row, $index + 1);
-                    $sheet->setCellValue('B' . $row, $pkl->judul_pkl);
-                    $sheet->setCellValue('C' . $row, $pkl->mahasiswa?->user?->name ?: '-');
-                    $sheet->setCellValue('D' . $row, $pkl->mahasiswa?->nim ?: '-');
-                    $sheet->setCellValue('E' . $row, $pkl->mahasiswa?->prodi?->nama_prodi ?: '-');
-                    $sheet->setCellValue('F' . $row, $pkl->pembimbing ?: '-');
-                    $sheet->setCellValue('G' . $row, $pkl->tahun);
-                    $sheet->setCellValue('H' . $row, strtoupper($pkl->status));
+                    $sheet->setCellValue('B' . $row, $pkl->nomor_surat ?: '-');
+                    $sheet->setCellValue('C' . $row, $pkl->judul_pkl);
+                    $sheet->setCellValue('D' . $row, $pkl->mahasiswa?->user?->name ?: '-');
+                    $sheet->setCellValue('E' . $row, $pkl->mahasiswa?->nim ?: '-');
+                    $sheet->setCellValue('F' . $row, $pkl->mahasiswa?->prodi?->nama_prodi ?: '-');
+                    $sheet->setCellValue('G' . $row, $pkl->pembimbing ?: '-');
+                    $sheet->setCellValue('H' . $row, $pkl->tahun);
+                    $sheet->setCellValue('I' . $row, strtoupper($pkl->status));
                     $row++;
                 }
 
-                foreach (range('A', 'H') as $col) {
+                foreach (range('A', 'I') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }
             };
@@ -496,29 +529,31 @@ class ReportController extends Controller
                 $sheet->setTitle('Proposal TA');
                 $sheet->setCellValue('A1', 'LAPORAN KOLEKSI ARSIP DIGITAL - PROPOSAL TA');
                 $sheet->setCellValue('A3', 'No');
-                $sheet->setCellValue('B3', 'Judul Proposal');
-                $sheet->setCellValue('C3', 'Nama Mahasiswa');
-                $sheet->setCellValue('D3', 'NIM');
-                $sheet->setCellValue('E3', 'Program Studi');
-                $sheet->setCellValue('F3', 'Dosen Pembimbing');
-                $sheet->setCellValue('G3', 'Tahun');
-                $sheet->setCellValue('H3', 'Status');
-                $sheet->getStyle('A3:H3')->getFont()->setBold(true);
+                $sheet->setCellValue('B3', 'Nomor Surat');
+                $sheet->setCellValue('C3', 'Judul Proposal');
+                $sheet->setCellValue('D3', 'Nama Mahasiswa');
+                $sheet->setCellValue('E3', 'NIM');
+                $sheet->setCellValue('F3', 'Program Studi');
+                $sheet->setCellValue('G3', 'Dosen Pembimbing');
+                $sheet->setCellValue('H3', 'Tahun');
+                $sheet->setCellValue('I3', 'Status');
+                $sheet->getStyle('A3:I3')->getFont()->setBold(true);
 
                 $row = 4;
                 foreach ($collections['ptas'] as $index => $pta) {
                     $sheet->setCellValue('A' . $row, $index + 1);
-                    $sheet->setCellValue('B' . $row, $pta->judul_proposal);
-                    $sheet->setCellValue('C' . $row, $pta->mahasiswa?->user?->name ?: '-');
-                    $sheet->setCellValue('D' . $row, $pta->mahasiswa?->nim ?: '-');
-                    $sheet->setCellValue('E' . $row, $pta->mahasiswa?->prodi?->nama_prodi ?: '-');
-                    $sheet->setCellValue('F' . $row, $pta->pembimbing ?: '-');
-                    $sheet->setCellValue('G' . $row, $pta->tahun);
-                    $sheet->setCellValue('H' . $row, strtoupper($pta->status));
+                    $sheet->setCellValue('B' . $row, $pta->nomor_surat ?: '-');
+                    $sheet->setCellValue('C' . $row, $pta->judul_proposal);
+                    $sheet->setCellValue('D' . $row, $pta->mahasiswa?->user?->name ?: '-');
+                    $sheet->setCellValue('E' . $row, $pta->mahasiswa?->nim ?: '-');
+                    $sheet->setCellValue('F' . $row, $pta->mahasiswa?->prodi?->nama_prodi ?: '-');
+                    $sheet->setCellValue('G' . $row, $pta->pembimbing ?: '-');
+                    $sheet->setCellValue('H' . $row, $pta->tahun);
+                    $sheet->setCellValue('I' . $row, strtoupper($pta->status));
                     $row++;
                 }
 
-                foreach (range('A', 'H') as $col) {
+                foreach (range('A', 'I') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }
             };
@@ -529,29 +564,31 @@ class ReportController extends Controller
                 $sheet->setTitle('Laporan TA');
                 $sheet->setCellValue('A1', 'LAPORAN KOLEKSI ARSIP DIGITAL - LAPORAN TA');
                 $sheet->setCellValue('A3', 'No');
-                $sheet->setCellValue('B3', 'Judul Tugas Akhir');
-                $sheet->setCellValue('C3', 'Nama Mahasiswa');
-                $sheet->setCellValue('D3', 'NIM');
-                $sheet->setCellValue('E3', 'Program Studi');
-                $sheet->setCellValue('F3', 'Dosen Pembimbing');
-                $sheet->setCellValue('G3', 'Tahun');
-                $sheet->setCellValue('H3', 'Status');
-                $sheet->getStyle('A3:H3')->getFont()->setBold(true);
+                $sheet->setCellValue('B3', 'Nomor Surat');
+                $sheet->setCellValue('C3', 'Judul Tugas Akhir');
+                $sheet->setCellValue('D3', 'Nama Mahasiswa');
+                $sheet->setCellValue('E3', 'NIM');
+                $sheet->setCellValue('F3', 'Program Studi');
+                $sheet->setCellValue('G3', 'Dosen Pembimbing');
+                $sheet->setCellValue('H3', 'Tahun');
+                $sheet->setCellValue('I3', 'Status');
+                $sheet->getStyle('A3:I3')->getFont()->setBold(true);
 
                 $row = 4;
                 foreach ($collections['tas'] as $index => $ta) {
                     $sheet->setCellValue('A' . $row, $index + 1);
-                    $sheet->setCellValue('B' . $row, $ta->judul_tgs_akhir);
-                    $sheet->setCellValue('C' . $row, $ta->mahasiswa?->user?->name ?: '-');
-                    $sheet->setCellValue('D' . $row, $ta->mahasiswa?->nim ?: '-');
-                    $sheet->setCellValue('E' . $row, $ta->mahasiswa?->prodi?->nama_prodi ?: '-');
-                    $sheet->setCellValue('F' . $row, $ta->pembimbing ?: '-');
-                    $sheet->setCellValue('G' . $row, $ta->tahun);
-                    $sheet->setCellValue('H' . $row, strtoupper($ta->status));
+                    $sheet->setCellValue('B' . $row, $ta->nomor_surat ?: '-');
+                    $sheet->setCellValue('C' . $row, $ta->judul_tgs_akhir);
+                    $sheet->setCellValue('D' . $row, $ta->mahasiswa?->user?->name ?: '-');
+                    $sheet->setCellValue('E' . $row, $ta->mahasiswa?->nim ?: '-');
+                    $sheet->setCellValue('F' . $row, $ta->mahasiswa?->prodi?->nama_prodi ?: '-');
+                    $sheet->setCellValue('G' . $row, $ta->pembimbing ?: '-');
+                    $sheet->setCellValue('H' . $row, $ta->tahun);
+                    $sheet->setCellValue('I' . $row, strtoupper($ta->status));
                     $row++;
                 }
 
-                foreach (range('A', 'H') as $col) {
+                foreach (range('A', 'I') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }
             };
@@ -581,18 +618,19 @@ class ReportController extends Controller
             'tgl_awal' => 'required|date',
             'tgl_akhir' => 'required|date',
             'jenis_arsip' => 'required|in:all,laporan_pkl,proposal_ta,laporan_ta',
+            'tahun' => 'nullable',
         ]);
 
         $tglAwal = Carbon::parse($request->tgl_awal);
         $tglAkhir = Carbon::parse($request->tgl_akhir);
         $jenisArsip = $request->jenis_arsip;
+        $tahun = $request->input('tahun', 'all');
 
-        $archives = $this->getArchivesData($tglAwal, $tglAkhir, $jenisArsip);
+        $archives = $this->getArchivesData($tglAwal, $tglAkhir, $jenisArsip, $tahun);
 
-        // Catat Log Aktivitas
         ActivityLog::create([
             'user_id' => Auth::id(),
-            'activity' => 'Mencetak laporan penerimaan arsip digital periode ' . $tglAwal->format('d/m/Y') . ' - ' . $tglAkhir->format('d/m/Y'),
+            'activity' => 'Mencetak laporan penerimaan arsip digital periode ' . $tglAwal->format('d/m/Y') . ' - ' . $tglAkhir->format('d/m/Y') . ($tahun && $tahun !== 'all' ? ' (Tahun ' . $tahun . ')' : ''),
         ]);
 
         return view('petugas.reports.print-arsip', [
@@ -600,6 +638,7 @@ class ReportController extends Controller
             'tglAwal' => $tglAwal,
             'tglAkhir' => $tglAkhir,
             'jenisArsip' => $jenisArsip,
+            'tahun' => $tahun,
         ]);
     }
 
@@ -609,16 +648,17 @@ class ReportController extends Controller
             'tgl_awal' => 'required|date',
             'tgl_akhir' => 'required|date',
             'jenis_arsip' => 'required|in:all,laporan_pkl,proposal_ta,laporan_ta',
+            'tahun' => 'nullable',
         ]);
 
         $tglAwal = Carbon::parse($request->tgl_awal);
         $tglAkhir = Carbon::parse($request->tgl_akhir);
         $jenisArsip = $request->jenis_arsip;
+        $tahun = $request->input('tahun', 'all');
 
-        // Catat Log Aktivitas
         ActivityLog::create([
             'user_id' => Auth::id(),
-            'activity' => 'Mengekspor laporan penerimaan arsip digital Excel periode ' . $tglAwal->format('d/m/Y') . ' - ' . $tglAkhir->format('d/m/Y'),
+            'activity' => 'Mengekspor laporan penerimaan arsip digital Excel periode ' . $tglAwal->format('d/m/Y') . ' - ' . $tglAkhir->format('d/m/Y') . ($tahun && $tahun !== 'all' ? ' (Tahun ' . $tahun . ')' : ''),
         ]);
 
         $spreadsheet = new Spreadsheet();
@@ -655,50 +695,54 @@ class ReportController extends Controller
             $sheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d F Y') . ' s/d ' . $tglAkhir->translatedFormat('d F Y'));
             
             $sheet->setCellValue('A4', 'No');
-            $sheet->setCellValue('B4', 'Nama Mahasiswa');
-            $sheet->setCellValue('C4', 'NIM');
-            $sheet->setCellValue('D4', 'Program Studi');
-            $sheet->setCellValue('E4', 'Judul Arsip');
+            $sheet->setCellValue('B4', 'Nomor Surat');
+            $sheet->setCellValue('C4', 'Nama Mahasiswa');
+            $sheet->setCellValue('D4', 'NIM');
+            $sheet->setCellValue('E4', 'Program Studi');
+            $sheet->setCellValue('F4', 'Judul Arsip');
             
             $hasPkl = ($key === 'laporan_pkl');
             if ($hasPkl) {
-                $sheet->setCellValue('F4', 'Tempat PKL');
+                $sheet->setCellValue('G4', 'Tempat PKL');
+                $sheet->setCellValue('H4', 'Dosen Pembimbing');
+                $sheet->setCellValue('I4', 'Tanggal Verifikasi');
+                $sheet->setCellValue('J4', 'Status Penyerahan Fisik');
+            } else {
                 $sheet->setCellValue('G4', 'Dosen Pembimbing');
                 $sheet->setCellValue('H4', 'Tanggal Verifikasi');
                 $sheet->setCellValue('I4', 'Status Penyerahan Fisik');
-            } else {
-                $sheet->setCellValue('F4', 'Dosen Pembimbing');
-                $sheet->setCellValue('G4', 'Tanggal Verifikasi');
-                $sheet->setCellValue('H4', 'Status Penyerahan Fisik');
             }
 
-            $lastCol = $hasPkl ? 'I' : 'H';
+            $lastCol = $hasPkl ? 'J' : 'I';
             $sheet->getStyle('A4:' . $lastCol . '4')->getFont()->setBold(true);
 
-            $items = $typeConfig['model']::with(['mahasiswa.user', 'mahasiswa.prodi'])
+            $query = $typeConfig['model']::with(['mahasiswa.user', 'mahasiswa.prodi'])
                 ->whereIn('status', ['diverifikasi', 'aktif'])
-                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59'])
-                ->latest('verified_at')
-                ->get();
+                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59']);
+            if ($tahun && $tahun !== 'all') {
+                $query->where('tahun', $tahun);
+            }
+            $items = $query->latest('verified_at')->get();
 
             $rowNum = 5;
             foreach ($items as $index => $item) {
                 $statusLabel = $item->status === 'aktif' ? 'Buku fisik telah diserahkan' : 'Belum penyerahan buku fisik';
                 $sheet->setCellValue('A' . $rowNum, $index + 1);
-                $sheet->setCellValue('B' . $rowNum, $item->mahasiswa?->user?->name ?: '-');
-                $sheet->setCellValue('C' . $rowNum, $item->mahasiswa?->nim ?: '-');
-                $sheet->setCellValue('D' . $rowNum, $item->mahasiswa?->prodi?->nama_prodi ?: '-');
-                $sheet->setCellValue('E' . $rowNum, $item->{$typeConfig['title_field']} ?: '-');
+                $sheet->setCellValue('B' . $rowNum, $item->nomor_surat ?: '-');
+                $sheet->setCellValue('C' . $rowNum, $item->mahasiswa?->user?->name ?: '-');
+                $sheet->setCellValue('D' . $rowNum, $item->mahasiswa?->nim ?: '-');
+                $sheet->setCellValue('E' . $rowNum, $item->mahasiswa?->prodi?->nama_prodi ?: '-');
+                $sheet->setCellValue('F' . $rowNum, $item->{$typeConfig['title_field']} ?: '-');
                 
                 if ($hasPkl) {
-                    $sheet->setCellValue('F' . $rowNum, $item->nama_tempat_pkl ?: '-');
+                    $sheet->setCellValue('G' . $rowNum, $item->nama_tempat_pkl ?: '-');
+                    $sheet->setCellValue('H' . $rowNum, $item->pembimbing ?: '-');
+                    $sheet->setCellValue('I' . $rowNum, $item->verified_at ? Carbon::parse($item->verified_at)->format('d-m-Y') : '-');
+                    $sheet->setCellValue('J' . $rowNum, $statusLabel);
+                } else {
                     $sheet->setCellValue('G' . $rowNum, $item->pembimbing ?: '-');
                     $sheet->setCellValue('H' . $rowNum, $item->verified_at ? Carbon::parse($item->verified_at)->format('d-m-Y') : '-');
                     $sheet->setCellValue('I' . $rowNum, $statusLabel);
-                } else {
-                    $sheet->setCellValue('F' . $rowNum, $item->pembimbing ?: '-');
-                    $sheet->setCellValue('G' . $rowNum, $item->verified_at ? Carbon::parse($item->verified_at)->format('d-m-Y') : '-');
-                    $sheet->setCellValue('H' . $rowNum, $statusLabel);
                 }
                 $rowNum++;
             }
@@ -721,66 +765,84 @@ class ReportController extends Controller
         ]);
     }
 
-    private function getArchivesData(Carbon $tglAwal, Carbon $tglAkhir, string $jenisArsip)
+    private function getArchivesData(Carbon $tglAwal, Carbon $tglAkhir, string $jenisArsip, ?string $tahun = null)
     {
         $data = collect();
 
         if ($jenisArsip === 'all' || $jenisArsip === 'laporan_pkl') {
-            $pkls = LaporanPkl::with(['mahasiswa.user', 'mahasiswa.prodi'])
+            $query = LaporanPkl::with(['mahasiswa.user', 'mahasiswa.prodi'])
                 ->whereIn('status', ['diverifikasi', 'aktif'])
-                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59'])
-                ->get()
-                ->map(function ($item) {
-                    $item->jenis_label = 'Laporan PKL';
-                    $item->judul_display = $item->judul_pkl;
-                    return $item;
-                });
+                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59']);
+            if ($tahun && $tahun !== 'all') {
+                $query->where('tahun', $tahun);
+            }
+            $pkls = $query->get()->map(function ($item) {
+                $item->jenis_label = 'Laporan PKL';
+                $item->judul_display = $item->judul_pkl;
+                return $item;
+            });
             $data = $data->concat($pkls);
         }
 
         if ($jenisArsip === 'all' || $jenisArsip === 'proposal_ta') {
-            $ptas = ProposalTa::with(['mahasiswa.user', 'mahasiswa.prodi'])
+            $query = ProposalTa::with(['mahasiswa.user', 'mahasiswa.prodi'])
                 ->whereIn('status', ['diverifikasi', 'aktif'])
-                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59'])
-                ->get()
-                ->map(function ($item) {
-                    $item->jenis_label = 'Proposal TA';
-                    $item->judul_display = $item->judul_proposal;
-                    return $item;
-                });
+                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59']);
+            if ($tahun && $tahun !== 'all') {
+                $query->where('tahun', $tahun);
+            }
+            $ptas = $query->get()->map(function ($item) {
+                $item->jenis_label = 'Proposal TA';
+                $item->judul_display = $item->judul_proposal;
+                return $item;
+            });
             $data = $data->concat($ptas);
         }
 
         if ($jenisArsip === 'all' || $jenisArsip === 'laporan_ta') {
-            $tas = LaporanTugasAkhir::with(['mahasiswa.user', 'mahasiswa.prodi'])
+            $query = LaporanTugasAkhir::with(['mahasiswa.user', 'mahasiswa.prodi'])
                 ->whereIn('status', ['diverifikasi', 'aktif'])
-                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59'])
-                ->get()
-                ->map(function ($item) {
-                    $item->jenis_label = 'Laporan TA';
-                    $item->judul_display = $item->judul_tgs_akhir;
-                    return $item;
-                });
+                ->whereBetween('verified_at', [$tglAwal->toDateString() . ' 00:00:00', $tglAkhir->toDateString() . ' 23:59:59']);
+            if ($tahun && $tahun !== 'all') {
+                $query->where('tahun', $tahun);
+            }
+            $tas = $query->get()->map(function ($item) {
+                $item->jenis_label = 'Laporan TA';
+                $item->judul_display = $item->judul_tgs_akhir;
+                return $item;
+            });
             $data = $data->concat($tas);
         }
 
         return $data->sortByDesc('verified_at')->values();
     }
 
-    private function getCollectionReportData(string $selectedCollectionType): array
+    private function getCollectionReportData(string $selectedCollectionType, ?string $tahun = null): array
     {
+        $pklQuery = LaporanPkl::with('mahasiswa.user', 'mahasiswa.prodi');
+        $ptaQuery = ProposalTa::with('mahasiswa.user', 'mahasiswa.prodi');
+        $taQuery = LaporanTugasAkhir::with('mahasiswa.user', 'mahasiswa.prodi');
+        $bookQuery = Book::with('category')->orderBy('judul');
+
+        if ($tahun && $tahun !== 'all') {
+            $pklQuery->where('tahun', $tahun);
+            $ptaQuery->where('tahun', $tahun);
+            $taQuery->where('tahun', $tahun);
+            $bookQuery->where('release', $tahun);
+        }
+
         return [
             'books' => $selectedCollectionType === 'all' || $selectedCollectionType === 'book'
-                ? Book::with('category')->orderBy('judul')->get()
+                ? $bookQuery->get()
                 : collect(),
             'pkls' => $selectedCollectionType === 'all' || $selectedCollectionType === 'laporan_pkl'
-                ? LaporanPkl::with('mahasiswa.user', 'mahasiswa.prodi')->get()
+                ? $pklQuery->latest()->get()
                 : collect(),
             'ptas' => $selectedCollectionType === 'all' || $selectedCollectionType === 'proposal_ta'
-                ? ProposalTa::with('mahasiswa.user', 'mahasiswa.prodi')->get()
+                ? $ptaQuery->latest()->get()
                 : collect(),
             'tas' => $selectedCollectionType === 'all' || $selectedCollectionType === 'laporan_ta'
-                ? LaporanTugasAkhir::with('mahasiswa.user', 'mahasiswa.prodi')->get()
+                ? $taQuery->latest()->get()
                 : collect(),
         ];
     }

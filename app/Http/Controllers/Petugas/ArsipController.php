@@ -46,6 +46,13 @@ class ArsipController extends Controller
         $type = $request->string('type')->toString();
         $search = $request->string('search')->toString();
 
+        $statusPriority = [
+            ArsipDigital::STATUS_PENDING => 1,
+            ArsipDigital::STATUS_DIVERIFIKASI => 2,
+            ArsipDigital::STATUS_AKTIF => 3,
+            ArsipDigital::STATUS_DITOLAK => 4,
+        ];
+
         $archives = collect(ArsipDigital::definitions())
             ->flatMap(function (array $definition, string $archiveType) use ($status, $type, $search) {
                 if ($type !== '' && $type !== $archiveType) {
@@ -74,7 +81,19 @@ class ArsipController extends Controller
 
                 return $query->get()->map(fn (Model $archive) => ArsipDigital::toSummary($archive, $archiveType));
             })
-            ->sortByDesc('created_at')
+            ->sort(function ($a, $b) use ($statusPriority) {
+                $priorityA = $statusPriority[$a['status']] ?? 99;
+                $priorityB = $statusPriority[$b['status']] ?? 99;
+
+                if ($priorityA === $priorityB) {
+                    $timeA = strtotime((string) ($a['created_at'] ?? 0));
+                    $timeB = strtotime((string) ($b['created_at'] ?? 0));
+
+                    return $timeB <=> $timeA;
+                }
+
+                return $priorityA <=> $priorityB;
+            })
             ->values();
 
         $page = LengthAwarePaginator::resolveCurrentPage();

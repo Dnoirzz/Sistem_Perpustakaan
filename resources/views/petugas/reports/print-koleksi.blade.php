@@ -144,8 +144,11 @@
 
     <!-- Judul Laporan -->
     <div class="title-section">
-        <h4>Laporan Rekapitulasi Koleksi & Aset Perpustakaan</h4>
+        <h4>Laporan Rekapitulasi Koleksi &amp; Aset Perpustakaan</h4>
         <p>Jenis Koleksi: <b>{{ $selectedCollectionTypeLabel }}</b></p>
+        @if(isset($tahun) && $tahun !== 'all')
+            <p>Filter Tahun: <b>{{ $tahun }}</b></p>
+        @endif
         <p>Tanggal Cetak: <b>{{ now()->translatedFormat('d F Y') }}</b></p>
     </div>
 
@@ -177,9 +180,9 @@
                         <td class="text-center">{{ $index + 1 }}</td>
                         <td><b>{{ $book->judul }}</b></td>
                         <td>{{ $book->category?->kategori_name ?: '-' }}</td>
-                        <td>{{ $book->penulis ?: '-' }}</td>
-                        <td>{{ $book->penerbit ?: '-' }}</td>
-                        <td class="text-center">{{ $book->tahun_terbit ?: '-' }}</td>
+                        <td>{{ $book->author ?: '-' }}</td>
+                        <td>{{ $book->publisher ?: '-' }}</td>
+                        <td class="text-center">{{ $book->release ?: '-' }}</td>
                         <td class="text-center">{{ $book->stock }}</td>
                     </tr>
                 @empty
@@ -200,9 +203,10 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 5%;">No</th>
-                    <th style="width: 40%;">Judul Laporan PKL</th>
-                    <th style="width: 20%;">Nama Mahasiswa / NIM</th>
+                    <th style="width: 4%;">No</th>
+                    <th style="width: 13%;">Nomor Surat</th>
+                    <th style="width: 30%;">Judul Laporan PKL</th>
+                    <th style="width: 18%;">Nama Mahasiswa / NIM</th>
                     <th style="width: 15%;">Program Studi</th>
                     <th style="width: 15%;">Pembimbing</th>
                     <th style="width: 5%;">Tahun</th>
@@ -212,6 +216,7 @@
                 @forelse($pkls as $index => $pkl)
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
+                        <td class="text-center" style="font-family: monospace; font-size: 8pt; font-weight: bold;">{{ $pkl->nomor_surat ?: '-' }}</td>
                         <td><b>{{ $pkl->judul_pkl }}</b></td>
                         <td>{{ $pkl->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $pkl->mahasiswa?->nim ?: '-' }}</small></td>
                         <td>{{ $pkl->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
@@ -220,7 +225,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">Belum ada arsip Laporan PKL.</td>
+                        <td colspan="7" class="text-center">Belum ada arsip Laporan PKL.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -236,9 +241,10 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 5%;">No</th>
-                    <th style="width: 40%;">Judul Proposal Tugas Akhir</th>
-                    <th style="width: 20%;">Nama Mahasiswa / NIM</th>
+                    <th style="width: 4%;">No</th>
+                    <th style="width: 13%;">Nomor Surat</th>
+                    <th style="width: 30%;">Judul Proposal Tugas Akhir</th>
+                    <th style="width: 18%;">Nama Mahasiswa / NIM</th>
                     <th style="width: 15%;">Program Studi</th>
                     <th style="width: 15%;">Pembimbing</th>
                     <th style="width: 5%;">Tahun</th>
@@ -248,6 +254,7 @@
                 @forelse($ptas as $index => $pta)
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
+                        <td class="text-center" style="font-family: monospace; font-size: 8pt; font-weight: bold;">{{ $pta->nomor_surat ?: '-' }}</td>
                         <td><b>{{ $pta->judul_proposal }}</b></td>
                         <td>{{ $pta->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $pta->mahasiswa?->nim ?: '-' }}</small></td>
                         <td>{{ $pta->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
@@ -256,7 +263,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">Belum ada arsip Proposal Tugas Akhir.</td>
+                        <td colspan="7" class="text-center">Belum ada arsip Proposal Tugas Akhir.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -272,9 +279,10 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 5%;">No</th>
-                    <th style="width: 40%;">Judul Laporan Tugas Akhir</th>
-                    <th style="width: 20%;">Nama Mahasiswa / NIM</th>
+                    <th style="width: 4%;">No</th>
+                    <th style="width: 13%;">Nomor Surat</th>
+                    <th style="width: 30%;">Judul Laporan Tugas Akhir</th>
+                    <th style="width: 18%;">Nama Mahasiswa / NIM</th>
                     <th style="width: 15%;">Program Studi</th>
                     <th style="width: 15%;">Pembimbing</th>
                     <th style="width: 5%;">Tahun</th>
@@ -284,6 +292,7 @@
                 @forelse($tas as $index => $ta)
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
+                        <td class="text-center" style="font-family: monospace; font-size: 8pt; font-weight: bold;">{{ $ta->nomor_surat ?: '-' }}</td>
                         <td><b>{{ $ta->judul_tgs_akhir }}</b></td>
                         <td>{{ $ta->mahasiswa?->user?->name ?: '-' }}<br/><small>NIM. {{ $ta->mahasiswa?->nim ?: '-' }}</small></td>
                         <td>{{ $ta->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
@@ -292,7 +301,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">Belum ada arsip Laporan Tugas Akhir.</td>
+                        <td colspan="7" class="text-center">Belum ada arsip Laporan Tugas Akhir.</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -134,21 +134,10 @@
     @include('petugas.layouts.sidebar')
 
     <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="font-headline-md text-on-surface">Transaksi Peminjaman Buku</h1>
-                <p class="text-sm text-outline">Pantau sirkulasi aktif dan buat transaksi peminjaman baru dengan alur petugas yang rapi.</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">{{ Auth::user()->petugas?->jabatan ?? 'Petugas Perpustakaan' }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
-                </div>
-            </div>
-        </header>
+        @include('petugas.layouts.header', [
+            'title' => 'Transaksi Peminjaman Buku',
+            'subtitle' => 'Pantau sirkulasi aktif dan buat transaksi peminjaman baru dengan alur petugas yang rapi.'
+        ])
 
         @if(session('success'))
             <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-emerald-800 text-sm shadow-sm">

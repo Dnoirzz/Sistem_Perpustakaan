@@ -133,7 +133,7 @@
 
             <!-- Desktop Nav Links -->
             <div class="hidden md:flex items-center gap-8 font-body-md text-body-md">
-                <a class="text-primary border-b-2 border-primary font-bold pb-1" href="#katalog">Koleksi</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#katalog">Koleksi</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#layanan">Layanan</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#panduan">Panduan</a>
             </div>
@@ -174,7 +174,7 @@
 
         <!-- Mobile Navigation Menu Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden border-t border-border-subtle bg-surface px-4 py-3 space-y-2 shadow-lg">
-            <a class="block font-medium text-primary font-bold py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#katalog" onclick="toggleMobileMenu()">Koleksi</a>
+            <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#katalog" onclick="toggleMobileMenu()">Koleksi</a>
             <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#layanan" onclick="toggleMobileMenu()">Layanan</a>
             <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#panduan" onclick="toggleMobileMenu()">Panduan</a>
         </div>

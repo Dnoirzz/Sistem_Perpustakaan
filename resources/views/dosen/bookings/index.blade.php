@@ -134,21 +134,10 @@
     @include('dosen.layouts.sidebar')
 
     <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="font-headline-md text-on-surface">Pemesanan Buku (Booking Saya)</h1>
-                <p class="text-sm text-outline">Pantau status persetujuan pemesanan buku Anda sebelum mengambilnya di perpustakaan.</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">NIP: {{ Auth::user()->dosen->nip ?? '-' }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00609a&bold=true"/>
-                </div>
-            </div>
-        </header>
+        @include('layouts.header', [
+            'title' => 'Pemesanan Buku (Booking Saya)',
+            'subtitle' => 'Pantau status persetujuan pemesanan buku Anda sebelum mengambilnya di perpustakaan.'
+        ])
 
         @if(session('success'))
             <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-emerald-800 text-sm shadow-sm">

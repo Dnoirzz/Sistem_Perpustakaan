@@ -140,27 +140,11 @@
 
     <!-- Main Content Area -->
     <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen space-y-8">
-        <!-- Top Bar / Header Info -->
-        <header class="flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <a href="{{ route('petugas.members.index') }}" class="w-10 h-10 rounded-2xl bg-white border border-outline-variant/30 flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm" title="Kembali ke Daftar Anggota">
-                    <span class="material-symbols-outlined text-[20px] text-on-surface">arrow_back</span>
-                </a>
-                <div>
-                    <h1 class="font-headline-md text-on-surface">Profil & Riwayat Anggota</h1>
-                    <p class="text-sm text-outline">Informasi akademis, peminjaman aktif, dan histori baca digital.</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">{{ Auth::user()->petugas?->jabatan ?? 'Petugas Perpustakaan' }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
-                </div>
-            </div>
-        </header>
+        @include('layouts.header', [
+            'title' => 'Profil & Riwayat Anggota',
+            'subtitle' => 'Informasi akademis, peminjaman aktif, dan histori baca digital.',
+            'back_url' => route('petugas.members.index')
+        ])
 
         <!-- Member Profile Overview Card -->
         <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8 flex flex-col md:flex-row items-center md:items-start gap-8">

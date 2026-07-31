@@ -120,21 +120,11 @@
     @include('petugas.layouts.sidebar')
 
     <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <!-- Top Bar / Header Info -->
-        <header class="flex justify-between items-center mb-8">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('petugas.voting.show', $voting->voting_id) }}" class="p-2 rounded-2xl bg-white border border-outline-variant/30 text-outline hover:text-on-surface hover:shadow-sm transition-all flex items-center justify-center">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </a>
-                <div>
-                    <h1 class="font-headline-md text-on-surface">Pilih Usulan Buku</h1>
-                    <p class="text-sm text-outline font-medium">Pilih satu atau beberapa usulan buku civitas akademika untuk dimasukkan ke sesi: <strong class="text-primary">{{ $voting->title }}</strong></p>
-                </div>
-            </div>
-            <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
-            </div>
-        </header>
+        @include('layouts.header', [
+            'title' => 'Pilih Usulan Buku',
+            'subtitle' => 'Pilih usulan buku civitas akademika untuk dimasukkan ke sesi voting.',
+            'back_url' => route('petugas.voting.show', $voting->voting_id)
+        ])
 
         <!-- Search and Filter Form -->
         <section class="mb-8">

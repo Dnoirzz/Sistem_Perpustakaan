@@ -55,20 +55,7 @@
             <span class="material-symbols-outlined">receipt_long</span>
             <span class="font-label-md">Log Aktivitas</span>
         </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('profile.edit') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('profile.edit') }}">
-            <span class="material-symbols-outlined">person</span>
-            <span class="font-label-md">Profil</span>
-        </a>
     </nav>
-    <div class="p-4 border-t border-outline-variant/10">
-        <form method="POST" action="{{ route('logout') }}" id="logout-form" class="hidden">
-            @csrf
-        </form>
-        <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-error hover:bg-error/5 transition-all">
-            <span class="material-symbols-outlined">logout</span>
-            <span class="font-label-md">Keluar</span>
-        </button>
-    </div>
 </aside>
 
 <style>

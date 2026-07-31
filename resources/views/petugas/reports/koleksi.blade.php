@@ -70,7 +70,7 @@
             </div>
             @if($selectedCollectionType)
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('petugas.reports.print-koleksi', ['collection_type' => $selectedCollectionType]) }}" target="_blank" class="px-5 py-2.5 rounded-2xl bg-secondary text-white hover:bg-opacity-95 font-bold text-xs transition-all shadow-md shadow-secondary/20 flex items-center gap-2">
+                    <a href="{{ route('petugas.reports.print-koleksi', ['collection_type' => $selectedCollectionType, 'tahun' => $tahun ?? 'all']) }}" target="_blank" class="px-5 py-2.5 rounded-2xl bg-secondary text-white hover:bg-opacity-95 font-bold text-xs transition-all shadow-md shadow-secondary/20 flex items-center gap-2">
                         <span class="material-symbols-outlined text-[18px]">print</span>
                         Cetak Dokumen (PDF)
                     </a>
@@ -80,7 +80,7 @@
 
         <!-- Filter Form Header -->
         <section class="no-print bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-            <form action="{{ route('petugas.reports.koleksi') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form action="{{ route('petugas.reports.koleksi') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pilih Jenis Koleksi Laporan</label>
                     <select name="collection_type" onchange="this.form.submit()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 text-xs font-bold text-slate-800">
@@ -91,11 +91,24 @@
                     </select>
                 </div>
                 <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filter Tahun</label>
+                    <input
+                        type="number"
+                        name="tahun"
+                        value="{{ ($tahun ?? 'all') !== 'all' ? $tahun : '' }}"
+                        min="2000"
+                        max="{{ date('Y') + 2 }}"
+                        placeholder="Contoh: {{ date('Y') }}"
+                        onchange="this.form.submit()"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 text-xs font-semibold text-slate-700"
+                    />
+                </div>
+                <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pencarian Kata Kunci</label>
-                    <input type="text" name="search" value="{{ $search }}" onchange="this.form.submit()" placeholder="Cari berdasarkan judul / pengarang / mahasiswa..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 text-xs font-semibold text-slate-700"/>
+                    <input type="text" name="search" value="{{ $search }}" onchange="this.form.submit()" placeholder="Cari judul / pengarang / no. surat / mahasiswa..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 text-xs font-semibold text-slate-700"/>
                 </div>
 
-                <div class="sm:col-span-2 flex justify-end pt-2 border-t border-slate-100">
+                <div class="sm:col-span-3 flex justify-end pt-2 border-t border-slate-100">
                     <a href="{{ route('petugas.reports.koleksi') }}" class="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1">
                         <span class="material-symbols-outlined text-[16px]">restart_alt</span>
                         Reset Filter
@@ -140,9 +153,11 @@
                                     <th class="py-3 px-3 border-r border-slate-300">Kategori</th>
                                     <th class="py-3 px-3 text-center">Stok Fisik</th>
                                 @else
+                                    <th class="py-3 px-3 border-r border-slate-300">Nomor Surat</th>
                                     <th class="py-3 px-4 border-r border-slate-300">Judul Dokumen / Karya Ilmiah</th>
                                     <th class="py-3 px-4 border-r border-slate-300">Nama Mahasiswa / NIM</th>
                                     <th class="py-3 px-3 border-r border-slate-300">Program Studi</th>
+                                    <th class="py-3 px-2 border-r border-slate-300 text-center">Tahun</th>
                                     <th class="py-3 px-3 border-r border-slate-300">Tgl Verifikasi</th>
                                     <th class="py-3 px-3 text-center">Status Fisik</th>
                                 @endif
@@ -166,15 +181,18 @@
                                             {{ $item->publisher ?? '-' }}
                                         </td>
                                         <td class="py-3 px-3 border-r border-slate-200 text-center">
-                                            {{ $item->year ?? '-' }}
+                                            {{ $item->release ?? '-' }}
                                         </td>
                                         <td class="py-3 px-3 border-r border-slate-200">
-                                            {{ $item->category?->name ?? '-' }}
+                                            {{ $item->category?->kategori_name ?? '-' }}
                                         </td>
                                         <td class="py-3 px-3 text-center font-bold">
                                             {{ $item->collection?->stock ?? 0 }} item
                                         </td>
                                     @elseif($selectedCollectionType === 'laporan_pkl')
+                                        <td class="py-3 px-3 border-r border-slate-200 font-mono text-[11px] text-teal-800 font-bold">
+                                            {{ $item->nomor_surat ?? '-' }}
+                                        </td>
                                         <td class="py-3 px-4 border-r border-slate-200 font-bold text-slate-900">
                                             {{ $item->judul_pkl }}
                                         </td>
@@ -185,6 +203,9 @@
                                         <td class="py-3 px-3 border-r border-slate-200">
                                             {{ $item->mahasiswa?->prodi?->nama_prodi ?? '-' }}
                                         </td>
+                                        <td class="py-3 px-2 border-r border-slate-200 text-center">
+                                            {{ $item->tahun ?? '-' }}
+                                        </td>
                                         <td class="py-3 px-3 border-r border-slate-200">
                                             {{ $item->verified_at ? \Carbon\Carbon::parse($item->verified_at)->translatedFormat('d/m/Y') : '-' }}
                                         </td>
@@ -194,6 +215,9 @@
                                             </span>
                                         </td>
                                     @elseif($selectedCollectionType === 'proposal_ta')
+                                        <td class="py-3 px-3 border-r border-slate-200 font-mono text-[11px] text-teal-800 font-bold">
+                                            {{ $item->nomor_surat ?? '-' }}
+                                        </td>
                                         <td class="py-3 px-4 border-r border-slate-200 font-bold text-slate-900">
                                             {{ $item->judul_proposal }}
                                         </td>
@@ -204,6 +228,9 @@
                                         <td class="py-3 px-3 border-r border-slate-200">
                                             {{ $item->mahasiswa?->prodi?->nama_prodi ?? '-' }}
                                         </td>
+                                        <td class="py-3 px-2 border-r border-slate-200 text-center">
+                                            {{ $item->tahun ?? '-' }}
+                                        </td>
                                         <td class="py-3 px-3 border-r border-slate-200">
                                             {{ $item->verified_at ? \Carbon\Carbon::parse($item->verified_at)->translatedFormat('d/m/Y') : '-' }}
                                         </td>
@@ -213,6 +240,9 @@
                                             </span>
                                         </td>
                                     @elseif($selectedCollectionType === 'laporan_ta')
+                                        <td class="py-3 px-3 border-r border-slate-200 font-mono text-[11px] text-teal-800 font-bold">
+                                            {{ $item->nomor_surat ?? '-' }}
+                                        </td>
                                         <td class="py-3 px-4 border-r border-slate-200 font-bold text-slate-900">
                                             {{ $item->judul_tgs_akhir }}
                                         </td>
@@ -222,6 +252,9 @@
                                         </td>
                                         <td class="py-3 px-3 border-r border-slate-200">
                                             {{ $item->mahasiswa?->prodi?->nama_prodi ?? '-' }}
+                                        </td>
+                                        <td class="py-3 px-2 border-r border-slate-200 text-center">
+                                            {{ $item->tahun ?? '-' }}
                                         </td>
                                         <td class="py-3 px-3 border-r border-slate-200">
                                             {{ $item->verified_at ? \Carbon\Carbon::parse($item->verified_at)->translatedFormat('d/m/Y') : '-' }}

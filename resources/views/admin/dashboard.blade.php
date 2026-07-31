@@ -146,22 +146,10 @@
 
     <!-- Main Content Area -->
     <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <!-- Top Bar / Header Info -->
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="font-headline-md text-on-surface">Dashboard Admin</h1>
-                <p class="text-sm text-outline">Selamat datang kembali di pusat kontrol sistem perpustakaan.</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">Role: Administrator</p>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
-                </div>
-            </div>
-        </header>
+        @include('layouts.header', [
+            'title' => 'Dashboard Admin',
+            'subtitle' => 'Selamat datang kembali di pusat kontrol sistem perpustakaan.'
+        ])
 
         <!-- Hero Banner Section -->
         <section class="mb-10 relative overflow-hidden rounded-3xl hero-pattern p-10 text-on-primary shadow-xl shadow-primary/20">
@@ -374,54 +362,6 @@
                     </div>
                 </section>
 
-                <!-- Audit Log / Info Widget -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="font-headline-md text-on-surface text-lg">Keamanan & Audit</h2>
-                        <span class="material-symbols-outlined text-primary">security</span>
-                    </div>
-                    <div class="space-y-6">
-                        <div class="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 flex gap-4">
-                            <div class="w-10 h-10 rounded-xl bg-blue-100 flex-shrink-0 flex items-center justify-center text-blue-600">
-                                <span class="material-symbols-outlined text-[20px]">verified_user</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-blue-800 font-semibold mb-1">Log Audit Aktif</p>
-                                <p class="text-[11px] text-blue-700 opacity-95">Setiap perubahan akun, role, dan data master terekam secara otomatis oleh log aktivitas sistem.</p>
-                            </div>
-                        </div>
-                        <div class="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 flex gap-4">
-                            <div class="w-10 h-10 rounded-xl bg-purple-100 flex-shrink-0 flex items-center justify-center text-purple-600">
-                                <span class="material-symbols-outlined text-[20px]">backup</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-purple-800 font-semibold mb-1">Backup Otomatis</p>
-                                <p class="text-[11px] text-purple-700 opacity-95">Pencadangan basis data MySQL dijadwalkan secara berkala untuk mencegah kehilangan data.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Quick Control Widget -->
-                <section class="bg-gradient-to-br from-primary to-primary-container rounded-3xl shadow-lg p-8 text-white relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h3 class="font-headline-md text-lg mb-2">Kontrol Cepat</h3>
-                        <p class="text-xs opacity-70 mb-6">Kelola dan pantau seluruh operasi dari satu genggaman.</p>
-                        
-                        <div class="space-y-3">
-                            <a href="{{ route('admin.users.create') }}" class="flex items-center justify-between p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-xs font-bold border border-white/15">
-                                <span>Tambah Pengguna Baru</span>
-                                <span class="material-symbols-outlined text-[16px]">person_add</span>
-                            </a>
-                            <a href="{{ route('admin.users.index') }}" class="flex items-center justify-between p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-xs font-bold border border-white/15">
-                                <span>Kelola Semua Akun</span>
-                                <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span>
-                            </a>
-                        </div>
-                    </div>
-                    <!-- Decorative element -->
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                </section>
             </div>
         </div>
     </main>

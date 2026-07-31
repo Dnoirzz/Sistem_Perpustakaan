@@ -141,22 +141,10 @@
 
     <!-- Main Content Area -->
     <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <!-- Top Bar / Header Info -->
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="font-headline-md text-on-surface">Kelola Program Studi (Prodi)</h1>
-                <p class="text-sm text-outline">Kelola data program studi untuk pengelompokan mahasiswa dan dosen.</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">Role: Administrator</p>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
-                </div>
-            </div>
-        </header>
+        @include('layouts.header', [
+            'title' => 'Kelola Program Studi & Jurusan',
+            'subtitle' => 'Kelola data program studi dan jurusan untuk pengelompokan mahasiswa dan dosen.'
+        ])
 
         <!-- Success Notification -->
         @if(session('success'))

@@ -37,15 +37,11 @@
     @include('petugas.layouts.sidebar')
 
     <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <header class="mb-8">
-            <nav class="flex items-center gap-2 text-xs text-outline mb-2">
-                <a href="{{ route('petugas.return-settings.index') }}" class="hover:text-primary transition-colors">Pengaturan Return</a>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span class="text-on-surface font-semibold">Edit Checklist</span>
-            </nav>
-            <h1 class="font-headline-md text-on-surface">Edit Checklist Pengembalian</h1>
-            <p class="text-sm text-outline">Perbarui item inspeksi fisik yang akan ditampilkan pada proses return.</p>
-        </header>
+        @include('layouts.header', [
+            'title' => 'Edit Checklist Pengembalian',
+            'subtitle' => 'Perbarui item inspeksi fisik yang akan ditampilkan pada proses return.',
+            'back_url' => route('petugas.return-settings.index')
+        ])
 
         <div class="max-w-3xl">
             <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">

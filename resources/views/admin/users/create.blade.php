@@ -142,27 +142,11 @@
 
     <!-- Main Content Area -->
     <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <!-- Top Bar / Header Info -->
-        <header class="flex justify-between items-center mb-8">
-            <div class="flex items-center gap-4">
-                <a href="{{ route('admin.users.index') }}" class="w-10 h-10 rounded-xl bg-white text-slate-650 hover:bg-slate-100 transition duration-200 flex items-center justify-center border border-outline-variant/15 shadow-sm">
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </a>
-                <div>
-                    <h1 class="font-headline-md text-on-surface">Tambah User Baru</h1>
-                    <p class="text-sm text-outline">Daftarkan akun pengguna baru ke dalam sistem perpustakaan.</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="font-label-md text-on-surface">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-outline font-medium uppercase tracking-wide">Role: Administrator</p>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true"/>
-                </div>
-            </div>
-        </header>
+        @include('layouts.header', [
+            'title' => 'Tambah User Baru',
+            'subtitle' => 'Daftarkan pengguna baru ke dalam sistem perpustakaan.',
+            'back_url' => route('admin.users.index')
+        ])
 
         <div class="max-w-3xl" x-data="{ roleName: '{{ old('role_id') ? ($roles->firstWhere('role_id', old('role_id'))->role_name ?? "") : "" }}' }">
             <div class="bg-white rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden">

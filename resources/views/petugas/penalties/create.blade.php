@@ -49,17 +49,11 @@
     @include('petugas.layouts.sidebar')
 
     <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <nav class="flex items-center gap-2 text-xs text-outline mb-2">
-                    <a href="{{ route('petugas.penalties.index') }}" class="hover:text-primary transition-colors">Denda & Sanksi</a>
-                    <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                    <span class="text-on-surface font-semibold">Buat Denda Manual</span>
-                </nav>
-                <h1 class="font-headline-md text-on-surface">Buat Denda Manual</h1>
-                <p class="text-sm text-outline">Catat sanksi untuk keterlambatan, kerusakan, atau kehilangan buku.</p>
-            </div>
-        </header>
+        @include('layouts.header', [
+            'title' => 'Buat Denda Manual',
+            'subtitle' => 'Catat sanksi untuk keterlambatan, kerusakan, atau kehilangan buku.',
+            'back_url' => route('petugas.penalties.index')
+        ])
 
         @if($errors->any())
             <div class="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-sm shadow-sm">

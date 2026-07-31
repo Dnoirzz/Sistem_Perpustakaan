@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('petugas.reports.print-arsip', ['tgl_awal' => $tglAwal, 'tgl_akhir' => $tglAkhir, 'jenis_arsip' => $jenisArsip]) }}" target="_blank" class="px-5 py-2.5 rounded-2xl bg-teal-600 text-white hover:bg-teal-700 font-bold text-xs transition-all shadow-md shadow-teal-200 flex items-center gap-2">
+                <a href="{{ route('petugas.reports.print-arsip', ['tgl_awal' => $tglAwal, 'tgl_akhir' => $tglAkhir, 'jenis_arsip' => $jenisArsip, 'tahun' => $tahun]) }}" target="_blank" class="px-5 py-2.5 rounded-2xl bg-teal-600 text-white hover:bg-teal-700 font-bold text-xs transition-all shadow-md shadow-teal-200 flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px]">print</span>
                     Cetak Dokumen (PDF)
                 </a>
@@ -78,7 +78,7 @@
 
         <!-- Filter Form Header -->
         <section class="no-print bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-            <form action="{{ route('petugas.reports.arsip') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <form action="{{ route('petugas.reports.arsip') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jenis Arsip</label>
                     <select name="jenis_arsip" onchange="this.form.submit()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-xs font-semibold text-slate-700">
@@ -89,6 +89,19 @@
                     </select>
                 </div>
                 <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filter Tahun</label>
+                    <input
+                        type="number"
+                        name="tahun"
+                        value="{{ ($tahun ?? 'all') !== 'all' ? $tahun : '' }}"
+                        min="2000"
+                        max="{{ date('Y') + 2 }}"
+                        placeholder="Contoh: {{ date('Y') }}"
+                        onchange="this.form.submit()"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-xs font-semibold text-slate-700"
+                    />
+                </div>
+                <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mulai Tanggal Verifikasi</label>
                     <input type="date" name="tgl_awal" value="{{ $tglAwal }}" onchange="this.form.submit()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-xs font-semibold text-slate-700"/>
                 </div>
@@ -97,7 +110,7 @@
                     <input type="date" name="tgl_akhir" value="{{ $tglAkhir }}" onchange="this.form.submit()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-xs font-semibold text-slate-700"/>
                 </div>
 
-                <div class="sm:col-span-3 flex justify-end pt-2 border-t border-slate-100">
+                <div class="sm:col-span-4 flex justify-end pt-2 border-t border-slate-100">
                     <a href="{{ route('petugas.reports.arsip') }}" class="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1">
                         <span class="material-symbols-outlined text-[16px]">restart_alt</span>
                         Reset Filter
@@ -114,6 +127,9 @@
                 <h3 class="text-sm font-bold uppercase tracking-wider text-teal-700 pt-2">LAPORAN REKAPITULASI PENGUMPULAN ARSIP DIGITAL</h3>
                 <p class="text-xs text-slate-500 font-medium">
                     Periode Verifikasi: {{ $tglAwal ? \Carbon\Carbon::parse($tglAwal)->translatedFormat('d M Y') : 'Awal' }} s/d {{ $tglAkhir ? \Carbon\Carbon::parse($tglAkhir)->translatedFormat('d M Y') : 'Sekarang' }}
+                    @if(isset($tahun) && $tahun !== 'all')
+                        • Tahun Karya: <b>{{ $tahun }}</b>
+                    @endif
                 </p>
             </div>
 
@@ -123,10 +139,12 @@
                     <thead>
                         <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
                             <th class="py-3 px-3 text-center border-r border-slate-300 w-10">No</th>
+                            <th class="py-3 px-3 border-r border-slate-300">Nomor Surat</th>
                             <th class="py-3 px-4 border-r border-slate-300">Nama Mahasiswa / NIM</th>
                             <th class="py-3 px-3 border-r border-slate-300">Prodi</th>
                             <th class="py-3 px-4 border-r border-slate-300">Judul Karya Ilmiah</th>
                             <th class="py-3 px-3 border-r border-slate-300">Jenis Dokumen</th>
+                            <th class="py-3 px-2 border-r border-slate-300 text-center">Tahun</th>
                             <th class="py-3 px-3 border-r border-slate-300">Tgl Verifikasi</th>
                             <th class="py-3 px-3 text-center">Status Fisik</th>
                         </tr>
@@ -135,6 +153,9 @@
                         @forelse($archives as $index => $item)
                             <tr class="hover:bg-slate-50">
                                 <td class="py-3 px-3 text-center border-r border-slate-200 font-semibold">{{ $index + 1 }}</td>
+                                <td class="py-3 px-3 border-r border-slate-200 font-mono text-[11px] text-teal-800 font-bold">
+                                    {{ $item->nomor_surat ?? '-' }}
+                                </td>
                                 <td class="py-3 px-4 border-r border-slate-200">
                                     <div class="font-bold text-slate-900">{{ $item->mahasiswa?->user?->name ?? '-' }}</div>
                                     <div class="text-[10px] text-slate-500 uppercase">NIM: {{ $item->mahasiswa->nim ?? '-' }}</div>
@@ -147,6 +168,9 @@
                                 </td>
                                 <td class="py-3 px-3 border-r border-slate-200">
                                     {{ $item->jenis_label }}
+                                </td>
+                                <td class="py-3 px-2 border-r border-slate-200 text-center">
+                                    {{ $item->tahun ?? '-' }}
                                 </td>
                                 <td class="py-3 px-3 border-r border-slate-200">
                                     {{ $item->verified_at ? \Carbon\Carbon::parse($item->verified_at)->translatedFormat('d/m/Y') : '-' }}
@@ -161,7 +185,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="py-8 text-center text-slate-400 font-medium">Tidak ada data penyerahan arsip pada filter ini.</td>
+                                <td colspan="9" class="py-8 text-center text-slate-400 font-medium">Tidak ada data penyerahan arsip pada filter ini.</td>
                             </tr>
                         @endforelse
                     </tbody>

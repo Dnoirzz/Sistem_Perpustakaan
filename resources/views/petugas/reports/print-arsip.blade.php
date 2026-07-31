@@ -137,6 +137,9 @@
         @if($jenisArsip !== 'all')
             <p>Kategori: <b>{{ $jenisArsip === 'laporan_pkl' ? 'Laporan PKL' : ($jenisArsip === 'proposal_ta' ? 'Proposal TA' : 'Laporan TA') }}</b></p>
         @endif
+        @if(isset($tahun) && $tahun !== 'all')
+            <p>Tahun Karya: <b>{{ $tahun }}</b></p>
+        @endif
     </div>
 
     <!-- Tabel Data -->
@@ -144,23 +147,25 @@
         <thead>
             <tr>
                 <th style="width: 4%;">No</th>
-                <th style="width: 15%;">Nama Mahasiswa</th>
-                <th style="width: 9%;">NIM</th>
-                <th style="width: 13%;">Program Studi</th>
-                <th style="width: 25%;">Judul Arsip</th>
+                <th style="width: 13%;">Nomor Surat</th>
+                <th style="width: 14%;">Nama Mahasiswa</th>
+                <th style="width: 8%;">NIM</th>
+                <th style="width: 11%;">Program Studi</th>
+                <th style="width: 22%;">Judul Arsip</th>
                 @if($jenisArsip === 'laporan_pkl')
-                    <th style="width: 14%;">Tempat PKL</th>
+                    <th style="width: 12%;">Tempat PKL</th>
                 @else
                     <th style="width: 8%;">Kategori</th>
                 @endif
-                <th style="width: 12%;">Pembimbing</th>
-                <th style="width: 10%;">Status Buku</th>
+                <th style="width: 5%;">Tahun</th>
+                <th style="width: 11%;">Status Buku</th>
             </tr>
         </thead>
         <tbody>
             @forelse($archives as $index => $archive)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center" style="font-family: monospace; font-size: 8.5pt; font-weight: bold;">{{ $archive->nomor_surat ?: '-' }}</td>
                     <td>{{ $archive->mahasiswa?->user?->name ?: '-' }}</td>
                     <td class="text-center">{{ $archive->mahasiswa?->nim ?: '-' }}</td>
                     <td>{{ $archive->mahasiswa?->prodi?->nama_prodi ?: '-' }}</td>
@@ -175,18 +180,18 @@
                     @else
                         <td class="text-center">{{ $archive->jenis_label ?: '-' }}</td>
                     @endif
-                    <td>{{ $archive->pembimbing ?: '-' }}</td>
+                    <td class="text-center">{{ $archive->tahun ?: '-' }}</td>
                     <td class="text-center" style="font-weight: bold; font-size: 8.5pt;">
                         @if($archive->status === 'aktif')
-                            <span style="color: #006c49;">Buku fisik telah diserahkan</span>
+                            <span style="color: #006c49;">Diserahkan</span>
                         @else
-                            <span style="color: #95002b;">Belum penyerahan buku fisik</span>
+                            <span style="color: #95002b;">Belum penyerahan</span>
                         @endif
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="{{ $jenisArsip === 'laporan_pkl' ? 8 : 8 }}" class="text-center">Tidak ada data penyerahan arsip pada periode ini.</td>
+                    <td colspan="9" class="text-center">Tidak ada data penyerahan arsip pada periode ini.</td>
                 </tr>
             @endforelse
         </tbody>
