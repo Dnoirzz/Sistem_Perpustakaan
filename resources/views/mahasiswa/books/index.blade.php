@@ -199,12 +199,8 @@
                     <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group flex flex-col justify-between">
                         <div>
                             <!-- Cover area -->
-                            <div class="h-56 bg-slate-50 relative flex items-center justify-center overflow-hidden border-b border-outline-variant/15">
-                                @if($book->cover_image)
-                                    <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
-                                @else
-                                    <span class="material-symbols-outlined text-[80px] text-outline opacity-40">menu_book</span>
-                                @endif
+                            <div class="h-56 bg-white relative flex items-center justify-center overflow-hidden border-b border-outline-variant/15">
+                                <img src="{{ $book->cover_url }}" alt="{{ $book->judul }}" class="w-full h-full {{ $book->cover_image ? 'object-cover' : 'object-contain p-6' }} group-hover:scale-105 transition-transform duration-300"/>
                                 
                                 <div class="absolute bottom-3 left-3 bg-white/80 backdrop-blur-md rounded-xl px-2.5 py-1 flex items-center">
                                     <span class="text-[9px] font-bold text-primary uppercase tracking-wider">

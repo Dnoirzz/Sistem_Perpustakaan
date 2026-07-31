@@ -15,6 +15,8 @@ class NotificationCustom extends Model
         'user_id',
         'title',
         'message',
+        'url',
+        'type',
         'is_read',
     ];
 
@@ -36,5 +38,41 @@ class NotificationCustom extends Model
     public function scopeUnread($query)
     {
         return $query->where('is_read', false);
+    }
+
+    /**
+     * Helper: Kirim notifikasi ke 1 pengguna
+     */
+    public static function send(int $userId, string $title, string $message, ?string $url = null, string $type = 'info'): self
+    {
+        return self::create([
+            'user_id' => $userId,
+            'title' => $title,
+            'message' => $message,
+            'url' => $url,
+            'type' => $type,
+            'is_read' => false,
+        ]);
+    }
+
+    /**
+     * Helper: Kirim notifikasi ke seluruh pengguna dengan role tertentu
+     */
+    public static function sendToRoles(array $roleNames, string $title, string $message, ?string $url = null, string $type = 'info'): void
+    {
+        $userIds = User::whereHas('role', function ($q) use ($roleNames) {
+            $q->whereIn('role_name', $roleNames);
+        })->pluck('user_id');
+
+        foreach ($userIds as $uid) {
+            self::create([
+                'user_id' => $uid,
+                'title' => $title,
+                'message' => $message,
+                'url' => $url,
+                'type' => $type,
+                'is_read' => false,
+            ]);
+        }
     }
 }

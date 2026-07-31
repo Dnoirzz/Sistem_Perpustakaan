@@ -75,6 +75,14 @@ class PenaltyController extends Controller
 
         $penalty->update(['status' => 'lunas']);
 
+        \App\Models\NotificationCustom::send(
+            $penalty->user_id,
+            'Pelunasan Denda Dikonfirmasi',
+            "Pembayaran denda sebesar Rp " . number_format($penalty->amount, 0, ',', '.') . " telah dikonfirmasi LUNAS.",
+            null,
+            'denda'
+        );
+
         return redirect()
             ->route('petugas.penalties.index')
             ->with('success', 'Denda berhasil ditandai sebagai lunas.');
@@ -149,6 +157,14 @@ class PenaltyController extends Controller
             'description' => $validated['description'] ?? null,
             'status' => 'belum_dibayar',
         ]);
+
+        \App\Models\NotificationCustom::send(
+            $loan->user_id,
+            'Catatan Sanksi Denda Baru',
+            "Tercatat sanksi denda sebesar Rp " . number_format($amount, 0, ',', '.') . " untuk peminjaman koleksi.",
+            null,
+            'denda'
+        );
 
         return redirect()
             ->route('petugas.penalties.index')

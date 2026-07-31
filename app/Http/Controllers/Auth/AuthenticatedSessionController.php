@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
             'activity' => 'Melakukan login ke sistem',
         ]);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('dashboard');
     }
 
     /**

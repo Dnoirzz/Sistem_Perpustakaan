@@ -100,6 +100,16 @@ class BookingController extends Controller
             $booking->collection->syncBackingStock(-1);
         });
 
+        // Send Notification to Member
+        $bookTitle = $booking->collection?->display_title ?? 'buku';
+        \App\Models\NotificationCustom::send(
+            $booking->user_id,
+            'Booking Disetujui (Siap Diambil)',
+            "Buku '{$bookTitle}' telah disetujui dan siap diambil di perpustakaan sebelum pukul {$timeInput} WIB.",
+            route('mahasiswa.bookings.my'),
+            'booking'
+        );
+
         return redirect()
             ->route('petugas.bookings.index')
             ->with('success', "Booking oleh {$booking->user->name} untuk \"{$booking->collection?->display_title}\" telah disetujui.");

@@ -84,4 +84,16 @@ class Book extends Model
                     ->where('status', 'dipinjam')
                     ->count();
     }
+
+    /**
+     * URL Cover Buku (mengembalikan logo_polnep.webp jika belum ada cover yang diupload)
+     */
+    public function getCoverUrlAttribute(): string
+    {
+        if ($this->cover_image && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->cover_image)) {
+            return asset('storage/' . $this->cover_image);
+        }
+
+        return asset('img/logo_polnep.webp');
+    }
 }

@@ -157,6 +157,17 @@ class ArsipController extends Controller
 
         $archive->refresh();
 
+        // Send Notification to Mahasiswa
+        if ($archive->mahasiswa?->user_id) {
+            \App\Models\NotificationCustom::send(
+                $archive->mahasiswa->user_id,
+                'Arsip Digital Diverifikasi',
+                "Karya ilmiah '" . ArsipDigital::title($archive) . "' Anda telah diverifikasi dan dipublikasikan.",
+                route('mahasiswa.arsip.index'),
+                'arsip'
+            );
+        }
+
         $recipientEmail = $archive->mahasiswa?->user?->email;
 
         if (! $recipientEmail) {
@@ -201,6 +212,20 @@ class ArsipController extends Controller
         $archive->update([
             'status' => ArsipDigital::STATUS_DITOLAK,
             'catatan_petugas' => $validated['catatan_petugas'],
+        ]);
+
+        // Send Notification to Mahasiswa
+        if ($archive->mahasiswa?->user_id) {
+            \App\Models\NotificationCustom::send(
+                $archive->mahasiswa->user_id,
+                'Arsip Digital Memerlukan Perbaikan',
+                "Karya ilmiah '" . ArsipDigital::title($archive) . "' memerlukan perbaikan. Catatan: " . $validated['catatan_petugas'],
+                route('mahasiswa.arsip.index'),
+                'arsip'
+            );
+        }
+
+        $archive->update([
             'received_at' => null,
         ]);
 

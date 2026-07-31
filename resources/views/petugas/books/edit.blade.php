@@ -160,13 +160,12 @@
                         <!-- Upload Box / Preview Area -->
                         <div class="relative w-full h-72 rounded-2xl border-2 border-dashed border-outline-variant/60 flex flex-col items-center justify-center bg-slate-50 overflow-hidden group">
                             <!-- Image Display -->
-                            <img id="cover-preview" class="w-full h-full object-cover {{ $book->cover_image ? '' : 'hidden' }}" src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : '' }}" alt="Cover Preview"/>
+                            <img id="cover-preview" class="w-full h-full object-cover" src="{{ $book->cover_url }}" alt="Cover Preview"/>
                             
-                            <!-- Static placeholder -->
-                            <div id="preview-placeholder" class="flex flex-col items-center justify-center text-center p-4 {{ $book->cover_image ? 'hidden' : '' }}">
-                                <span class="material-symbols-outlined text-[48px] text-outline opacity-60 mb-2">image</span>
-                                <span class="text-xs text-outline font-semibold">Pilih file gambar cover</span>
-                                <span class="text-[10px] text-outline-variant mt-1">Format: JPG, PNG, WEBP (Max: 2MB)</span>
+                            <!-- Overlay Upload Instruction -->
+                            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-center p-4 transition-all duration-200 pointer-events-none">
+                                <span class="material-symbols-outlined text-[36px] text-white mb-1">cloud_upload</span>
+                                <span class="text-xs text-white font-bold">Klik untuk mengganti cover</span>
                             </div>
                             
                             <!-- Hidden File Input Overlay -->

@@ -27,34 +27,63 @@
             <span class="material-symbols-outlined">dashboard</span>
             <span class="font-label-md">Dashboard</span>
         </a>
+
         <details class="group" {{ $libraryMenuOpen ? 'open' : '' }}>
             <summary class="list-none flex items-center justify-between gap-3 px-4 py-3 rounded-2xl cursor-pointer {{ $libraryMenuOpen ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all">
                 <span class="flex items-center gap-3 min-w-0">
                     <span class="material-symbols-outlined">auto_stories</span>
                     <span class="font-label-md">Koleksi Perpustakaan</span>
                 </span>
-                <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
+                <div class="flex items-center gap-2">
+                    @if(($petugasBadges['koleksi_total'] ?? 0) > 0)
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-600 text-white shadow-xs" title="{{ $petugasBadges['koleksi_total'] }} tugas arsip pending verifikasi">
+                            {{ $petugasBadges['koleksi_total'] }}
+                        </span>
+                    @endif
+                    <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
+                </div>
             </summary>
 
             <div class="mt-2 ml-4 pl-3 border-l border-outline-variant/20 space-y-1">
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.books.*') || request()->routeIs('petugas.categories.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.books.index') }}">
-                    <span class="material-symbols-outlined text-[18px]">menu_book</span>
-                    <span class="text-sm">Kelola Buku</span>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.books.*') || request()->routeIs('petugas.categories.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.books.index') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">menu_book</span>
+                        <span class="text-sm">Kelola Buku</span>
+                    </div>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.arsip.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.arsip.index') }}">
-                    <span class="material-symbols-outlined text-[18px]">folder_managed</span>
-                    <span class="text-sm">Kelola Arsip Digital</span>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.arsip.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.arsip.index') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">folder_managed</span>
+                        <span class="text-sm">Kelola Arsip Digital</span>
+                    </div>
+                    @if(($petugasBadges['arsip'] ?? 0) > 0)
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-600 text-white shadow-xs" title="{{ $petugasBadges['arsip'] }} arsip pending verifikasi">
+                            {{ $petugasBadges['arsip'] }}
+                        </span>
+                    @endif
                 </a>
             </div>
         </details>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.members.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.members.index') }}">
-            <span class="material-symbols-outlined">group</span>
-            <span class="font-label-md">Kelola Anggota</span>
+
+        <a class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.members.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.members.index') }}">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined">group</span>
+                <span class="font-label-md">Kelola Anggota</span>
+            </div>
         </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.recommendations.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.recommendations.index') }}">
-            <span class="material-symbols-outlined">rate_review</span>
-            <span class="font-label-md">Kelola Usulan Buku</span>
+
+        <a class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.recommendations.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.recommendations.index') }}">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined">rate_review</span>
+                <span class="font-label-md">Kelola Usulan Buku</span>
+            </div>
+            @if(($petugasBadges['recommendations'] ?? 0) > 0)
+                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-600 text-white shadow-xs" title="{{ $petugasBadges['recommendations'] }} usulan pending">
+                    {{ $petugasBadges['recommendations'] }}
+                </span>
+            @endif
         </a>
+
         <a class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.voting.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.voting.index') }}">
             <span class="material-symbols-outlined">how_to_vote</span>
             <span class="font-label-md">Kelola Voting Buku</span>
@@ -64,31 +93,53 @@
             <summary class="list-none flex items-center justify-between gap-3 px-4 py-3 rounded-2xl cursor-pointer {{ $loanManagementMenuOpen ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all">
                 <span class="flex items-center gap-3 min-w-0">
                     <span class="material-symbols-outlined">library_books</span>
-                    <span class="font-label-md">Manajemen Peminjaman Buku</span>
+                    <span class="font-label-md">Manajemen Peminjaman</span>
                 </span>
-                <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
+                <div class="flex items-center gap-2">
+                    @if(($petugasBadges['peminjaman_total'] ?? 0) > 0)
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-600 text-white shadow-xs" title="{{ $petugasBadges['peminjaman_total'] }} transaksi butuh tindakan petugas">
+                            {{ $petugasBadges['peminjaman_total'] }}
+                        </span>
+                    @endif
+                    <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
+                </div>
             </summary>
 
             <div class="mt-2 ml-4 pl-3 border-l border-outline-variant/20 space-y-1">
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.loans.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.loans.index') }}">
-                    <span class="material-symbols-outlined text-[18px]">assignment_returned</span>
-                    <span class="text-sm">Peminjaman</span>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.loans.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.loans.index') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">assignment_returned</span>
+                        <span class="text-sm">Peminjaman</span>
+                    </div>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.returns.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.returns.index') }}">
-                    <span class="material-symbols-outlined text-[18px]">assignment_return</span>
-                    <span class="text-sm">Pengembalian</span>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.returns.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.returns.index') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">assignment_return</span>
+                        <span class="text-sm">Pengembalian</span>
+                    </div>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.bookings.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.bookings.index') }}">
-                    <span class="material-symbols-outlined text-[18px]">event_available</span>
-                    <span class="text-sm">Booking</span>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.bookings.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.bookings.index') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">event_available</span>
+                        <span class="text-sm">Booking</span>
+                    </div>
+                    @if(($petugasBadges['bookings'] ?? 0) > 0)
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-600 text-white shadow-xs" title="{{ $petugasBadges['bookings'] }} booking pending disetujui">
+                            {{ $petugasBadges['bookings'] }}
+                        </span>
+                    @endif
                 </a>
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.antrian.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.antrian.index') }}">
-                    <span class="material-symbols-outlined text-[18px]">format_list_numbered</span>
-                    <span class="text-sm">Antrian</span>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.antrian.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.antrian.index') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">format_list_numbered</span>
+                        <span class="text-sm">Antrian</span>
+                    </div>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.penalties.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.penalties.index') }}">
-                    <span class="material-symbols-outlined text-[18px]">gavel</span>
-                    <span class="text-sm">Denda & Sanksi</span>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.penalties.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.penalties.index') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">gavel</span>
+                        <span class="text-sm">Denda & Sanksi</span>
+                    </div>
                 </a>
             </div>
         </details>

@@ -23,12 +23,72 @@ Route::get('/', function () {
     })->count();
     $totalArchives = \App\Models\LaporanPkl::count() + \App\Models\LaporanTugasAkhir::count() + \App\Models\ProposalTa::count();
 
+    // 5 Buku Umum Terbaru
     $featuredBooks = \App\Models\Book::with(['category', 'collection'])
         ->latest()
-        ->take(10)
+        ->take(5)
         ->get();
 
-    return view('welcome', compact('totalBooks', 'totalMembers', 'totalArchives', 'featuredBooks'));
+    // 5 Arsip Digital Terbaru (Diprioritaskan Laporan Tugas Akhir, disusul Proposal TA & PKL - Wajib status aktif & file PDF terunggah)
+    $taList = \App\Models\LaporanTugasAkhir::with(['mahasiswa.user', 'mahasiswa.prodi'])
+        ->where('status', 'aktif')
+        ->whereNotNull('file_pdf')
+        ->where('file_pdf', '!=', '')
+        ->latest()
+        ->take(5)
+        ->get()
+        ->map(function ($item) {
+            $item->archive_type = 'laporan-ta';
+            $item->type_label = 'Laporan Tugas Akhir';
+            $item->title_display = \App\Support\ArsipDigital::title($item);
+            $item->author_display = $item->mahasiswa?->user?->name ?? 'Mahasiswa';
+            $item->prodi_display = $item->mahasiswa?->prodi?->nama_prodi ?? 'POLNEP';
+            return $item;
+        });
+
+    $needed = 5 - $taList->count();
+    if ($needed > 0) {
+        $proposalList = \App\Models\ProposalTa::with(['mahasiswa.user', 'mahasiswa.prodi'])
+            ->where('status', 'aktif')
+            ->whereNotNull('file_pdf')
+            ->where('file_pdf', '!=', '')
+            ->latest()
+            ->take($needed)
+            ->get()
+            ->map(function ($item) {
+                $item->archive_type = 'proposal-ta';
+                $item->type_label = 'Proposal TA';
+                $item->title_display = \App\Support\ArsipDigital::title($item);
+                $item->author_display = $item->mahasiswa?->user?->name ?? 'Mahasiswa';
+                $item->prodi_display = $item->mahasiswa?->prodi?->nama_prodi ?? 'POLNEP';
+                return $item;
+            });
+        $taList = $taList->merge($proposalList);
+    }
+
+    $needed = 5 - $taList->count();
+    if ($needed > 0) {
+        $pklList = \App\Models\LaporanPkl::with(['mahasiswa.user', 'mahasiswa.prodi'])
+            ->where('status', 'aktif')
+            ->whereNotNull('file_pdf')
+            ->where('file_pdf', '!=', '')
+            ->latest()
+            ->take($needed)
+            ->get()
+            ->map(function ($item) {
+                $item->archive_type = 'laporan-pkl';
+                $item->type_label = 'Laporan PKL';
+                $item->title_display = \App\Support\ArsipDigital::title($item);
+                $item->author_display = $item->mahasiswa?->user?->name ?? 'Mahasiswa';
+                $item->prodi_display = $item->mahasiswa?->prodi?->nama_prodi ?? 'POLNEP';
+                return $item;
+            });
+        $taList = $taList->merge($pklList);
+    }
+
+    $featuredArchives = $taList;
+
+    return view('welcome', compact('totalBooks', 'totalMembers', 'totalArchives', 'featuredBooks', 'featuredArchives'));
 })->name('welcome');
 
 // Main dashboard router based on role
@@ -58,6 +118,11 @@ Route::middleware('auth')->group(function () {
     
     // Receipt & Report Logo
     Route::get('/receipt/logo', [\App\Http\Controllers\Admin\SettingController::class, 'receiptLogo'])->name('receipt.logo');
+
+    // Notifications Feed & Read Routes
+    Route::get('/notifications/feed', [\App\Http\Controllers\NotificationController::class, 'feed'])->name('notifications.feed');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 });
 
 // Admin routes

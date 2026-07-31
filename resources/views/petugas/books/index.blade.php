@@ -237,12 +237,8 @@
                             <tr class="hover:bg-surface-container-low/30 transition-colors">
                                 <!-- Cover Column -->
                                 <td class="px-8 py-4">
-                                    <div class="w-12 h-16 bg-slate-100 rounded-lg overflow-hidden border border-outline-variant/20 flex items-center justify-center text-outline">
-                                        @if($book->cover_image)
-                                            <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover Buku" class="w-full h-full object-cover"/>
-                                        @else
-                                            <span class="material-symbols-outlined text-[24px]">book</span>
-                                        @endif
+                                    <div class="w-12 h-16 bg-white rounded-lg overflow-hidden border border-outline-variant/20 flex items-center justify-center text-outline">
+                                        <img src="{{ $book->cover_url }}" alt="Cover Buku" class="w-full h-full {{ $book->cover_image ? 'object-cover' : 'object-contain p-1' }}"/>
                                     </div>
                                 </td>
                                 

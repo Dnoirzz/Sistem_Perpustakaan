@@ -44,7 +44,16 @@ class ArsipController extends Controller
         $payload['status'] = ArsipDigital::STATUS_PENDING;
         $payload['catatan_petugas'] = null;
 
-        $definition['model']::create($payload);
+        $archiveItem = $definition['model']::create($payload);
+
+        // Send notification to Petugas & Admin
+        \App\Models\NotificationCustom::sendToRoles(
+            ['petugas', 'admin'],
+            'Unggahan Arsip Digital Baru',
+            "Mahasiswa {$mahasiswa->user->name} mengunggah arsip digital baru (" . $definition['label'] . ").",
+            route('petugas.arsip.index'),
+            'arsip'
+        );
 
         return redirect()
             ->route('mahasiswa.arsip.index')

@@ -337,6 +337,16 @@ class LoanController extends Controller
             \Illuminate\Support\Facades\Log::warning("Gagal mengirim WA Peminjaman Baru: " . $e->getMessage());
         }
 
+        // Kirim Notifikasi Sistem Bell
+        $btsWaktuFormated = \Carbon\Carbon::parse($validated['bts_waktu'])->translatedFormat('d M Y');
+        \App\Models\NotificationCustom::send(
+            $member->user_id,
+            'Peminjaman Buku Baru',
+            "Peminjaman {$totalLoaned} koleksi baru Anda telah dicatat. Batas pengembalian: {$btsWaktuFormated}.",
+            route('mahasiswa.loans.active'),
+            'sirkulasi'
+        );
+
         $successMsg = $totalLoaned === 1
             ? 'Transaksi peminjaman baru berhasil disimpan.'
             : "Transaksi peminjaman baru sebanyak {$totalLoaned} koleksi berhasil disimpan.";

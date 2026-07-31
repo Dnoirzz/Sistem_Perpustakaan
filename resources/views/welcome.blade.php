@@ -133,7 +133,8 @@
 
             <!-- Desktop Nav Links -->
             <div class="hidden md:flex items-center gap-8 font-body-md text-body-md">
-                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#katalog">Koleksi</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#katalog">Koleksi Buku</a>
+                <a class="text-on-surface-variant hover:text-teal-700 transition-colors duration-200" href="#repositori">Karya Ilmiah</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#layanan">Layanan</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#panduan">Panduan</a>
             </div>
@@ -174,7 +175,8 @@
 
         <!-- Mobile Navigation Menu Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden border-t border-border-subtle bg-surface px-4 py-3 space-y-2 shadow-lg">
-            <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#katalog" onclick="toggleMobileMenu()">Koleksi</a>
+            <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#katalog" onclick="toggleMobileMenu()">Koleksi Buku</a>
+            <a class="block font-medium text-on-surface-variant hover:text-teal-700 py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#repositori" onclick="toggleMobileMenu()">Karya Ilmiah</a>
             <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#layanan" onclick="toggleMobileMenu()">Layanan</a>
             <a class="block font-medium text-on-surface-variant hover:text-primary py-1.5 px-2 rounded-lg hover:bg-surface-container-low" href="#panduan" onclick="toggleMobileMenu()">Panduan</a>
         </div>
@@ -279,13 +281,17 @@
             </div>
         </section>
 
-        <!-- Featured Collection (Dynamic Data Real + Style Card Asli) -->
-        <section id="katalog" class="py-12 sm:py-16">
+        <!-- Section 1: Koleksi Buku Terbaru (5 Buku Umum) -->
+        <section id="katalog" class="py-10 sm:py-14">
             <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
                 <div class="flex justify-between items-end mb-6 sm:mb-8">
                     <div>
-                        <h2 class="font-headline-lg text-2xl sm:text-headline-lg text-on-surface">Koleksi Unggulan</h2>
-                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Buku-buku terbaru yang tersedia di perpustakaan.</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="material-symbols-outlined text-primary text-[20px]">menu_book</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-primary">Koleksi Cetak & Teks</span>
+                        </div>
+                        <h2 class="font-headline-lg text-2xl sm:text-headline-lg text-on-surface font-bold">Koleksi Buku</h2>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Koleksi buku yang tersedia di perpustakaan.</p>
                     </div>
                     @auth
                         @php
@@ -305,34 +311,14 @@
                 
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
                     @forelse($featuredBooks as $book)
-                        @php
-                            $totalStock = $book->stock ?? ($book->collection?->stock ?? 0);
-                        @endphp
-                        <div class="group bg-white border border-border-subtle rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
-                            <div class="aspect-[3/4] overflow-hidden bg-surface-container-highest flex items-center justify-center relative">
-                                @if($book->cover_image)
-                                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $book->judul }}" src="{{ Storage::url($book->cover_image) }}">
-                                @else
-                                    <div class="w-full h-full flex flex-col items-center justify-center p-4 text-outline">
-                                        <span class="material-symbols-outlined text-[36px] sm:text-[48px] mb-2 text-outline-variant">book</span>
-                                        <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-center">No Cover</span>
-                                    </div>
-                                @endif
-                                
-                                @if($totalStock > 0)
-                                    <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full">
-                                        Stok: {{ $totalStock }}
-                                    </span>
-                                @else
-                                    <span class="absolute top-2 right-2 bg-amber-600 text-white text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full">
-                                        Diantri
-                                    </span>
-                                @endif
+                        <div class="group bg-white border border-border-subtle rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+                            <div class="aspect-[3/4] overflow-hidden bg-white flex items-center justify-center relative border-b border-border-subtle">
+                                <img class="w-full h-full {{ $book->cover_image ? 'object-cover' : 'object-contain p-6 bg-white' }} group-hover:scale-105 transition-transform duration-500" alt="{{ $book->judul }}" src="{{ $book->cover_url }}">
                             </div>
                             <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
                                 <div>
-                                    <span class="text-[9px] sm:text-[10px] font-bold text-primary uppercase mb-1 block truncate">{{ $book->category?->name ?? 'Umum' }}</span>
-                                    <h3 class="font-label-md text-xs sm:text-label-md text-on-surface line-clamp-2 mb-1" title="{{ $book->judul }}">{{ $book->judul }}</h3>
+                                    <span class="text-[9px] sm:text-[10px] font-bold text-primary uppercase mb-1 block truncate">{{ $book->category?->kategori_name ?? 'Umum' }}</span>
+                                    <h3 class="font-label-md text-xs sm:text-label-md text-on-surface line-clamp-2 mb-1 font-bold" title="{{ $book->judul }}">{{ $book->judul }}</h3>
                                     <p class="text-[11px] sm:text-[12px] text-outline truncate">{{ $book->author ?? 'Penulis tidak diketahui' }}</p>
                                 </div>
                                 <div class="mt-3 sm:mt-4 pt-2 border-t border-border-subtle flex items-center justify-between">
@@ -346,6 +332,85 @@
                     @empty
                         <div class="col-span-full py-12 text-center text-outline font-medium">
                             Belum ada koleksi buku yang ditampilkan.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Repositori Karya Ilmiah Digital (5 Laporan TA / Proposal / PKL Terbaru) -->
+        <section id="repositori" class="py-10 sm:py-14 bg-slate-50/70 border-t border-b border-outline-variant/15">
+            <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
+                <div class="flex justify-between items-end mb-6 sm:mb-8">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="material-symbols-outlined text-teal-600 text-[20px]">school</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-teal-700">Repositori Digital Kampus</span>
+                        </div>
+                        <h2 class="font-headline-lg text-2xl sm:text-headline-lg text-on-surface font-bold">Karya Ilmiah Mahasiswa</h2>
+                        <p class="font-body-md text-xs sm:text-body-md text-on-surface-variant">Laporan Tugas Akhir, Proposal dan Laporan PKL Mahasiswa</p>
+                    </div>
+                    @auth
+                        @php
+                            $archiveRoute = route('mahasiswa.katalog-arsip.index');
+                            if (Auth::user()->isDosen()) $archiveRoute = route('dosen.katalog-arsip.index');
+                            elseif (Auth::user()->isPetugas()) $archiveRoute = route('petugas.arsip.index');
+                        @endphp
+                        <a class="text-teal-700 font-label-md text-xs sm:text-label-md flex items-center gap-1 hover:underline font-bold shrink-0" href="{{ $archiveRoute }}">
+                            Lihat Semua <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    @else
+                        <a class="text-teal-700 font-label-md text-xs sm:text-label-md flex items-center gap-1 hover:underline font-bold shrink-0" href="{{ route('login') }}">
+                            Lihat Semua <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    @endauth
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
+                    @forelse($featuredArchives as $archive)
+                        <div class="group bg-white border border-border-subtle rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+                            <!-- Cover area using default logo_polnep.webp -->
+                            <div class="aspect-[3/4] overflow-hidden bg-white flex items-center justify-center relative border-b border-border-subtle">
+                                <img class="w-full h-full object-contain p-6 bg-white group-hover:scale-105 transition-transform duration-500" alt="{{ $archive->title_display }}" src="{{ asset('img/logo_polnep.webp') }}">
+                                
+                                <!-- Badge Type Label -->
+                                <span class="absolute top-2 left-2 bg-teal-700 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
+                                    {{ $archive->type_label }}
+                                </span>
+                            </div>
+
+                            <!-- Content Footer -->
+                            <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[9px] sm:text-[10px] font-bold text-teal-700 uppercase mb-1 block truncate">{{ $archive->prodi_display }}</span>
+                                    <h3 class="font-label-md text-xs sm:text-label-md text-on-surface line-clamp-2 mb-1 font-bold" title="{{ $archive->title_display }}">
+                                        {{ $archive->title_display }}
+                                    </h3>
+                                    <p class="text-[11px] sm:text-[12px] text-outline truncate">Oleh: {{ $archive->author_display }}</p>
+                                </div>
+                                <div class="mt-3 sm:mt-4 pt-2 border-t border-border-subtle flex items-center justify-between">
+                                    @auth
+                                        @php
+                                            $streamRoute = route('mahasiswa.katalog-arsip.show', ['type' => $archive->archive_type, 'id' => $archive->getKey()]);
+                                            if (Auth::user()->isDosen()) $streamRoute = route('dosen.katalog-arsip.show', ['type' => $archive->archive_type, 'id' => $archive->getKey()]);
+                                            elseif (Auth::user()->isPetugas()) $streamRoute = route('petugas.arsip.show', ['type' => $archive->archive_type, 'id' => $archive->getKey()]);
+                                        @endphp
+                                        <a href="{{ $streamRoute }}" class="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1">
+                                            <span>Selengkapnya</span>
+                                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('login') }}" class="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1">
+                                            <span>Selengkapnya</span>
+                                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                                        </a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full py-12 text-center text-outline font-medium">
+                            Belum ada karya ilmiah publikasi digital yang ditampilkan.
                         </div>
                     @endforelse
                 </div>
@@ -439,7 +504,8 @@
                 <div>
                     <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-4">Navigasi Utama</h4>
                     <ul class="space-y-2.5 text-xs text-white/85">
-                        <li><a href="#katalog" class="hover:text-white hover:underline transition-all">Koleksi Terbaru</a></li>
+                        <li><a href="#katalog" class="hover:text-white hover:underline transition-all">Koleksi Buku</a></li>
+                        <li><a href="#repositori" class="hover:text-white hover:underline transition-all">Karya Ilmiah</a></li>
                         <li><a href="#layanan" class="hover:text-white hover:underline transition-all">Layanan &amp; Fitur</a></li>
                         <li><a href="#panduan" class="hover:text-white hover:underline transition-all">Panduan Peminjaman</a></li>
                         <li><a href="{{ route('login') }}" class="hover:text-white hover:underline transition-all">Masuk Anggota</a></li>

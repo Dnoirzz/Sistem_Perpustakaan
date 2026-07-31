@@ -45,12 +45,32 @@ class BookingController extends Controller
             return back()->with('error', 'Anda sudah memiliki booking aktif untuk koleksi ini.');
         }
 
-        Booking::create([
+        $booking = Booking::create([
             'user_id' => $user->user_id,
             'koleksi_id' => $koleksiId,
             'tgl_booking' => today(),
             'status' => 'pending',
         ]);
+
+        $bookTitle = $booking->collection?->display_title ?? 'buku';
+        
+        // Notif ke anggota
+        \App\Models\NotificationCustom::send(
+            $user->user_id,
+            'Pengajuan Booking Berhasil',
+            "Pengajuan booking untuk koleksi '{$bookTitle}' berhasil dicatat.",
+            route('mahasiswa.bookings.my'),
+            'booking'
+        );
+
+        // Notif ke petugas & admin
+        \App\Models\NotificationCustom::sendToRoles(
+            ['petugas', 'admin'],
+            'Pengajuan Booking Baru',
+            "Anggota {$user->name} mengajukan booking untuk koleksi '{$bookTitle}'.",
+            route('petugas.bookings.index'),
+            'booking'
+        );
 
         return back()->with('success', 'Booking berhasil dibuat. Tunggu persetujuan petugas.');
     }
