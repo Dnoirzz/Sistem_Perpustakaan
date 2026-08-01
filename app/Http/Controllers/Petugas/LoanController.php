@@ -337,6 +337,49 @@ class LoanController extends Controller
             \Illuminate\Support\Facades\Log::warning("Gagal mengirim WA Peminjaman Baru: " . $e->getMessage());
         }
 
+        // Kirim Notifikasi Telegram (Fase 6)
+        try {
+            if ($member->telegram_chat_id) {
+                $namaAnggota = e($member->name);
+                $tglPinjam = \Carbon\Carbon::parse($validated['tgl_pinjam'])->translatedFormat('d M Y');
+                $btsWaktu = \Carbon\Carbon::parse($validated['bts_waktu'])->translatedFormat('d M Y');
+
+                if ($totalLoaned === 1) {
+                    $judulBuku = e($createdLoans[0]->collection?->display_title ?? 'Koleksi Perpustakaan');
+                    $tgMessage = "<b>Halo, {$namaAnggota}!</b> 📚\n\n" .
+                                 "Peminjaman buku baru Anda telah berhasil dicatat.\n\n" .
+                                 "<b>Detail Peminjaman:</b>\n" .
+                                 "• Judul Buku: <b>{$judulBuku}</b>\n" .
+                                 "• Tanggal Pinjam: {$tglPinjam}\n" .
+                                 "• Batas Pengembalian: <b>{$btsWaktu}</b>\n\n" .
+                                 "Mohon kembalikan tepat waktu untuk menghindari denda.\n\n" .
+                                 "<i>SIPUS PSDKU POLNEP Sukamara</i>";
+                } else {
+                    $bookListLines = [];
+                    foreach ($createdLoans as $idx => $l) {
+                        $l->load('collection');
+                        $num = $idx + 1;
+                        $title = e($l->collection?->display_title ?? 'Koleksi');
+                        $bookListLines[] = "{$num}. <b>{$title}</b>";
+                    }
+                    $bookListText = implode("\n", $bookListLines);
+
+                    $tgMessage = "<b>Halo, {$namaAnggota}!</b> 📚\n\n" .
+                                 "Peminjaman {$totalLoaned} koleksi baru Anda telah berhasil dicatat.\n\n" .
+                                 "<b>Daftar Koleksi Dipinjam:</b>\n" .
+                                 "{$bookListText}\n\n" .
+                                 "• Tanggal Pinjam: {$tglPinjam}\n" .
+                                 "• Batas Pengembalian: <b>{$btsWaktu}</b>\n\n" .
+                                 "Mohon kembalikan tepat waktu untuk menghindari denda.\n\n" .
+                                 "<i>SIPUS PSDKU POLNEP Sukamara</i>";
+                }
+
+                \App\Services\TelegramService::send($member->telegram_chat_id, $tgMessage);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Gagal mengirim Telegram Peminjaman Baru: " . $e->getMessage());
+        }
+
         // Kirim Notifikasi Sistem Bell
         $btsWaktuFormated = \Carbon\Carbon::parse($validated['bts_waktu'])->translatedFormat('d M Y');
         \App\Models\NotificationCustom::send(

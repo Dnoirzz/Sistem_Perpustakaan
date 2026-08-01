@@ -74,6 +74,22 @@ class Antrian extends Model
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::warning('Gagal mengirim WA Antrian Tersedia: '.$e->getMessage());
             }
+
+            try {
+                if ($nextInQueue->user && ! empty($nextInQueue->user->telegram_chat_id)) {
+                    $judulBuku = e($nextInQueue->collection?->display_title ?? 'Koleksi Perpustakaan');
+                    $namaAnggota = e($nextInQueue->user->name);
+
+                    $tgMessage = "<b>Halo, {$namaAnggota}!</b> 📚\n\n".
+                                 "Kabar baik! Buku <b>{$judulBuku}</b> yang Anda tunggu di antrian kini sudah <b>TERSEDIA</b> untuk dipinjam.\n\n".
+                                 "Silakan datang ke perpustakaan untuk memproses peminjaman buku tersebut.\n\n".
+                                 "<i>SIPUS PSDKU POLNEP Sukamara</i>";
+
+                    \App\Services\TelegramService::send($nextInQueue->user->telegram_chat_id, $tgMessage);
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Gagal mengirim Telegram Antrian Tersedia: '.$e->getMessage());
+            }
         }
 
         return $nextInQueue;

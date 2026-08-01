@@ -143,6 +143,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/wa', [\App\Http\Controllers\Admin\SettingController::class, 'waUpdate'])->name('wa.update');
         Route::post('/wa/test', [\App\Http\Controllers\Admin\SettingController::class, 'testWa'])->name('wa.test');
 
+        Route::get('/telegram', [\App\Http\Controllers\Admin\SettingController::class, 'telegramIndex'])->name('telegram');
+        Route::post('/telegram', [\App\Http\Controllers\Admin\SettingController::class, 'telegramUpdate'])->name('telegram.update');
+        Route::post('/telegram/test', [\App\Http\Controllers\Admin\SettingController::class, 'testTelegram'])->name('telegram.test');
+
         Route::get('/email', [\App\Http\Controllers\Admin\SettingController::class, 'emailIndex'])->name('email');
         Route::post('/email', [\App\Http\Controllers\Admin\SettingController::class, 'emailUpdate'])->name('email.update');
         Route::post('/email/test', [\App\Http\Controllers\Admin\SettingController::class, 'testEmail'])->name('email.test');

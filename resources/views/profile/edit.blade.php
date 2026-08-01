@@ -208,5 +208,79 @@
             
         </div>
     </main>
+
+    @php 
+        $rawBot = \App\Models\AppSetting::get('telegram_bot_username', 'SipusPolnep_bot');
+        $cleanBot = ltrim(trim($rawBot), '@') ?: 'SipusPolnep_bot';
+    @endphp
+
+    <!-- MODAL PANDUAN CARI CHAT ID -->
+    <div id="modal-help-chatid" class="fixed inset-0 z-[99999] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-6 my-auto relative animate-in fade-in zoom-in duration-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3 text-sky-600">
+                    <div class="w-10 h-10 rounded-2xl bg-sky-50 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-2xl">help</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-slate-800">Cara Cek Chat ID Telegram</h3>
+                        <p class="text-xs text-slate-400">Ikuti 3 langkah mudah berikut ini</p>
+                    </div>
+                </div>
+                <button type="button" 
+                        onclick="document.getElementById('modal-help-chatid').classList.add('hidden')" 
+                        class="text-slate-400 hover:text-slate-600 rounded-full p-1.5 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-xl block">close</span>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-600 leading-relaxed">
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-150 space-y-4">
+                    <div class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-sky-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <div class="space-y-1">
+                            <p class="font-bold text-slate-800">Cek Chat ID Anda di Telegram</p>
+                            <p class="text-slate-500">Klik tombol di bawah untuk membuka bot resmi penginfo ID Telegram:</p>
+                            <div class="pt-1">
+                                <a href="https://t.me/userinfobot" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold text-xs transition-colors shadow-sm shadow-sky-200">
+                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                    <span>Buka @userinfobot</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-sky-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <div class="space-y-1">
+                            <p class="font-bold text-slate-800">Salin Deretan Angka 'Id'</p>
+                            <p class="text-slate-500">Bot akan membalas info akun Anda. Salin deretan angka pada baris <strong>Id</strong> (misal: <code>123456789</code>).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-sky-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <div class="space-y-1">
+                            <p class="font-bold text-slate-800">Tempel & Simpan</p>
+                            <p class="text-slate-500">Kembali ke halaman profil ini, tempel angka tersebut di kolom <strong>Telegram Chat ID</strong>, lalu klik <strong>Save</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl flex items-start gap-2.5 text-xs">
+                    <span class="material-symbols-outlined text-amber-600 text-lg shrink-0 mt-0.5">warning</span>
+                    <span><strong>Penting:</strong> Setelah menyimpan Chat ID, pastikan Anda mengeklik tombol <strong>"Buka Bot"</strong> dan menekan <strong>START</strong> pada bot Telegram perpustakaan agar notifikasi dapat terkirim.</span>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button type="button" 
+                        onclick="document.getElementById('modal-help-chatid').classList.add('hidden')" 
+                        class="w-full sm:w-auto px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-2xl transition-all shadow-md">
+                    Saya Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Loan;
 use App\Models\AppSetting;
 use App\Services\WhatsAppService;
+use App\Services\TelegramService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -70,6 +71,22 @@ class SendLoanReminderNotifications extends Command
                 // Beri jeda 1 detik untuk menghindari rate limit API
                 sleep(1);
             }
+
+            // Kirim Telegram H-1 jika terkonfigurasi
+            if ($loan->user && !empty($loan->user->telegram_chat_id)) {
+                $namaAnggota = e($loan->user->name);
+                $judulBuku = e($loan->collection?->display_title ?? 'Buku Perpustakaan');
+                $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
+
+                $tgMessage = "<b>Halo, {$namaAnggota}!</b> ⏰\n\n" .
+                             "Ini adalah pengingat bahwa batas pengembalian buku berikut jatuh tempo <b>BESOK</b>:\n" .
+                             "• Judul Buku: <b>{$judulBuku}</b>\n" .
+                             "• Tanggal Jatuh Tempo: <b>{$btsWaktu}</b>\n\n" .
+                             "Mohon kembalikan tepat waktu untuk menghindari denda keterlambatan.\n\n" .
+                             "<i>SIPUS PSDKU POLNEP Sukamara</i>";
+
+                TelegramService::send($loan->user->telegram_chat_id, $tgMessage);
+            }
         }
         $this->info("Berhasil mengirim {$successH1Count} notifikasi H-1.");
 
@@ -104,6 +121,24 @@ class SendLoanReminderNotifications extends Command
                 }
                 // Beri jeda 1 detik untuk menghindari rate limit API
                 sleep(1);
+            }
+
+            // Kirim Telegram Terlambat jika terkonfigurasi
+            if ($loan->user && !empty($loan->user->telegram_chat_id)) {
+                $namaAnggota = e($loan->user->name);
+                $judulBuku = e($loan->collection?->display_title ?? 'Buku Perpustakaan');
+                $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
+                $daysLate = Carbon::parse($loan->bts_waktu)->diffInDays(Carbon::today());
+
+                $tgMessage = "<b>Halo, {$namaAnggota}!</b> ⚠️\n\n" .
+                             "Buku yang Anda pinjam telah <b>MELEWATI BATAS WAKTU</b> pengembalian (TERLAMBAT):\n" .
+                             "• Judul Buku: <b>{$judulBuku}</b>\n" .
+                             "• Tanggal Jatuh Tempo: {$btsWaktu}\n" .
+                             "• Keterlambatan: <b>{$daysLate} Hari</b>\n\n" .
+                             "Mohon segera kembalikan buku tersebut ke perpustakaan untuk menghentikan akumulasi denda keterlambatan.\n\n" .
+                             "<i>SIPUS PSDKU POLNEP Sukamara</i>";
+
+                TelegramService::send($loan->user->telegram_chat_id, $tgMessage);
             }
         }
         $this->info("Berhasil mengirim {$successOverdueCount} notifikasi terlambat.");

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Services\WhatsAppService;
+use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -307,5 +308,67 @@ class SettingController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="preview_tanda_terima.pdf"'
         ])->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Tampilkan halaman pengaturan Bot Telegram.
+     */
+    public function telegramIndex()
+    {
+        $settings = [
+            'telegram_bot_token' => AppSetting::get('telegram_bot_token', ''),
+            'telegram_notification_enabled' => AppSetting::get('telegram_notification_enabled', 'false'),
+            'telegram_bot_username' => AppSetting::get('telegram_bot_username', 'SipusPolnep_bot'),
+        ];
+
+        return view('admin.settings.telegram', compact('settings'));
+    }
+
+    /**
+     * Simpan perubahan pengaturan Bot Telegram.
+     */
+    public function telegramUpdate(Request $request)
+    {
+        $request->validate([
+            'telegram_bot_token' => 'nullable|string',
+            'telegram_notification_enabled' => 'required|in:true,false',
+            'telegram_bot_username' => 'nullable|string|max:100',
+        ]);
+
+        $cleanUsername = ltrim(trim($request->telegram_bot_username ?? 'SipusPolnep_bot'), '@');
+        AppSetting::set('telegram_bot_token', trim($request->telegram_bot_token ?? ''));
+        AppSetting::set('telegram_notification_enabled', $request->telegram_notification_enabled);
+        AppSetting::set('telegram_bot_username', $cleanUsername ?: 'SipusPolnep_bot');
+
+        return redirect()->route('admin.settings.telegram')
+            ->with('success', 'Pengaturan Bot Telegram berhasil diperbarui.');
+    }
+
+    /**
+     * Kirim pesan Telegram uji coba.
+     */
+    public function testTelegram(Request $request)
+    {
+        $request->validate([
+            'test_chat_id' => 'required|string',
+            'test_message' => 'required|string',
+        ]);
+
+        $botUsername = AppSetting::get('telegram_bot_username', 'SipusPolnep_bot');
+        $fullMessage = "<b>[UJI COBA NOTIFIKASI TELEGRAM]</b>\n\n" . e($request->test_message) . "\n\n<i>Dikirim otomatis dari Bot @" . e($botUsername) . "</i>";
+
+        $sent = TelegramService::send($request->test_chat_id, $fullMessage);
+
+        if ($sent) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesan Telegram uji coba berhasil dikirim ke Chat ID ' . $request->test_chat_id
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim pesan Telegram uji coba. Pastikan Bot Token dan Chat ID benar serta Bot telah di-start oleh penerima.'
+            ], 400);
+        }
     }
 }

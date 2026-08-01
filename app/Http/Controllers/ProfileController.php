@@ -32,6 +32,7 @@ class ProfileController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'no_hp' => $request->no_hp,
+            'telegram_chat_id' => $request->telegram_chat_id,
         ]);
 
         if ($user->isDirty('email')) {

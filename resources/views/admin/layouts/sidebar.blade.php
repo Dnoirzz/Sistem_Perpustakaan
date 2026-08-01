@@ -41,6 +41,10 @@
                     <span class="material-symbols-outlined text-[18px]">chat</span>
                     <span class="text-sm">Notifikasi WA</span>
                 </a>
+                <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('admin.settings.telegram') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('admin.settings.telegram') }}">
+                    <span class="material-symbols-outlined text-[18px]">send</span>
+                    <span class="text-sm">Notifikasi Telegram</span>
+                </a>
                 <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('admin.settings.email') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('admin.settings.email') }}">
                     <span class="material-symbols-outlined text-[18px]">mail</span>
                     <span class="text-sm">Notifikasi Email</span>
