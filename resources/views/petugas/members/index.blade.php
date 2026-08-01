@@ -4,6 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Kelola Anggota - SIPUS PSDKU POLNEP</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -102,11 +103,6 @@
         }
     </script>
     <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(226, 231, 255, 0.5);
-        }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
@@ -142,7 +138,7 @@
     <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Kelola Anggota Perpustakaan',
-            'subtitle' => 'Daftarkan dan perbarui profil keanggotaan mahasiswa dan dosen.'
+            'subtitle' => 'Daftarkan, perbarui profil, dan verifikasi pendaftaran anggota mahasiswa & dosen.'
         ])
 
         <!-- Alert Section -->
@@ -153,6 +149,13 @@
             </div>
         @endif
 
+        @if(session('warning'))
+            <div class="mb-6 p-4 bg-amber-50 border border-amber-250 rounded-2xl flex items-center gap-3 text-amber-800 text-sm shadow-sm">
+                <span class="material-symbols-outlined text-amber-600">warning</span>
+                <div class="font-semibold">{{ session('warning') }}</div>
+            </div>
+        @endif
+
         @if(session('error'))
             <div class="mb-6 p-4 bg-rose-50 border border-rose-250 rounded-2xl flex items-center gap-3 text-rose-800 text-sm shadow-sm">
                 <span class="material-symbols-outlined text-rose-600">error</span>
@@ -160,8 +163,28 @@
             </div>
         @endif
 
-        <!-- Action Bar: Add button -->
-        <div class="flex justify-end gap-4 mb-8">
+        <!-- TAB NAVIGATION & ACTION BAR -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div class="flex gap-4">
+                <a href="{{ route('petugas.members.index', ['tab' => 'verified']) }}" 
+                   class="px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 {{ $tab !== 'pending' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-slate-50 hover:text-primary' }}">
+                    <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                    Anggota Terverifikasi
+                </a>
+
+                <a href="{{ route('petugas.members.index', ['tab' => 'pending']) }}" 
+                   class="px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 {{ $tab === 'pending' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-slate-50 hover:text-primary' }}">
+                    <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                    Verifikasi Pendaftaran
+                    @if($pendingCount > 0)
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full {{ $tab === 'pending' ? 'bg-amber-400 text-slate-900' : 'bg-amber-500 text-white' }} shadow-xs">
+                            {{ $pendingCount }}
+                        </span>
+                    @endif
+                </a>
+            </div>
+
+            <!-- Tambah Anggota Button -->
             <a href="{{ route('petugas.members.create') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all">
                 <span class="material-symbols-outlined text-[18px]">person_add</span>
                 Tambah Anggota Baru
@@ -171,10 +194,12 @@
         <!-- Filter & Search Section -->
         <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm mb-8">
             <form action="{{ route('petugas.members.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input type="hidden" name="tab" value="{{ $tab }}">
+                
                 <!-- Search query -->
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" placeholder="Cari nama, NIM, atau NIP..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                    <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau email..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                 </div>
 
                 <!-- Role Filter -->
@@ -207,7 +232,7 @@
                         Terapkan
                     </button>
                     @if(request()->filled('search') || request()->filled('role_id') || request()->filled('prodi_id'))
-                        <a href="{{ route('petugas.members.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
+                        <a href="{{ route('petugas.members.index', ['tab' => $tab]) }}" class="py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
                             Reset
                         </a>
                     @endif
@@ -215,115 +240,335 @@
             </form>
         </section>
 
-        <!-- Members Table -->
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden font-body-md">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Nama & ID Anggota</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Akun / Kontak</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Peran</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Detail Akademis</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs text-center uppercase tracking-widest w-40">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($members as $m)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <!-- Name Column -->
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
-                                            {{ substr($m->name, 0, 2) }}
+        @if($tab === 'pending')
+            <!-- TAB 2: UNVERIFIED / PENDING MEMBERS TABLE -->
+            <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden font-body-md">
+                <div class="p-6 border-b border-outline-variant/10 flex items-center justify-between bg-amber-50/50">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-amber-600 text-2xl">pending_actions</span>
+                        <div>
+                            <h2 class="font-headline-md text-base text-on-surface">Antrian Verifikasi Anggota Mandiri</h2>
+                            <p class="text-xs text-outline">Periksa foto Kartu Tanda Mahasiswa (KTM) / Kartu Identitas dan setujui atau tolak akun pendaftar.</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold rounded-full">
+                        {{ $members->total() }} Menunggu Akses
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-surface-container-low/50">
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Calon Anggota</th>
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Peran & Prodi</th>
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Identitas (NIM/NIP)</th>
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Bukti Identitas</th>
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs text-center uppercase tracking-widest w-48">Aksi Verifikasi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/10">
+                            @forelse($members as $m)
+                                <tr class="hover:bg-amber-50/20 transition-colors">
+                                    <!-- Name Column -->
+                                    <td class="px-8 py-5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 font-bold flex items-center justify-center text-xs uppercase border border-amber-200 shadow-sm">
+                                                {{ substr($m->name, 0, 2) }}
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="font-bold text-on-surface text-sm">{{ $m->name }}</span>
+                                                <span class="text-xs text-slate-500">{{ $m->email }} • {{ $m->no_hp }}</span>
+                                            </div>
                                         </div>
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-on-surface text-sm">{{ $m->name }}</span>
-                                            <span class="text-[10px] text-outline font-bold tracking-wider">
-                                                @if($m->role->role_name === 'mahasiswa')
-                                                    NIM: {{ $m->mahasiswa->nim ?? '-' }}
-                                                @else
-                                                    NIP: {{ $m->dosen->nip ?? '-' }}
-                                                @endif
+                                    </td>
+
+                                    <!-- Role Column -->
+                                    <td class="px-8 py-5">
+                                        <div class="space-y-1">
+                                            <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $m->isMahasiswa() ? 'bg-sky-50 text-sky-700 border border-sky-200' : 'bg-purple-50 text-purple-700 border border-purple-200' }}">
+                                                {{ $m->role->role_name ?? '-' }}
                                             </span>
+                                            <p class="text-xs text-slate-600 font-medium">
+                                                @if($m->isMahasiswa())
+                                                    {{ $m->mahasiswa->prodi->nama_prodi ?? '-' }} (Sem {{ $m->mahasiswa->semester ?? '-' }})
+                                                @elseif($m->isDosen())
+                                                    {{ $m->dosen->prodi->nama_prodi ?? '-' }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </p>
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
 
-                                <!-- Contact Column -->
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    <div class="flex flex-col">
-                                        <span class="font-semibold text-xs">{{ $m->email }}</span>
-                                        <span class="text-[10px] text-outline mt-0.5 font-medium">{{ $m->no_hp ?? '-' }}</span>
-                                    </div>
-                                </td>
-
-                                <!-- Role Column -->
-                                <td class="px-8 py-5">
-                                    @if($m->role->role_name === 'mahasiswa')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Mahasiswa
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Dosen
-                                        </span>
-                                    @endif
-                                </td>
-
-                                <!-- Academic Details -->
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        @if($m->role->role_name === 'mahasiswa')
-                                            <span class="font-bold text-xs text-on-surface-variant">{{ $m->mahasiswa->prodi->nama_prodi ?? 'Prodi' }}</span>
-                                            <span class="text-[10px] text-outline mt-0.5 font-bold uppercase">Semester {{ $m->mahasiswa->semester ?? '-' }}</span>
+                                    <!-- Identitas -->
+                                    <td class="px-8 py-5 font-mono text-xs font-semibold text-slate-700">
+                                        @if($m->isMahasiswa())
+                                            NIM: {{ $m->mahasiswa->nim ?? '-' }}
+                                        @elseif($m->isDosen())
+                                            NIP: {{ $m->dosen->nip ?? '-' }}
                                         @else
-                                            <span class="font-bold text-xs text-on-surface-variant">{{ $m->dosen->prodi->nama_prodi ?? 'Prodi' }}</span>
-                                            <span class="text-[10px] text-outline mt-0.5 font-bold uppercase">Pengajar / Dosen</span>
+                                            -
                                         @endif
-                                    </div>
-                                </td>
+                                    </td>
 
-                                <!-- Actions -->
-                                <td class="px-8 py-5 text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <!-- History button -->
-                                        <a href="{{ route('petugas.members.show', $m->user_id) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 flex items-center justify-center transition-all" title="Lihat Detail">
-                                            <span class="material-symbols-outlined text-[18px]">visibility</span>
-                                        </a>
-
-                                        <!-- Edit button -->
-                                        <a href="{{ route('petugas.members.edit', $m->user_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center justify-center transition-all" title="Edit Anggota">
-                                            <span class="material-symbols-outlined text-[18px]">edit</span>
-                                        </a>
-                                        
-                                        <!-- Delete form -->
-                                        <form action="{{ route('petugas.members.destroy', $m->user_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus anggota ini? Seluruh data sirkulasi dan log terkait anggota ini akan hilang.')" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-all" title="Hapus Anggota">
-                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    <!-- Preview Identitas -->
+                                    <td class="px-8 py-5">
+                                        @if(!empty($m->foto_ktm))
+                                            <button type="button" 
+                                                    onclick="previewKtm('{{ route('petugas.members.ktm', $m->user_id) }}', '{{ e($m->name) }}')"
+                                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all border border-slate-200">
+                                                <span class="material-symbols-outlined text-[16px]">badge</span>
+                                                Lihat Identitas
                                             </button>
-                                        </form>
-                                    </div>
-                                </td>
+                                        @else
+                                            <span class="text-xs text-slate-400 italic">Tanpa Berkas</span>
+                                        @endif
+                                    </td>
+
+                                    <!-- Actions -->
+                                    <td class="px-8 py-5 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <!-- Approve Form -->
+                                            <form action="{{ route('petugas.members.approve', $m->user_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui akun {{ e($m->name) }}?')">
+                                                @csrf
+                                                <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1">
+                                                    <span class="material-symbols-outlined text-[16px]">check</span>
+                                                    Setujui
+                                                </button>
+                                            </form>
+
+                                            <!-- Reject Button -->
+                                            <button type="button" 
+                                                    onclick="openRejectModal('{{ $m->user_id }}', '{{ e($m->name) }}')"
+                                                    class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-xl transition-all flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-[16px]">close</span>
+                                                Tolak
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-8 py-12 text-center">
+                                        <span class="material-symbols-outlined text-slate-300 text-6xl mb-2">verified</span>
+                                        <p class="font-bold text-slate-700 text-sm">Tidak Ada Antrian Verifikasi</p>
+                                        <p class="text-xs text-slate-400">Seluruh pendaftaran anggota baru telah terverifikasi.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if($members->hasPages())
+                    <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
+                        {{ $members->links() }}
+                    </div>
+                @endif
+            </section>
+        @else
+            <!-- TAB 1: VERIFIED ACTIVE MEMBERS TABLE -->
+            <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden font-body-md">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-surface-container-low/50">
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Nama & ID Anggota</th>
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Akun / Kontak</th>
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Peran</th>
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Detail Akademis</th>
+                                <th class="px-8 py-4 font-label-md text-outline-variant text-xs text-center uppercase tracking-widest w-40">Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-10 text-center text-outline font-medium">Data anggota perpustakaan tidak ditemukan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/10">
+                            @forelse($members as $m)
+                                <tr class="hover:bg-surface-container-low/30 transition-colors">
+                                    <!-- Name Column -->
+                                    <td class="px-8 py-5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
+                                                {{ substr($m->name, 0, 2) }}
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="font-bold text-on-surface text-sm">{{ $m->name }}</span>
+                                                <span class="text-[10px] text-outline font-bold tracking-wider">
+                                                    @if($m->role->role_name === 'mahasiswa')
+                                                        NIM: {{ $m->mahasiswa->nim ?? '-' }}
+                                                    @else
+                                                        NIP: {{ $m->dosen->nip ?? '-' }}
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Contact Column -->
+                                    <td class="px-8 py-5 text-sm text-on-surface-variant">
+                                        <div class="flex flex-col">
+                                            <span class="font-semibold text-xs">{{ $m->email }}</span>
+                                            <span class="text-[10px] text-outline mt-0.5 font-medium">{{ $m->no_hp ?? '-' }}</span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Role Column -->
+                                    <td class="px-8 py-5">
+                                        @if($m->role->role_name === 'mahasiswa')
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
+                                                Mahasiswa
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider">
+                                                Dosen
+                                            </span>
+                                        @endif
+                                    </td>
+
+                                    <!-- Academic Details -->
+                                    <td class="px-8 py-5">
+                                        <div class="flex flex-col">
+                                            @if($m->role->role_name === 'mahasiswa')
+                                                <span class="font-bold text-xs text-on-surface-variant">{{ $m->mahasiswa->prodi->nama_prodi ?? 'Prodi' }}</span>
+                                                <span class="text-[10px] text-outline mt-0.5 font-bold uppercase">Semester {{ $m->mahasiswa->semester ?? '-' }}</span>
+                                            @else
+                                                <span class="font-bold text-xs text-on-surface-variant">{{ $m->dosen->prodi->nama_prodi ?? 'Prodi' }}</span>
+                                                <span class="text-[10px] text-outline mt-0.5 font-bold uppercase">Pengajar / Dosen</span>
+                                            @endif
+                                        </div>
+                                    </td>
+
+                                    <!-- Actions -->
+                                    <td class="px-8 py-5 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <!-- History button -->
+                                            <a href="{{ route('petugas.members.show', $m->user_id) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 flex items-center justify-center transition-all" title="Lihat Detail">
+                                                <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                            </a>
+
+                                            <!-- Edit button -->
+                                            <a href="{{ route('petugas.members.edit', $m->user_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center justify-center transition-all" title="Edit Anggota">
+                                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                                            </a>
+                                            
+                                            <!-- Delete form -->
+                                            <form action="{{ route('petugas.members.destroy', $m->user_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus anggota ini? Seluruh data sirkulasi dan log terkait anggota ini akan hilang.')" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-all" title="Hapus Anggota">
+                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-8 py-10 text-center text-outline font-medium">Data anggota perpustakaan tidak ditemukan.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if($members->hasPages())
+                    <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
+                        {{ $members->links() }}
+                    </div>
+                @endif
+            </section>
+        @endif
+    </main>
+
+    <!-- MODAL PREVIEW KTM -->
+    <div id="modal-ktm" class="fixed inset-0 z-[99999] hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 my-auto relative">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2 text-primary">
+                    <span class="material-symbols-outlined text-2xl">badge</span>
+                    <h3 class="font-bold text-base text-slate-800" id="ktm-modal-title">Pratinjau Foto KTM</h3>
+                </div>
+                <button type="button" onclick="closeKtmModal()" class="text-slate-400 hover:text-slate-600 rounded-full p-1 transition-colors">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+            <div class="bg-slate-100 rounded-2xl overflow-hidden min-h-[250px] flex items-center justify-center border border-slate-200">
+                <img id="ktm-img" src="" alt="Foto KTM" class="max-h-[70vh] w-auto object-contain rounded-xl shadow-sm" />
+            </div>
+            <div class="flex justify-end pt-2">
+                <button type="button" onclick="closeKtmModal()" class="px-5 py-2.5 bg-slate-800 text-white font-bold text-xs rounded-xl hover:bg-slate-900 transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ALASAN PENOLAKAN -->
+    <div id="modal-reject" class="fixed inset-0 z-[99999] hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 my-auto relative">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2 text-rose-600">
+                    <span class="material-symbols-outlined text-2xl">cancel</span>
+                    <h3 class="font-bold text-base text-slate-800">Tolak Pendaftaran</h3>
+                </div>
+                <button type="button" onclick="closeRejectModal()" class="text-slate-400 hover:text-slate-600 rounded-full p-1 transition-colors">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
             </div>
 
-            <!-- Pagination -->
-            @if($members->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $members->links() }}
+            <form id="reject-form" method="POST" action="" class="space-y-4">
+                @csrf
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Menolak pendaftaran calon anggota <strong id="reject-user-name" class="text-slate-800"></strong>. 
+                    Pesan alasan penolakan ini akan dikirimkan ke email pendaftar, dan data pendaftaran akan dibersihkan agar calon anggota dapat mendaftar ulang.
+                </p>
+
+                <div class="space-y-1.5">
+                    <label for="reject-reason" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Alasan Penolakan <span class="text-rose-500">*</span></label>
+                    <textarea id="reject-reason" 
+                              name="reason" 
+                              rows="3" 
+                              required 
+                              class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500 resize-none" 
+                              placeholder="Misal: Foto KTM yang diunggah kurang jelas/buram. Silakan daftar kembali dengan foto KTM yang valid."></textarea>
                 </div>
-            @endif
-        </section>
-    </main>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeRejectModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                        Tolak & Kirim Email
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function previewKtm(url, name) {
+            document.getElementById('ktm-modal-title').textContent = 'Foto KTM: ' + name;
+            document.getElementById('ktm-img').src = url;
+            document.getElementById('modal-ktm').classList.remove('hidden');
+        }
+
+        function closeKtmModal() {
+            document.getElementById('modal-ktm').classList.add('hidden');
+            document.getElementById('ktm-img').src = '';
+        }
+
+        function openRejectModal(userId, name) {
+            const form = document.getElementById('reject-form');
+            form.action = "{{ url('petugas/members') }}/" + userId + "/reject";
+            document.getElementById('reject-user-name').textContent = name;
+            document.getElementById('reject-reason').value = '';
+            document.getElementById('modal-reject').classList.remove('hidden');
+        }
+
+        function closeRejectModal() {
+            document.getElementById('modal-reject').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>

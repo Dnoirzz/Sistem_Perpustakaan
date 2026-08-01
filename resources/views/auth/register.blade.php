@@ -581,7 +581,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('register') }}" id="registerForm">
+                <form method="POST" action="{{ route('register') }}" id="registerForm" enctype="multipart/form-data">
                     @csrf
 
                     <input type="hidden" name="role_name" id="roleNameInput" value="{{ $selectedRole }}">
@@ -681,6 +681,12 @@
                     <div class="field-group">
                         <label for="email">Email<span class="required-asterisk">*</span></label>
                         <input id="email" type="email" name="email" class="field-input" value="{{ old('email') }}" placeholder="nama@email.com" required>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="foto_ktm">Upload Foto KTM / Kartu Identitas<span class="required-asterisk">*</span></label>
+                        <input id="foto_ktm" type="file" name="foto_ktm" class="field-input" accept="image/jpeg,image/png,image/jpg" required>
+                        <p style="margin: 0.35rem 0 0; font-size: 0.75rem; color: #707882;">Format: JPG, JPEG, PNG (Maks. 2MB). Foto KTM/kartu identitas tersebut digunakan petugas untuk memverifikasi identitas Anda.</p>
                     </div>
 
                     <div class="field-group">

@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Prodi;
 use App\Models\Mahasiswa;
-use App\Models\Dosen;
+use App\Models\NotificationCustom;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +42,7 @@ class RegisteredUserController extends Controller
             'no_hp' => ['required', 'string', 'max:20'],
             'role_name' => ['required', 'string', 'in:mahasiswa,dosen'],
             'prodi_id' => ['required', 'exists:prodi,prodi_id'],
+            'foto_ktm' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ];
 
         if ($request->role_name === 'mahasiswa') {
@@ -53,6 +54,12 @@ class RegisteredUserController extends Controller
 
         $request->validate($rules);
 
+        // Upload Foto KTM
+        $ktmPath = null;
+        if ($request->hasFile('foto_ktm')) {
+            $ktmPath = $request->file('foto_ktm')->store('ktm', 'public');
+        }
+
         // Get corresponding role_id
         $roleName = $request->role_name;
         $role = Role::where('role_name', $roleName)->first();
@@ -63,13 +70,15 @@ class RegisteredUserController extends Controller
             ]);
         }
 
-        // Create User
+        // Create User (default status_verifikasi = pending)
         $user = User::create([
             'role_id' => $role->role_id,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'no_hp' => $request->no_hp,
+            'status_verifikasi' => 'pending',
+            'foto_ktm' => $ktmPath,
         ]);
 
         // Create related Mahasiswa or Dosen profile
@@ -90,8 +99,19 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        // Auth::login($user);
+        // Kirim Notifikasi Lonceng (Bell) ke seluruh Petugas dan Admin
+        try {
+            NotificationCustom::sendToRoles(
+                ['admin', 'petugas'],
+                'Pendaftaran Anggota Baru',
+                "Calon anggota baru: {$user->name} (" . ucfirst($roleName) . ") melakukan pendaftaran mandiri dan menunggu verifikasi identitas.",
+                '/petugas/members?tab=pending',
+                'warning'
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Gagal mengirim notifikasi lonceng pendaftaran: " . $e->getMessage());
+        }
 
-        return redirect()->route('register')->with('registration_success', true);
+        return redirect()->route('login')->with('info', 'Pendaftaran akun berhasil! Akun Anda sedang dalam proses verifikasi oleh Petugas Perpustakaan. Hasil verifikasi akan dikirimkan ke email Anda.');
     }
 }

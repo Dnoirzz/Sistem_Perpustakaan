@@ -339,9 +339,121 @@
                 font-size: 2.2rem;
             }
         }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(19, 27, 46, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards ease;
+        }
+
+        /* Modal Container */
+        .modal-card {
+            background: #ffffff;
+            border-radius: 24px;
+            width: min(440px, 90%);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: slideIn 0.35s 0.1s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-family: "Outfit", sans-serif;
+        }
+
+        /* Icon Wrap */
+        .modal-icon-wrap {
+            width: 80px;
+            height: 80px;
+            background: #e6f7f8;
+            color: #00a5c0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .modal-icon-wrap svg {
+            width: 42px !important;
+            height: 42px !important;
+            max-width: 42px !important;
+            max-height: 42px !important;
+        }
+
+        /* Modal Text Styles */
+        .modal-card h2 {
+            margin: 0 0 0.75rem;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #141b2b;
+        }
+
+        .modal-card p {
+            margin: 0 0 2rem;
+            font-size: 0.92rem;
+            color: #707882;
+            line-height: 1.6;
+        }
+
+        /* Modal Button */
+        .modal-button {
+            width: 100%;
+            border: 0;
+            background: #00a5c0;
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 0.9rem 1.5rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(0, 165, 192, 0.25);
+            transition: all 0.2s;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+
+        .modal-button:hover {
+            background: #007b91;
+            transform: translateY(-1px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
+    @if (session('info') || request()->has('test_modal'))
+        <div class="modal-overlay" id="registrationModal">
+            <div class="modal-card">
+                <div class="modal-icon-wrap">
+                    <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:42px;height:42px;">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <h2>Pendaftaran Berhasil!</h2>
+                <p>{{ session('info') ?? 'Pendaftaran akun berhasil! Akun Anda sedang dalam proses verifikasi oleh Petugas Perpustakaan. Hasil verifikasi akan dikirimkan ke email Anda.' }}</p>
+                <button type="button" class="modal-button" onclick="document.getElementById('registrationModal').remove()">Saya Mengerti</button>
+            </div>
+        </div>
+    @endif
     <div class="login-layout">
         <aside class="visual-pane" aria-hidden="true">
             <div style="width: min(220px, 55%); aspect-ratio: 1/1; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1.5px solid rgba(255, 255, 255, 0.25); border-radius: 24px; padding: 2rem; box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1), 0 10px 25px rgba(0, 0, 0, 0.05);">

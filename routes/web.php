@@ -119,10 +119,13 @@ Route::middleware('auth')->group(function () {
     // Receipt & Report Logo
     Route::get('/receipt/logo', [\App\Http\Controllers\Admin\SettingController::class, 'receiptLogo'])->name('receipt.logo');
 
-    // Notifications Feed & Read Routes
+    // Notifications Feed, Index & Read Routes
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/feed', [\App\Http\Controllers\NotificationController::class, 'feed'])->name('notifications.feed');
+    Route::get('/notifications/{id}/open', [\App\Http\Controllers\NotificationController::class, 'open'])->name('notifications.open');
     Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
 
 // Admin routes
@@ -177,6 +180,9 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::resource('categories', \App\Http\Controllers\Petugas\CategoryController::class);
     
     Route::resource('members', \App\Http\Controllers\Petugas\MemberController::class);
+    Route::post('/members/{member}/approve', [\App\Http\Controllers\Petugas\MemberController::class, 'approve'])->name('members.approve');
+    Route::post('/members/{member}/reject', [\App\Http\Controllers\Petugas\MemberController::class, 'reject'])->name('members.reject');
+    Route::get('/members/{member}/ktm', [\App\Http\Controllers\Petugas\MemberController::class, 'viewKtm'])->name('members.ktm');
 
     // Fase 5: Arsip Digital
     Route::get('/arsip', [PetugasArsipController::class, 'index'])->name('arsip.index');

@@ -8,7 +8,13 @@ use App\Models\Role;
 use App\Models\Prodi;
 use App\Models\Mahasiswa;
 use App\Models\Dosen;
+use App\Models\ActivityLog;
+use App\Mail\MemberApprovedMail;
+use App\Mail\MemberRejectedMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -23,11 +29,18 @@ class MemberController extends Controller
         $search = $request->input('search');
         $roleId = $request->input('role_id');
         $prodiId = $request->input('prodi_id');
+        $tab = $request->input('tab', 'verified'); // 'verified' atau 'pending'
 
-        // Batasi hanya menampilkan Mahasiswa dan Dosen
         $query = User::whereHas('role', function ($q) {
             $q->whereIn('role_name', ['mahasiswa', 'dosen']);
         })->with(['role', 'mahasiswa.prodi', 'dosen.prodi']);
+
+        // Filter tab status verifikasi
+        if ($tab === 'pending') {
+            $query->where('status_verifikasi', 'pending');
+        } else {
+            $query->where('status_verifikasi', 'verified');
+        }
 
         // Filter pencarian
         if ($search) {
@@ -61,10 +74,11 @@ class MemberController extends Controller
 
         $members = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
+        $pendingCount = User::where('status_verifikasi', 'pending')->count();
         $roles = Role::whereIn('role_name', ['mahasiswa', 'dosen'])->get();
         $prodis = Prodi::orderBy('nama_prodi', 'asc')->get();
 
-        return view('petugas.members.index', compact('members', 'roles', 'prodis', 'search', 'roleId', 'prodiId'));
+        return view('petugas.members.index', compact('members', 'roles', 'prodis', 'search', 'roleId', 'prodiId', 'tab', 'pendingCount'));
     }
 
     /**
@@ -362,5 +376,100 @@ class MemberController extends Controller
 
         return redirect()->route('petugas.members.index')
             ->with('success', 'Anggota perpustakaan berhasil dihapus.');
+    }
+
+    /**
+     * Disetujui (Approve) pendaftaran anggota.
+     */
+    public function approve(User $member)
+    {
+        if ($member->status_verifikasi === 'verified') {
+            return redirect()->back()->with('warning', 'Akun ini sudah terverifikasi sebelumnya.');
+        }
+
+        $member->update([
+            'status_verifikasi' => 'verified',
+        ]);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Menyetujui (Approve) pendaftaran anggota baru: ' . $member->name . ' (' . $member->email . ')',
+        ]);
+
+        // Kirim Email Notifikasi Kelulusan
+        try {
+            Mail::to($member->email)->send(new MemberApprovedMail($member));
+            Log::info("Email kelulusan verifikasi terkirim ke {$member->email}");
+        } catch (\Exception $e) {
+            Log::warning("Gagal mengirim email kelulusan verifikasi ke {$member->email}: " . $e->getMessage());
+        }
+
+        // Kirim Notifikasi Lonceng (Bell) ke User
+        try {
+            \App\Models\NotificationCustom::send(
+                $member->user_id,
+                'Akun Terverifikasi 🎉',
+                'Selamat! Akun anggota perpustakaan Anda telah berhasil diverifikasi dan disetujui oleh Petugas.',
+                '/dashboard',
+                'success'
+            );
+        } catch (\Exception $e) {
+            Log::warning("Gagal mengirim notifikasi lonceng ke user: " . $e->getMessage());
+        }
+
+        return redirect()->route('petugas.members.index', ['tab' => 'pending'])
+            ->with('success', 'Akun anggota "' . $member->name . '" berhasil diverifikasi dan disetujui. Email konfirmasi telah dikirim.');
+    }
+
+    /**
+     * Ditolak (Reject) pendaftaran anggota & Hapus data (Clean Delete).
+     */
+    public function reject(Request $request, User $member)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ], [
+            'reason.required' => 'Alasan penolakan wajib diisi agar pendaftar mengetahui penyebabnya.',
+        ]);
+
+        $userName = $member->name;
+        $userEmail = $member->email;
+        $reason = $request->reason;
+
+        // Kirim Email Notifikasi Penolakan SEBELUM data dihapus
+        try {
+            Mail::to($userEmail)->send(new MemberRejectedMail($userName, $reason));
+            Log::info("Email penolakan verifikasi terkirim ke {$userEmail}");
+        } catch (\Exception $e) {
+            Log::warning("Gagal mengirim email penolakan verifikasi ke {$userEmail}: " . $e->getMessage());
+        }
+
+        // Hapus file foto KTM dari storage jika ada
+        if (!empty($member->foto_ktm) && Storage::disk('public')->exists($member->foto_ktm)) {
+            Storage::disk('public')->delete($member->foto_ktm);
+        }
+
+        // Hapus data pengguna dari database (Clean Delete)
+        $member->delete();
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity' => 'Menolak & menghapus pendaftaran anggota: ' . $userName . ' (' . $userEmail . '). Alasan: ' . $reason,
+        ]);
+
+        return redirect()->route('petugas.members.index', ['tab' => 'pending'])
+            ->with('success', 'Pendaftaran anggota "' . $userName . '" berhasil ditolak. Email pemberitahuan telah dikirim dan data telah dibersihkan.');
+    }
+
+    /**
+     * Stream file foto KTM untuk modal preview.
+     */
+    public function viewKtm(User $member)
+    {
+        if (empty($member->foto_ktm) || !Storage::disk('public')->exists($member->foto_ktm)) {
+            abort(404, 'File foto KTM tidak ditemukan.');
+        }
+
+        return Storage::disk('public')->response($member->foto_ktm);
     }
 }

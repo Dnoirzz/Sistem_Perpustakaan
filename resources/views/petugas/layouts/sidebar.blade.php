@@ -70,6 +70,12 @@
                 <span class="material-symbols-outlined">group</span>
                 <span class="font-label-md">Kelola Anggota</span>
             </div>
+            @php $pendingVerifCount = \App\Models\User::where('status_verifikasi', 'pending')->count(); @endphp
+            @if($pendingVerifCount > 0)
+                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-amber-500 text-white shadow-xs" title="{{ $pendingVerifCount }} pendaftaran pending verifikasi">
+                    {{ $pendingVerifCount }}
+                </span>
+            @endif
         </a>
 
         <a class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('petugas.recommendations.*') ? 'sidebar-active' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all group" href="{{ route('petugas.recommendations.index') }}">

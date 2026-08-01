@@ -50,7 +50,28 @@ class NotificationController extends Controller
     }
 
     /**
-     * Tandai notifikasi spesifik sebagai dibaca
+     * Tandai notifikasi spesifik sebagai dibaca (via GET) lalu redirect ke URL tujuan
+     */
+    public function open(Request $request, $id)
+    {
+        $userId = Auth::id();
+
+        $notification = NotificationCustom::where('id', $id)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($notification) {
+            $notification->update(['is_read' => true]);
+            $targetUrl = $notification->url ?: route('notifications.index');
+        } else {
+            $targetUrl = route('notifications.index');
+        }
+
+        return redirect($targetUrl);
+    }
+
+    /**
+     * Tandai notifikasi spesifik sebagai dibaca (via POST)
      */
     public function markAsRead(Request $request, $id)
     {
@@ -95,6 +116,42 @@ class NotificationController extends Controller
             return response()->json(['success' => true]);
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Seluruh pemberitahuan telah ditandai sebagai dibaca.');
+    }
+
+    /**
+     * Halaman penuh daftar seluruh pemberitahuan user
+     */
+    public function index(Request $request)
+    {
+        $userId = Auth::id();
+
+        $notifications = NotificationCustom::where('user_id', $userId)
+            ->latest()
+            ->paginate(15);
+
+        return view('notifications.index', compact('notifications'));
+    }
+
+    /**
+     * Hapus satu notifikasi
+     */
+    public function destroy(Request $request, $id)
+    {
+        $userId = Auth::id();
+
+        $notification = NotificationCustom::where('id', $id)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($notification) {
+            $notification->delete();
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()->back()->with('success', 'Pemberitahuan berhasil dihapus.');
     }
 }

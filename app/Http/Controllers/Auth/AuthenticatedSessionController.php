@@ -26,6 +26,19 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $user = Auth::user();
+
+        // Cek status verifikasi akun (Login Blocking)
+        if ($user && $user->isPending()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun Anda belum terverifikasi oleh Petugas Perpustakaan. Silakan periksa inbox/spam email Anda secara berkala untuk info hasil verifikasi.',
+            ]);
+        }
+
         $request->session()->regenerate();
 
         \App\Models\ActivityLog::create([

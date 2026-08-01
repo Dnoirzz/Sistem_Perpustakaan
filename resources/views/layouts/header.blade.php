@@ -143,44 +143,49 @@
                     </template>
 
                     <template x-for="item in notifications" :key="item.id">
-                        <form :action="'{{ url('/notifications') }}/' + item.id + '/read'" method="POST" class="block">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <button 
-                                type="submit" 
-                                class="w-full text-left p-4 hover:bg-slate-50 transition-colors flex items-start gap-3 cursor-pointer group"
-                                :class="!item.is_read ? 'bg-teal-50/40' : ''"
+                        <a :href="'{{ url('/notifications') }}/' + item.id + '/open'"
+                           class="block w-full text-left p-4 hover:bg-slate-50 transition-colors flex items-start gap-3 cursor-pointer group"
+                           :class="!item.is_read ? 'bg-teal-50/40' : ''"
+                        >
+                            <!-- Icon Tipe Notifikasi -->
+                            <div class="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 mt-0.5"
+                                 :class="{
+                                     'bg-teal-100 text-teal-700': item.type === 'arsip',
+                                     'bg-amber-100 text-amber-700': item.type === 'warning' || item.type === 'booking',
+                                     'bg-sky-100 text-sky-700': item.type === 'sirkulasi',
+                                     'bg-emerald-100 text-emerald-700': item.type === 'success',
+                                     'bg-rose-100 text-rose-700': item.type === 'denda',
+                                     'bg-slate-100 text-slate-700': !['arsip','warning','booking','sirkulasi','denda','success'].includes(item.type)
+                                 }"
                             >
-                                <!-- Icon Tipe Notifikasi -->
-                                <div class="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 mt-0.5"
-                                     :class="{
-                                         'bg-teal-100 text-teal-700': item.type === 'arsip',
-                                         'bg-amber-100 text-amber-700': item.type === 'booking',
-                                         'bg-sky-100 text-sky-700': item.type === 'sirkulasi',
-                                         'bg-rose-100 text-rose-700': item.type === 'denda',
-                                         'bg-slate-100 text-slate-700': !['arsip','booking','sirkulasi','denda'].includes(item.type)
-                                     }"
-                                >
-                                    <span class="material-symbols-outlined text-[18px]"
-                                          x-text="item.type === 'arsip' ? 'folder_managed' : (item.type === 'booking' ? 'event_available' : (item.type === 'sirkulasi' ? 'assignment_returned' : (item.type === 'denda' ? 'gavel' : 'info')))"
-                                    ></span>
-                                </div>
+                                <span class="material-symbols-outlined text-[18px]"
+                                      x-text="item.type === 'arsip' ? 'folder_managed' : (item.type === 'booking' ? 'event_available' : (item.type === 'sirkulasi' ? 'assignment_returned' : (item.type === 'denda' ? 'gavel' : (item.type === 'success' ? 'check_circle' : (item.type === 'warning' ? 'error' : 'info')))))"
+                                ></span>
+                            </div>
 
-                                <!-- Text Body -->
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between gap-1 mb-1">
-                                        <h4 class="text-xs font-bold text-slate-900 group-hover:text-teal-700 transition-colors truncate" x-text="item.title"></h4>
-                                        <span class="text-[10px] text-slate-400 shrink-0 font-medium" x-text="item.time_ago"></span>
-                                    </div>
-                                    <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed" x-text="item.message"></p>
+                            <!-- Text Body -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-1 mb-1">
+                                    <h4 class="text-xs font-bold text-slate-900 group-hover:text-teal-700 transition-colors truncate" x-text="item.title"></h4>
+                                    <span class="text-[10px] text-slate-400 shrink-0 font-medium" x-text="item.time_ago"></span>
                                 </div>
+                                <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed" x-text="item.message"></p>
+                            </div>
 
-                                <!-- Unread Dot Indicator -->
-                                <template x-if="!item.is_read">
-                                    <div class="w-2 h-2 rounded-full bg-rose-600 shrink-0 mt-2"></div>
-                                </template>
-                            </button>
-                        </form>
+                            <!-- Unread Dot Indicator -->
+                            <template x-if="!item.is_read">
+                                <div class="w-2 h-2 rounded-full bg-rose-600 shrink-0 mt-2"></div>
+                            </template>
+                        </a>
                     </template>
+                </div>
+
+                <!-- Dropdown Footer: Link to /notifications page -->
+                <div class="p-3 bg-slate-50 border-t border-slate-100 text-center">
+                    <a href="{{ route('notifications.index') }}" class="inline-flex items-center gap-1 text-xs font-bold text-teal-700 hover:text-teal-900 transition-colors">
+                        Lihat Semua Pemberitahuan
+                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </a>
                 </div>
             </div>
         </div>

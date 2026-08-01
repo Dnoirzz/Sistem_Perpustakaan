@@ -29,6 +29,8 @@ class User extends Authenticatable
         'password',
         'no_hp',
         'telegram_chat_id',
+        'status_verifikasi',
+        'foto_ktm',
         'foto',
     ];
 
@@ -181,5 +183,21 @@ class User extends Authenticatable
     public function isMahasiswa(): bool
     {
         return $this->role && $this->role->role_name === 'mahasiswa';
+    }
+
+    /**
+     * Helper: Cek apakah akun user telah terverifikasi
+     */
+    public function isVerified(): bool
+    {
+        return $this->status_verifikasi === 'verified';
+    }
+
+    /**
+     * Helper: Cek apakah akun user masih berstatus pending
+     */
+    public function isPending(): bool
+    {
+        return $this->status_verifikasi === 'pending';
     }
 }
