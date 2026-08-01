@@ -171,7 +171,7 @@
             <form action="{{ route('petugas.arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-4">
                 <div class="relative flex items-center">
                     <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari judul, NIM, mahasiswa..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama, NIM atau judul" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
                 </div>
                 <div>
                     <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
@@ -207,18 +207,18 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Jenis</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest whitespace-nowrap">Jenis</th>
                             <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Judul</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Mahasiswa</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs text-center uppercase tracking-widest w-28">Aksi</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest whitespace-nowrap">Mahasiswa</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest whitespace-nowrap">Status</th>
+                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs text-center uppercase tracking-widest w-28 whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant/10">
                         @forelse($archives as $item)
                             <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+                                <td class="px-8 py-5 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
                                         {{ $item['type_label'] }}
                                     </span>
                                 </td>
@@ -232,24 +232,24 @@
                                 </td>
                                 <td class="px-8 py-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
+                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm shrink-0">
                                             {{ substr($item['mahasiswa_name'] ?? 'M', 0, 2) }}
                                         </div>
                                         <div class="flex flex-col">
-                                            <span class="font-bold text-on-surface text-sm">{{ $item['mahasiswa_name'] ?? '-' }}</span>
-                                            <span class="text-[10px] text-outline font-bold tracking-wider mt-0.5">NIM: {{ $item['nim'] ?? '-' }}</span>
+                                            <span class="font-bold text-on-surface text-sm whitespace-nowrap">{{ $item['mahasiswa_name'] ?? '-' }}</span>
+                                            <span class="text-[10px] text-outline font-bold tracking-wider mt-0.5 whitespace-nowrap">NIM: {{ $item['nim'] ?? '-' }}</span>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-8 py-5">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border
+                                <td class="px-8 py-5 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border whitespace-nowrap
                                         {{ $item['status'] === 'ditolak' ? 'bg-error/15 text-error border-error/20' : 
                                            ($item['status'] === 'aktif' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
                                            ($item['status'] === 'diverifikasi' ? 'bg-primary/15 text-primary border-primary/20' : 'bg-amber-500/15 text-amber-700 border-amber-500/20')) }}">
                                         {{ $item['status'] }}
                                     </span>
                                 </td>
-                                <td class="px-8 py-5 text-center">
+                                <td class="px-8 py-5 text-center whitespace-nowrap">
                                     <a href="{{ route('petugas.arsip.show', [$item['type'], $item['id']]) }}" class="w-8 h-8 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 flex items-center justify-center transition-all inline-flex" title="Detail Arsip">
                                         <span class="material-symbols-outlined text-[18px]">visibility</span>
                                     </a>

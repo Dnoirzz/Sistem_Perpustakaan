@@ -143,30 +143,30 @@
                             <th class="py-3 px-4 border-r border-slate-300">Nama Mahasiswa / NIM</th>
                             <th class="py-3 px-3 border-r border-slate-300">Prodi</th>
                             <th class="py-3 px-4 border-r border-slate-300">Judul Karya Ilmiah</th>
-                            <th class="py-3 px-3 border-r border-slate-300">Jenis Dokumen</th>
-                            <th class="py-3 px-2 border-r border-slate-300 text-center">Tahun</th>
-                            <th class="py-3 px-3 border-r border-slate-300">Tgl Verifikasi</th>
-                            <th class="py-3 px-3 text-center">Status Fisik</th>
+                            <th class="py-3 px-3 border-r border-slate-300 whitespace-nowrap">Jenis Dokumen</th>
+                            <th class="py-3 px-2 border-r border-slate-300 text-center whitespace-nowrap">Tahun</th>
+                            <th class="py-3 px-3 border-r border-slate-300 whitespace-nowrap">Tgl Verifikasi</th>
+                            <th class="py-3 px-3 text-center whitespace-nowrap">Status Fisik</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-slate-800 font-medium">
                         @forelse($archives as $index => $item)
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-3 text-center border-r border-slate-200 font-semibold">{{ $index + 1 }}</td>
-                                <td class="py-3 px-3 border-r border-slate-200 font-mono text-[11px] text-teal-800 font-bold">
+                                <td class="py-3 px-3 text-center border-r border-slate-200 font-semibold whitespace-nowrap">{{ $index + 1 }}</td>
+                                <td class="py-3 px-3 border-r border-slate-200 font-mono text-[11px] text-teal-800 font-bold whitespace-nowrap">
                                     {{ $item->nomor_surat ?? '-' }}
                                 </td>
                                 <td class="py-3 px-4 border-r border-slate-200">
                                     <div class="font-bold text-slate-900">{{ $item->mahasiswa?->user?->name ?? '-' }}</div>
                                     <div class="text-[10px] text-slate-500 uppercase">NIM: {{ $item->mahasiswa->nim ?? '-' }}</div>
                                 </td>
-                                <td class="py-3 px-3 border-r border-slate-200">
+                                <td class="py-3 px-3 border-r border-slate-200 whitespace-nowrap">
                                     {{ $item->mahasiswa?->prodi?->nama_prodi ?? '-' }}
                                 </td>
                                 <td class="py-3 px-4 border-r border-slate-200 font-bold text-slate-900">
                                     {{ $item->judul_display }}
                                 </td>
-                                <td class="py-3 px-3 border-r border-slate-200">
+                                <td class="py-3 px-3 border-r border-slate-200 whitespace-nowrap">
                                     {{ $item->jenis_label }}
                                 </td>
                                 <td class="py-3 px-2 border-r border-slate-200 text-center">

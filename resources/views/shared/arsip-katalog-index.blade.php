@@ -207,8 +207,8 @@
                 <article class="flex flex-col justify-between rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm hover:shadow-md transition duration-200">
                     <div>
                         <div class="mb-4 flex items-center justify-between gap-4">
-                            <span class="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-primary">{{ $item['type_label'] }}</span>
-                            <span class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide border
+                            <span class="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-primary whitespace-nowrap">{{ $item['type_label'] }}</span>
+                            <span class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide border whitespace-nowrap
                                 {{ $item['status'] === 'aktif' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-500/15 text-amber-700 border-amber-500/20' }}">
                                 {{ $item['status'] === 'aktif' ? 'Diserahkan' : 'Belum Diserahkan' }}
                             </span>

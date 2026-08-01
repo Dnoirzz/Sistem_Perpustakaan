@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Prodi;
@@ -335,7 +336,10 @@ class ArsipController extends Controller
         $kind = $request->string('kind')->toString() ?: 'pdf';
         $path = $kind === 'word' ? $archive->file_word : $archive->file_pdf;
 
-        abort_unless($path && Storage::disk('local')->exists($path), 404, 'File tidak ditemukan.');
+        if (! $path || ! Storage::disk('local')->exists($path)) {
+            $label = $kind === 'word' ? 'File Word' : 'File PDF Asli';
+            return back()->with('error', "Berkas {$label} belum diunggah atau tidak ditemukan di penyimpanan server.");
+        }
 
         return response()->download(storage_path('app/' . $path));
     }
@@ -345,7 +349,9 @@ class ArsipController extends Controller
         $archive = ArsipDigital::findOrFail($type, $id);
         $path = $archive->surat_tanda_terima_pdf;
 
-        abort_unless($path && Storage::disk('local')->exists($path), 404, 'Surat tanda terima belum tersedia.');
+        if (! $path || ! Storage::disk('local')->exists($path)) {
+            return back()->with('error', 'Surat tanda terima belum diterbitkan atau berkas tidak ditemukan di penyimpanan server.');
+        }
 
         return response()->download(storage_path('app/' . $path));
     }

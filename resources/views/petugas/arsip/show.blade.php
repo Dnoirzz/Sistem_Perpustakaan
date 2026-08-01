@@ -156,6 +156,11 @@
                 <span class="material-symbols-outlined text-rose-600">error</span>
                 {{ session('error') }}
             </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    window.SIPUSModal.alert('Berkas Tidak Ditemukan', "{!! addslashes(session('error')) !!}", 'danger', { confirmText: 'Paham & Tutup' });
+                });
+            </script>
         @endif
 
         <div class="grid gap-8 xl:grid-cols-[1.2fr_.8fr]">
@@ -231,21 +236,40 @@
                     @endif
 
                     <div class="mt-8 flex flex-wrap gap-3 border-t border-outline-variant/10 pt-6">
-                        <a href="{{ route('petugas.arsip.download', [$archiveType, $archive->getKey()]) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-on-background text-white font-bold text-sm hover:bg-opacity-90 transition duration-200 shadow-sm">
-                            <span class="material-symbols-outlined text-[20px]">download</span>
-                            Unduh PDF Asli
-                        </a>
+                        @if($archive->file_pdf)
+                            <a href="{{ route('petugas.arsip.download', [$archiveType, $archive->getKey()]) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-on-background text-white font-bold text-sm hover:bg-opacity-90 transition duration-200 shadow-sm">
+                                <span class="material-symbols-outlined text-[20px]">download</span>
+                                Unduh PDF Asli
+                            </a>
+                        @else
+                            <button type="button" onclick="window.SIPUSModal.alert('Berkas PDF Belum Diunggah', 'Mahasiswa belum mengunggah berkas naskah PDF utama untuk arsip karya ilmiah ini.', 'warning', { confirmText: 'Paham & Tutup' })" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold text-sm border border-slate-200 transition duration-200 shadow-sm">
+                                <span class="material-symbols-outlined text-[20px]">download</span>
+                                Unduh PDF Asli
+                            </button>
+                        @endif
+
                         @if($archive->file_word)
                             <a href="{{ route('petugas.arsip.download', [$archiveType, $archive->getKey(), 'kind' => 'word']) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm bg-white hover:bg-slate-50 transition duration-200 shadow-sm">
                                 <span class="material-symbols-outlined text-[20px]">description</span>
                                 Unduh Word
                             </a>
+                        @else
+                            <button type="button" onclick="window.SIPUSModal.alert('Berkas Word Belum Diunggah', 'Mahasiswa belum mengunggah berkas dokumen Word (.doc / .docx) untuk arsip karya ilmiah ini.', 'warning', { confirmText: 'Paham & Tutup' })" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-dashed border-outline-variant/40 text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-50/50 hover:bg-slate-100 transition duration-200">
+                                <span class="material-symbols-outlined text-[20px]">description</span>
+                                Unduh Word
+                            </button>
                         @endif
+
                         @if($archive->surat_tanda_terima_pdf)
                             <a href="{{ route('petugas.arsip.surat', [$archiveType, $archive->getKey()]) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm bg-white hover:bg-slate-50 transition duration-200 shadow-sm">
                                 <span class="material-symbols-outlined text-[20px]">feed</span>
                                 Unduh Surat Tanda Terima
                             </a>
+                        @else
+                            <button type="button" onclick="window.SIPUSModal.alert('Surat Belum Diterbitkan', 'Surat Tanda Terima belum diterbitkan karena arsip ini belum diverifikasi oleh petugas.', 'warning', { confirmText: 'Paham & Tutup' })" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-dashed border-outline-variant/40 text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-50/50 hover:bg-slate-100 transition duration-200">
+                                <span class="material-symbols-outlined text-[20px]">feed</span>
+                                Unduh Surat Tanda Terima
+                            </button>
                         @endif
                     </div>
                 </section>

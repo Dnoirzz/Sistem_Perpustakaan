@@ -273,7 +273,7 @@
                         <article class="rounded-2xl border border-outline-variant/10 p-5 hover:shadow-md transition duration-200 bg-white">
                             <div class="flex flex-wrap items-start justify-between gap-4">
                                 <div>
-                                    <span class="mb-2 inline-block text-xs font-bold uppercase tracking-wide text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">{{ $item['type_label'] }}</span>
+                                    <span class="mb-2 inline-block text-xs font-bold uppercase tracking-wide text-primary bg-primary/10 px-2.5 py-0.5 rounded-full whitespace-nowrap">{{ $item['type_label'] }}</span>
                                     <h3 class="text-[16px] font-bold text-on-surface line-clamp-2 mt-1">{{ $item['title'] }}</h3>
                                     <p class="mt-2 text-xs text-outline font-semibold flex flex-wrap items-center gap-2">
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_month</span> Tahun {{ $item['year'] ?? '-' }}</span>
@@ -285,7 +285,7 @@
                                         @endif
                                     </p>
                                 </div>
-                                <span class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide border
+                                <span class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide border whitespace-nowrap
                                     {{ $item['status'] === 'ditolak' ? 'bg-error/15 text-error border-error/20' : 
                                        ($item['status'] === 'aktif' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
                                        ($item['status'] === 'diverifikasi' ? 'bg-primary/15 text-primary border-primary/20' : 'bg-amber-500/15 text-amber-700 border-amber-500/20')) }}">

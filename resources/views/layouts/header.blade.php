@@ -31,7 +31,7 @@
     [x-cloak] { display: none !important; }
 </style>
 
-<header class="sticky top-0 flex justify-between items-center mb-8 -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 px-6 sm:px-10 h-[88px] bg-white border-b border-outline-variant/20 shadow-sm z-40">
+<header class="sticky top-0 flex justify-between items-center mb-8 -mx-4 sm:-mx-10 -mt-6 sm:-mt-10 px-4 sm:px-10 h-[88px] bg-white border-b border-outline-variant/20 shadow-sm z-40">
     <div class="flex items-center gap-3.5 min-w-0 flex-1 mr-4">
         @if(isset($targetBackUrl) && $targetBackUrl)
             <a href="{{ $targetBackUrl }}" class="w-10 h-10 rounded-2xl bg-white hover:bg-slate-100/90 text-on-surface flex items-center justify-center border border-outline-variant/20 transition-all shadow-sm group shrink-0" title="Kembali">
@@ -107,6 +107,7 @@
             <div 
                 x-show="notifOpen" 
                 x-cloak
+                style="display: none;"
                 x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
@@ -207,6 +208,7 @@
             <div 
                 x-show="userMenuOpen" 
                 x-cloak
+                style="display: none;"
                 x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
