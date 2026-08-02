@@ -48,7 +48,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
 
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Rules Pengembalian',
             'subtitle' => 'Atur checklist inspeksi fisik dan aturan denda untuk proses pengembalian.'
@@ -83,59 +83,50 @@
         @endif
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
-            <section class="xl:col-span-2 bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-                <div class="p-8 border-b border-outline-variant/10">
-                    <h2 class="font-headline-md text-on-surface text-lg">Checklist Pengembalian</h2>
-                    <p class="text-xs text-outline mt-1">Item aktif akan muncul pada modal inspeksi fisik saat petugas memproses pengembalian.</p>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="bg-surface-container-low/50">
-                                <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant">Urutan</th>
-                                <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant">Item</th>
-                                <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant">Status</th>
-                                <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-outline-variant/10">
-                            @forelse($checklists as $checklist)
-                                <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                    <td class="px-8 py-5 text-sm font-bold text-on-surface">{{ $checklist->sort_order }}</td>
-                                    <td class="px-8 py-5">
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-on-surface text-sm">{{ $checklist->item_name }}</span>
-                                            <span class="text-xs text-outline">{{ $checklist->description ?: 'Tanpa deskripsi tambahan.' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full {{ $checklist->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }} text-[10px] font-bold uppercase tracking-wide">
-                                            {{ $checklist->is_active ? 'Aktif' : 'Nonaktif' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-8 py-5">
-                                        <div class="flex items-center justify-center gap-2">
-                                            <a href="{{ route('petugas.return-settings.checklists.edit', $checklist->return_checklist_id) }}" class="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center justify-center transition-all" title="Edit checklist">
-                                                <span class="material-symbols-outlined text-[18px]">edit</span>
-                                            </a>
-                                            <form action="{{ route('petugas.return-settings.checklists.destroy', $checklist->return_checklist_id) }}" method="POST" onsubmit="return confirm('Hapus checklist ini dari sistem?')" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="w-9 h-9 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 flex items-center justify-center transition-all" title="Hapus checklist">
-                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="px-8 py-10 text-center text-outline font-medium">Belum ada checklist pengembalian.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+            <section class="xl:col-span-2">
+                <x-table>
+                    <x-slot name="headers">
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Urutan</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Item</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Aksi</th>
+                    </x-slot>
+
+                    @forelse($checklists as $checklist)
+                        <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                            <td class="px-8 py-5 text-sm font-bold text-slate-900 whitespace-nowrap">{{ $checklist->sort_order }}</td>
+                            <td class="px-8 py-5">
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $checklist->item_name }}</span>
+                                    <span class="text-xs text-slate-500 font-medium">{{ $checklist->description ?: 'Tanpa deskripsi tambahan.' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 whitespace-nowrap">
+                                <span class="inline-flex items-center px-3.5 py-1 rounded-full {{ $checklist->is_active ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-700 border border-slate-200' }} text-xs font-extrabold tracking-wide">
+                                    {{ $checklist->is_active ? 'Aktif' : 'Nonaktif' }}
+                                </span>
+                            </td>
+                            <td class="px-8 py-5 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('petugas.return-settings.checklists.edit', $checklist->return_checklist_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-600 hover:text-white hover:border-amber-600 flex items-center justify-center transition-all active:scale-95" title="Edit checklist">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </a>
+                                    <form action="{{ route('petugas.return-settings.checklists.destroy', $checklist->return_checklist_id) }}" method="POST" onsubmit="return confirm('Hapus checklist ini dari sistem?')" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 flex items-center justify-center transition-all active:scale-95" title="Hapus checklist">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-8 py-14 text-center text-slate-500 font-medium">Belum ada checklist pengembalian.</td>
+                        </tr>
+                    @endforelse
+                </x-table>
             </section>
 
             <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
@@ -166,58 +157,59 @@
                         <input type="checkbox" name="is_active" value="1" class="rounded border-outline-variant/50 text-primary focus:ring-primary" {{ old('is_active', '1') ? 'checked' : '' }}>
                         <span class="text-sm font-semibold text-on-surface">Aktifkan checklist ini</span>
                     </label>
-                    <button type="submit" class="w-full py-3 px-6 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-opacity-95 transition-all shadow-lg shadow-primary/20">
+                    <button type="submit" class="w-full py-3 px-6 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-sm transition-all shadow-sm">
                         Simpan Checklist
                     </button>
                 </form>
             </section>
         </div>
 
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="p-8 border-b border-outline-variant/10">
-                <h2 class="font-headline-md text-on-surface text-lg">Aturan Denda Default</h2>
-                <p class="text-xs text-outline mt-1">Aturan aktif akan dipakai untuk mengisi default denda keterlambatan, kerusakan, dan kehilangan.</p>
+        <section>
+            <div class="mb-4 p-4 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-2xl">gavel</span>
+                    <div>
+                        <h2 class="font-bold text-sm text-slate-800">Aturan Denda Default</h2>
+                        <p class="text-xs text-slate-600">Aturan aktif akan dipakai untuk mengisi default denda keterlambatan, kerusakan, dan kehilangan.</p>
+                    </div>
+                </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant">Jenis</th>
-                            <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant">Perhitungan</th>
-                            <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant">Penyelesaian Default</th>
-                            <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant">Nominal Default</th>
-                            <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant">Status</th>
-                            <th class="px-8 py-4 text-xs font-bold uppercase tracking-widest text-outline-variant text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @foreach($penaltyRules as $rule)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $rule->rule_name }}</span>
-                                        <span class="text-xs text-outline">{{ $rule->description ?: 'Tanpa catatan tambahan.' }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm font-semibold text-on-surface-variant">{{ $rule->calculation_type_label }}</td>
-                                <td class="px-8 py-5 text-sm font-semibold text-on-surface-variant">{{ $rule->default_settlement_method_label }}</td>
-                                <td class="px-8 py-5 text-sm font-bold text-on-surface">Rp {{ number_format($rule->default_amount, 0, ',', '.') }}</td>
-                                <td class="px-8 py-5">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full {{ $rule->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }} text-[10px] font-bold uppercase tracking-wide">
-                                        {{ $rule->is_active ? 'Aktif' : 'Nonaktif' }}
-                                    </span>
-                                </td>
-                                <td class="px-8 py-5 text-center">
-                                    <a href="{{ route('petugas.return-settings.penalty-rules.edit', $rule->penalty_rule_id) }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-amber-50 text-amber-700 font-bold text-xs hover:bg-amber-100 transition-all">
-                                        <span class="material-symbols-outlined text-[16px]">tune</span>
-                                        Ubah Aturan
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+
+            <x-table>
+                <x-slot name="headers">
+                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Jenis</th>
+                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Perhitungan</th>
+                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Penyelesaian Default</th>
+                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Nominal Default</th>
+                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Aksi</th>
+                </x-slot>
+
+                @foreach($penaltyRules as $rule)
+                    <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                        <td class="px-8 py-5 whitespace-nowrap">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $rule->rule_name }}</span>
+                                <span class="text-xs text-slate-500 font-medium">{{ $rule->description ?: 'Tanpa catatan tambahan.' }}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5 text-sm font-semibold text-slate-700 whitespace-nowrap">{{ $rule->calculation_type_label }}</td>
+                        <td class="px-8 py-5 text-sm font-semibold text-slate-700 whitespace-nowrap">{{ $rule->default_settlement_method_label }}</td>
+                        <td class="px-8 py-5 text-sm font-bold text-slate-900 whitespace-nowrap">Rp {{ number_format($rule->default_amount, 0, ',', '.') }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3.5 py-1 rounded-full {{ $rule->is_active ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-700 border border-slate-200' }} text-xs font-extrabold tracking-wide">
+                                {{ $rule->is_active ? 'Aktif' : 'Nonaktif' }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-5 text-center whitespace-nowrap">
+                            <a href="{{ route('petugas.return-settings.penalty-rules.edit', $rule->penalty_rule_id) }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[16px]">tune</span>
+                                Ubah Aturan
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </x-table>
         </section>
     </main>
 </body>

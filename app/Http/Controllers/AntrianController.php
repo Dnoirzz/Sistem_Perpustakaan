@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Antrian;
+use App\Models\Collection;
 use App\Models\Loan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AntrianController extends Controller
 {
@@ -24,39 +26,54 @@ class AntrianController extends Controller
         $user = Auth::user();
         $koleksiId = $validated['koleksi_id'];
 
-        // Cek apakah pengguna sedang meminjam koleksi ini
-        $sedangDipinjam = Loan::where('user_id', $user->user_id)
-            ->where('koleksi_id', $koleksiId)
-            ->whereIn('status', ['dipinjam', 'terlambat'])
-            ->exists();
+        $errorMessage = null;
+        $nextNo = DB::transaction(function () use ($user, $koleksiId, &$errorMessage) {
+            // The collection row acts as the per-collection mutex while the
+            // duplicate check and next queue number are calculated.
+            Collection::query()
+                ->whereKey($koleksiId)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        if ($sedangDipinjam) {
-            return back()->with('error', 'Anda sedang meminjam koleksi ini. Silakan kembalikan terlebih dahulu.');
+            $sedangDipinjam = Loan::where('user_id', $user->user_id)
+                ->where('koleksi_id', $koleksiId)
+                ->whereIn('status', ['dipinjam', 'terlambat'])
+                ->exists();
+
+            if ($sedangDipinjam) {
+                $errorMessage = 'Anda sedang meminjam koleksi ini. Silakan kembalikan terlebih dahulu.';
+                return null;
+            }
+
+            $existingQueue = Antrian::where('user_id', $user->user_id)
+                ->where('koleksi_id', $koleksiId)
+                ->whereIn('status', ['menunggu', 'tersedia'])
+                ->exists();
+
+            if ($existingQueue) {
+                $errorMessage = 'Anda sudah terdaftar dalam antrian untuk koleksi ini.';
+                return null;
+            }
+
+            $lastNo = Antrian::where('koleksi_id', $koleksiId)
+                ->whereIn('status', ['menunggu', 'tersedia'])
+                ->max('no_antrian') ?? 0;
+
+            $nextNo = $lastNo + 1;
+
+            Antrian::create([
+                'user_id' => $user->user_id,
+                'koleksi_id' => $koleksiId,
+                'no_antrian' => $nextNo,
+                'status' => 'menunggu',
+            ]);
+
+            return $nextNo;
+        });
+
+        if ($nextNo === null) {
+            return back()->with('error', $errorMessage ?? 'Pendaftaran antrian tidak dapat dilakukan saat ini.');
         }
-
-        // Cek apakah sudah punya antrian aktif untuk koleksi ini
-        $existingQueue = Antrian::where('user_id', $user->user_id)
-            ->where('koleksi_id', $koleksiId)
-            ->whereIn('status', ['menunggu', 'tersedia'])
-            ->exists();
-
-        if ($existingQueue) {
-            return back()->with('error', 'Anda sudah terdaftar dalam antrian untuk koleksi ini.');
-        }
-
-        // Hitung nomor antrian berikutnya (reset ke 1 jika tidak ada antrian aktif)
-        $lastNo = Antrian::where('koleksi_id', $koleksiId)
-            ->whereIn('status', ['menunggu', 'tersedia'])
-            ->max('no_antrian') ?? 0;
-
-        $nextNo = $lastNo + 1;
-
-        Antrian::create([
-            'user_id' => $user->user_id,
-            'koleksi_id' => $koleksiId,
-            'no_antrian' => $nextNo,
-            'status' => 'menunggu',
-        ]);
 
         return back()->with('success', 'Anda berhasil masuk antrian! Nomor antrian Anda: ' . $nextNo);
     }
@@ -100,26 +117,46 @@ class AntrianController extends Controller
     public function cancel($antrian_id)
     {
         $user = Auth::user();
-        $antrian = Antrian::where('antrian_id', $antrian_id)
-            ->where('user_id', $user->user_id)
-            ->firstOrFail();
+        $promoteNext = false;
+        $koleksiId = DB::transaction(function () use ($antrian_id, $user, &$promoteNext) {
+            // Read the collection id first, then always acquire locks in the
+            // shared order: collection -> queue row. This matches loan,
+            // return, and queue-allocation transactions.
+            $antrianRef = Antrian::query()
+                ->where('antrian_id', $antrian_id)
+                ->where('user_id', $user->user_id)
+                ->firstOrFail();
 
-        if (! in_array($antrian->status, ['menunggu', 'tersedia'], true)) {
+            $collectionId = $antrianRef->koleksi_id;
+            $collection = Collection::query()
+                ->whereKey($collectionId)
+                ->lockForUpdate()
+                ->first();
+
+            $antrian = Antrian::query()
+                ->where('antrian_id', $antrian_id)
+                ->where('user_id', $user->user_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (! in_array($antrian->status, ['menunggu', 'tersedia'], true)) {
+                return null;
+            }
+
+            $promoteNext = $antrian->status === 'tersedia' && $collection !== null;
+            $antrian->update(['status' => 'dibatalkan']);
+
+            return $collectionId;
+        });
+
+        if ($koleksiId === null) {
             return back()->with('error', 'Antrian yang sudah selesai tidak dapat dibatalkan.');
         }
 
-        $koleksiId = $antrian->koleksi_id;
-        $oldStatus = $antrian->status;
-
-        $antrian->update(['status' => 'dibatalkan']);
-
-        // Jika antrian yang dibatalkan sebelumnya berstatus 'tersedia',
-        // alokasikan giliran ketersediaan ke pendaftar antrian berikutnya
-        if ($oldStatus === 'tersedia') {
+        if ($promoteNext) {
             Antrian::checkAndNotifyAvailableQueue($koleksiId);
         }
 
         return back()->with('success', 'Antrian berhasil dibatalkan.');
     }
 }
-

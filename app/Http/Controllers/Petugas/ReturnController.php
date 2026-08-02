@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Petugas;
 use App\Http\Controllers\Controller;
 use App\Models\Antrian;
 use App\Models\Loan;
+use App\Models\NotificationCustom;
 use App\Models\Penalty;
 use App\Models\PenaltyRule;
 use App\Models\ReturnChecklist;
+use App\Services\TelegramService;
+use App\Services\WhatsAppService;
 use App\Support\ArsipDigital;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -170,12 +173,10 @@ class ReturnController extends Controller
         $shouldRestock = ! ($request->input('penalty_type') === 'kehilangan' || $isLost) || in_array($settlementMethod, ['ganti_buku', 'kombinasi'], true);
         $penaltyAmount = $request->filled('penalty_amount') ? (float) $request->input('penalty_amount') : 0;
 
-        $notifiableQueue = null;
-
-        DB::transaction(function () use (
+        $releasedCollectionId = null;
+        $processed = DB::transaction(function () use (
             $loan,
             $today,
-            $wasOverdue,
             $conditionChecks,
             $hasPhysicalIssue,
             $failedConditions,
@@ -184,8 +185,34 @@ class ReturnController extends Controller
             $request,
             $lateRule,
             $selectedPhysicalRule,
-            &$notifiableQueue
+            &$releasedCollectionId
         ) {
+            // Acquire locks in the shared order collection -> loan. This
+            // prevents a return from deadlocking with a new loan or stock
+            // adjustment for the same collection.
+            $loanReference = Loan::query()
+                ->select(['loan_id', 'koleksi_id'])
+                ->whereKey($loan->loan_id)
+                ->firstOrFail();
+
+            $collection = \App\Models\Collection::query()
+                ->whereKey($loanReference->koleksi_id)
+                ->lockForUpdate()
+                ->first();
+
+            // Re-read and lock the loan inside the transaction. A second
+            // return request must see the status change and do nothing.
+            $loan = Loan::with(['user', 'collection.book'])
+                ->whereKey($loanReference->loan_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (! in_array($loan->status, ['dipinjam', 'terlambat'], true)) {
+                return false;
+            }
+
+            $wasOverdue = $loan->isOverdue();
+
             $loan->update([
                 'tgl_kembali' => $today,
                 'status' => 'dikembalikan',
@@ -194,16 +221,19 @@ class ReturnController extends Controller
                 'return_condition_notes' => $request->input('return_condition_notes'),
             ]);
 
-            if ($shouldRestock && $loan->collection) {
-                $loan->collection->syncBackingStock(1);
+            if ($shouldRestock && $collection) {
+                $collection->syncBackingStock(1);
+                $releasedCollectionId = $loan->koleksi_id;
             }
+
+            $createdPenalties = [];
 
             if ($wasOverdue && $lateRule && $lateRule->is_active) {
                 $daysLate = $loan->bts_waktu->diffInDays($today);
                 $amount = $this->calculateLatePenaltyAmount($lateRule, $daysLate);
 
                 if ($amount > 0) {
-                    Penalty::create([
+                    $createdPenalties[] = Penalty::create([
                         'loan_id' => $loan->loan_id,
                         'user_id' => $loan->user_id,
                         'type' => 'keterlambatan',
@@ -216,7 +246,7 @@ class ReturnController extends Controller
             }
 
             if ($hasPhysicalIssue && $selectedPhysicalRule) {
-                Penalty::create([
+                $createdPenalties[] = Penalty::create([
                     'loan_id' => $loan->loan_id,
                     'user_id' => $loan->user_id,
                     'type' => $selectedPhysicalRule->code,
@@ -232,10 +262,58 @@ class ReturnController extends Controller
                 ]);
             }
 
-            if ($shouldRestock && $loan->koleksi_id) {
-                Antrian::checkAndNotifyAvailableQueue($loan->koleksi_id);
+            // Kirim Notifikasi ke User jika ada denda baru yang dibuat
+            if ($createdPenalties !== [] && $loan->user_id) {
+                $targetUrl = $loan->user?->isDosen() ? route('dosen.loans.penalties') : route('mahasiswa.loans.penalties');
+                $collectionTitle = $loan->collection?->display_title ?? 'Koleksi';
+
+                foreach ($createdPenalties as $pen) {
+                    $typeLabel = ucfirst($pen->type);
+                    $amountFmt = $pen->amount > 0 ? "Rp " . number_format($pen->amount, 0, ',', '.') : "Sanksi Fisik";
+
+                    NotificationCustom::create([
+                        'user_id' => $loan->user_id,
+                        'title' => 'Tagihan Denda Baru',
+                        'message' => "Anda mendapatkan sanksi {$typeLabel} ({$amountFmt}) untuk pengembalian \"{$collectionTitle}\". Silakan cek halaman Denda Saya.",
+                        'url' => $targetUrl,
+                        'type' => 'warning',
+                        'is_read' => false,
+                    ]);
+
+                    // Kirim WA jika ada no HP
+                    if ($loan->user && !empty($loan->user->no_hp)) {
+                        $waMsg = "Halo, {$loan->user->name}! ⚠️\n\n" .
+                                 "Pengembalian koleksi *{$collectionTitle}* telah diproses dengan sanksi *{$typeLabel}*.\n" .
+                                 "• Nominal / Penyelesaian: *{$amountFmt}*\n" .
+                                 "• Keterangan: {$pen->description}\n\n" .
+                                 "Mohon segera selesaikan tagihan denda tersebut di perpustakaan.";
+                        WhatsAppService::send($loan->user->no_hp, $waMsg);
+                    }
+
+                    // Kirim Telegram jika ada
+                    if ($loan->user && !empty($loan->user->telegram_chat_id)) {
+                        $tgMsg = "<b>Halo, " . e($loan->user->name) . "!</b> ⚠️\n\n" .
+                                 "Pengembalian koleksi <b>" . e($collectionTitle) . "</b> telah diproses dengan sanksi <b>" . e($typeLabel) . "</b>.\n" .
+                                 "• Nominal / Penyelesaian: <b>" . e($amountFmt) . "</b>\n" .
+                                 "• Keterangan: " . e($pen->description) . "\n\n" .
+                                 "Mohon segera selesaikan tagihan denda tersebut di perpustakaan.";
+                        TelegramService::send($loan->user->telegram_chat_id, $tgMsg);
+                    }
+                }
             }
+
+            return true;
         });
+
+        if (! $processed) {
+            return redirect()
+                ->route('petugas.returns.index')
+                ->with('error', 'Peminjaman ini sudah dikembalikan sebelumnya.');
+        }
+
+        if ($releasedCollectionId) {
+            Antrian::checkAndNotifyAvailableQueue($releasedCollectionId);
+        }
 
         // Catat Log Aktivitas (Fase 6)
         \App\Models\ActivityLog::create([

@@ -133,7 +133,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
 
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Sistem Antrian Buku',
             'subtitle' => 'Kelola daftar tunggu buku yang sedang kosong stoknya.'
@@ -215,7 +215,7 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all">
+                        <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all shadow-sm">
                             Terapkan Filter
                         </button>
                         @if(request()->filled('search') || request()->filled('status'))
@@ -229,113 +229,99 @@
         </div>
 
         {{-- Tabel --}}
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">No. Antrian</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Anggota</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($antrianList as $antrian)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5 text-sm font-bold text-primary">
-                                    #{{ $antrian->no_antrian }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
-                                            {{ substr($antrian->user->name, 0, 2) }}
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-on-surface text-sm">{{ $antrian->user->name }}</span>
-                                            <span class="text-[10px] text-outline font-bold tracking-wider uppercase">
-                                                @if($antrian->user->role?->role_name === 'mahasiswa')
-                                                    Mahasiswa • NIM {{ $antrian->user->mahasiswa->nim ?? '-' }}
-                                                @else
-                                                    Dosen • NIP {{ $antrian->user->dosen->nip ?? '-' }}
-                                                @endif
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $antrian->collection?->display_title ?? 'Buku tidak ditemukan' }}</span>
-                                        <span class="text-[10px] text-outline font-semibold">
-                                            Stok Koleksi: {{ $antrian->collection?->stock ?? 0 }} eks
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($antrian->status === 'menunggu')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
-                                            Menunggu Stok
-                                        </span>
-                                    @elseif($antrian->status === 'tersedia')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide animate-pulse">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                            Buku Tersedia
-                                        </span>
-                                    @elseif($antrian->status === 'selesai')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-500 mr-1.5"></span>
-                                            Selesai
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
-                                            {{ $antrian->status }}
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-center">
-                                    @if($antrian->status === 'menunggu')
-                                        <button type="button" disabled title="Stok fisik belum tersedia" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs cursor-not-allowed border border-slate-200/80 shadow-none">
-                                            <span class="material-symbols-outlined text-[16px]">book</span>
-                                            Proses Peminjaman
-                                        </button>
-                                    @elseif($antrian->status === 'tersedia')
-                                        <div class="flex items-center justify-center gap-2">
-                                            <a href="{{ route('petugas.loans.create', ['user_id' => $antrian->user_id, 'koleksi_id' => $antrian->koleksi_id]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200">
-                                                <span class="material-symbols-outlined text-[16px]">book</span>
-                                                Proses Peminjaman
-                                            </a>
-                                            <form action="{{ route('petugas.antrian.mark-done', $antrian->antrian_id) }}" method="POST">
-                                                @csrf
-                                                <button type="submit" title="Tandai Selesai" class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
-                                                    <span class="material-symbols-outlined text-[18px]">done</span>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    @else
-                                        <span class="text-xs text-outline font-medium">Selesai diproses</span>
-                                    @endif
+        <x-table :pagination="$antrianList->hasPages() ? $antrianList->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">No. Antrian</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Anggota</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Buku</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Aksi</th>
+            </x-slot>
 
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-12 text-center text-outline font-medium">
-                                    Tidak ada data antrian buku.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if($antrianList->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $antrianList->links() }}
-                </div>
-            @endif
-        </section>
+            @forelse($antrianList as $antrian)
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                    <td class="px-8 py-5 text-sm font-extrabold text-teal-700 whitespace-nowrap">
+                        #{{ $antrian->no_antrian }}
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/10 shadow-xs">
+                                {{ substr($antrian->user->name, 0, 2) }}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $antrian->user->name }}</span>
+                                <span class="text-[10px] text-slate-500 font-bold tracking-wider uppercase">
+                                    @if($antrian->user->role?->role_name === 'mahasiswa')
+                                        Mahasiswa • NIM {{ $antrian->user->mahasiswa->nim ?? '-' }}
+                                    @else
+                                        Dosen • NIP {{ $antrian->user->dosen->nip ?? '-' }}
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm">{{ $antrian->collection?->display_title ?? 'Buku tidak ditemukan' }}</span>
+                            <span class="text-[10px] text-slate-500 font-semibold">
+                                Stok Koleksi: {{ $antrian->collection?->stock ?? 0 }} eks
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @if($antrian->status === 'menunggu')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-amber-600 mr-2 animate-pulse"></span>
+                                Menunggu Stok
+                            </span>
+                        @elseif($antrian->status === 'tersedia')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2 animate-pulse"></span>
+                                Buku Tersedia
+                            </span>
+                        @elseif($antrian->status === 'selesai')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-slate-500 mr-2"></span>
+                                Selesai
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                {{ $antrian->status }}
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 text-center whitespace-nowrap">
+                        @if($antrian->status === 'menunggu')
+                            <button type="button" disabled title="Stok fisik belum tersedia" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs cursor-not-allowed border border-slate-200/80 shadow-none">
+                                <span class="material-symbols-outlined text-[16px]">book</span>
+                                Proses Peminjaman
+                            </button>
+                        @elseif($antrian->status === 'tersedia')
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('petugas.loans.create', ['user_id' => $antrian->user_id, 'koleksi_id' => $antrian->koleksi_id]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all shadow-xs active:scale-95 shadow-emerald-200">
+                                    <span class="material-symbols-outlined text-[16px]">book</span>
+                                    Proses Peminjaman
+                                </a>
+                                <form action="{{ route('petugas.antrian.mark-done', $antrian->antrian_id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" title="Tandai Selesai" class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all border border-slate-200">
+                                        <span class="material-symbols-outlined text-[18px]">done</span>
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <span class="text-xs text-slate-400 font-medium">Selesai diproses</span>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-8 py-14 text-center text-slate-500 font-medium">
+                        Tidak ada data antrian buku.
+                    </td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 </body>
 </html>

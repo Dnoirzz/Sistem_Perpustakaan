@@ -52,9 +52,10 @@
 1. **Booking Buku**: Jika stok buku tersedia (stok > 0), klik tombol **"Booking Buku"** untuk mengamankan buku sebelum diambil di perpustakaan.
 2. **Daftar Antrian**: Jika stok buku habis (stok = 0), klik **"Daftar Antrian"**. Anda akan mendapatkan nomor antrian dan menerima notifikasi otomatis via WhatsApp/Telegram saat buku telah dikembalikan oleh peminjam sebelumnya.
 
-### E. Mengelola Rak Pinjam (Peminjaman Aktif & Riwayat)
-1. Buka menu **"Rak Pinjam"** $\rightarrow$ **Peminjaman Aktif** untuk melihat tanggal pinjam dan batas waktu pengembalian buku Anda.
-2. Buka tab **Riwayat Peminjaman** untuk melihat riwayat buku yang pernah Anda pinjam di masa lalu.
+### E. Mengelola Rak Pinjam (Peminjaman Aktif, Denda Saya & Riwayat)
+1. Buka menu **"Rak Pinjam"** $\rightarrow$ **Pinjaman** untuk melihat tanggal pinjam dan batas waktu pengembalian buku Anda.
+2. Buka sub-menu **"Denda Saya"** untuk melihat rincian tagihan denda belum dibayar (nominal, jenis sanksi, dan petunjuk penyelesaian) serta riwayat denda yang telah lunas.
+3. Buka tab **Riwayat** untuk melihat riwayat buku dan dokumen digital yang pernah Anda akses.
 
 ### F. Upload Repository Mandiri (PKL, Proposal TA, Laporan TA)
 1. Akses menu **"Repository Saya"** $\rightarrow$ Klik **"Unggah Karya Ilmiah"**.

@@ -130,86 +130,73 @@
         }
     </style>
 </head>
-<body class="font-body-md text-body-md antialiased min-h-screen flex">
+<body class="font-body-md text-body-md antialiased min-h-screen">
     @include('mahasiswa.layouts.sidebar')
 
-    <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
             'title' => 'Buku Sedang Dipinjam',
             'subtitle' => 'Daftar koleksi buku fisik perpustakaan yang sedang Anda pinjam saat ini.'
         ])
 
         {{-- Tampilan Desktop Tabel --}}
-        <section class="hidden lg:block bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tanggal Pinjam</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Pengembalian</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Denda Aktif</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($loans as $loan)
-                            @php
-                                $unpaidFines = $loan->penalties->where('status', 'belum_dibayar')->sum('amount');
-                            @endphp
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $loan->collection?->display_title ?? 'Koleksi tidak ditemukan' }}</span>
-                                        <span class="text-xs text-outline">
-                                            {{ $loan->collection?->book?->author ?? 'Penulis' }}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ $loan->tgl_pinjam ? \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') : '-' }}
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant font-semibold">
-                                    {{ $loan->bts_waktu ? \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') : '-' }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($loan->status === 'terlambat' || $loan->isOverdue())
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span>
-                                            Terlambat
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
-                                            Dipinjam
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-sm font-bold text-on-surface">
-                                    @if($unpaidFines > 0)
-                                        <span class="text-rose-600">Rp {{ number_format($unpaidFines, 0, ',', '.') }}</span>
-                                    @else
-                                        <span class="text-outline font-medium">-</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-12 text-center text-outline font-medium">
-                                    Anda tidak sedang meminjam buku fisik saat ini.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <x-table :pagination="$loans->hasPages() ? $loans->links() : null">
+            <x-slot name="headers">
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Buku</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Pinjam</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Batas Pengembalian</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Denda Aktif</th>
+            </x-slot>
 
-            @if($loans->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $loans->links() }}
-                </div>
-            @endif
-        </section>
+            @forelse($loans as $loan)
+                @php
+                    $unpaidFines = $loan->penalties->where('status', 'belum_dibayar')->sum('amount');
+                @endphp
+                <tr class="even:bg-slate-50/40 hover:bg-sky-50/40 transition-colors duration-150 group">
+                    <td class="px-4 sm:px-5 py-4">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm group-hover:text-primary transition-colors leading-snug">{{ $loan->collection?->display_title ?? 'Koleksi tidak ditemukan' }}</span>
+                            <span class="text-xs font-semibold text-slate-500 mt-0.5">
+                                {{ $loan->collection?->book?->author ?? 'Penulis' }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ $loan->tgl_pinjam ? \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') : '-' }}
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm text-slate-900 font-bold whitespace-nowrap">
+                        {{ $loan->bts_waktu ? \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') : '-' }}
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 whitespace-nowrap">
+                        @if($loan->status === 'terlambat' || $loan->isOverdue())
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2 animate-pulse"></span>
+                                Terlambat
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-sky-600 mr-2"></span>
+                                Dipinjam
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm font-extrabold text-slate-900 whitespace-nowrap">
+                        @if($unpaidFines > 0)
+                            <span class="text-rose-600">Rp {{ number_format($unpaidFines, 0, ',', '.') }}</span>
+                        @else
+                            <span class="text-slate-400 font-medium text-xs">-</span>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-5 py-14 text-center text-slate-500 font-medium">
+                        Anda tidak sedang meminjam buku fisik saat ini.
+                    </td>
+                </tr>
+            @endforelse
+        </x-table>
 
         {{-- Tampilan Mobile Card List --}}
         <div class="lg:hidden space-y-4">

@@ -222,15 +222,15 @@
                 </div>
 
                 <!-- 3. Laporan Arsip Digital -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-teal-500/40 transition-all group">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/40 transition-all group">
                     <div>
-                        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-[28px]">folder_shared</span>
                         </div>
                         <h3 class="font-headline-md text-on-surface text-base mb-1">Laporan Pengumpulan Arsip</h3>
                         <p class="text-xs text-outline mb-6">Tampilkan tabel penerimaan dokumen karya ilmiah digital (Laporan PKL, Proposal TA, dan Laporan TA).</p>
                     </div>
-                    <a href="{{ route('petugas.reports.arsip') }}" class="w-full py-3 px-4 rounded-2xl bg-teal-600 text-white text-xs font-bold transition-all shadow-md shadow-teal-200 hover:bg-teal-700 text-center flex items-center justify-center gap-2">
+                    <a href="{{ route('petugas.reports.arsip') }}" class="w-full py-3 px-4 rounded-2xl bg-primary text-white text-xs font-bold transition-all shadow-md shadow-primary/20 hover:bg-primary/90 text-center flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">visibility</span>
                         Buka Laporan Arsip
                     </a>

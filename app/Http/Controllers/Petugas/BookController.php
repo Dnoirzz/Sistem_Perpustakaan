@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
+use App\Models\Antrian;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Collection;
@@ -166,7 +167,43 @@ class BookController extends Controller
             $data['cover_image'] = 'covers/' . $filename;
         }
 
-        $book->update($data);
+        $updatedCollectionId = null;
+        $updatedStock = null;
+
+        if (array_key_exists('stock', $data)) {
+            // Circulation transactions lock collection -> book. Follow the
+            // same order here so a manual stock edit cannot overwrite a
+            // concurrent booking/loan/return update.
+            [$updatedCollectionId, $updatedStock] = DB::transaction(function () use ($book, $data) {
+                $collection = Collection::query()
+                    ->where('item_type', 'book')
+                    ->where('item_id', $book->buku_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                $lockedBook = Book::query()
+                    ->whereKey($book->buku_id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $lockedBook->fill($data);
+                $lockedBook->saveQuietly();
+
+                if ($collection) {
+                    $collection->update(['stock' => $lockedBook->stock]);
+                }
+
+                return [$collection?->koleksi_id, (int) $lockedBook->stock];
+            });
+        } else {
+            $book->update($data);
+        }
+
+        // Preserve the previous Book observer behavior: if manual stock
+        // editing makes a copy available, promote the next waiting member.
+        if ($updatedCollectionId && $updatedStock > 0) {
+            Antrian::checkAndNotifyAvailableQueue($updatedCollectionId);
+        }
 
         return redirect()->route('petugas.books.index')
             ->with('success', 'Buku berhasil diperbarui.');

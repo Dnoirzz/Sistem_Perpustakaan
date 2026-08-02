@@ -133,7 +133,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
 
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Kelola Booking Online',
             'subtitle' => 'Konfirmasi dan proses permintaan pemesanan buku dari anggota secara online.'
@@ -212,7 +212,7 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all">
+                        <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all shadow-sm">
                             Terapkan Filter
                         </button>
                         @if(request()->filled('search') || request()->filled('status'))
@@ -226,124 +226,111 @@
         </div>
 
         {{-- Tabel --}}
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Anggota</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Booking</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($bookings as $booking)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
-                                            {{ substr($booking->user->name, 0, 2) }}
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-on-surface text-sm">{{ $booking->user->name }}</span>
-                                            <span class="text-[10px] text-outline font-bold tracking-wider uppercase">
-                                                @if($booking->user->role?->role_name === 'mahasiswa')
-                                                    Mahasiswa • NIM {{ $booking->user->mahasiswa->nim ?? '-' }}
-                                                @else
-                                                    Dosen • NIP {{ $booking->user->dosen->nip ?? '-' }}
-                                                @endif
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $booking->collection?->display_title ?? 'Buku tidak ditemukan' }}</span>
-                                        <span class="text-[10px] text-outline font-semibold">
-                                            Stok: {{ $booking->collection?->stock ?? 0 }} eks
-                                        </span>
-                                        @if($booking->note)
-                                            <span class="text-[10px] text-primary font-semibold mt-1 bg-primary-container/10 px-2 py-0.5 rounded-lg border border-primary/10 w-fit">
-                                                Catatan: {{ $booking->note }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d M Y') }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($booking->status === 'pending')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
-                                            Pending
-                                        </span>
-                                    @elseif($booking->status === 'disetujui')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                            Disetujui
-                                        </span>
-                                    @elseif($booking->status === 'dibatalkan')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>
-                                            Dibatalkan
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
-                                            {{ $booking->status }}
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-center">
-                                    @if($booking->status === 'pending')
-                                        <div class="flex justify-center items-center gap-2">
-                                            <button onclick="openProcessModal({{ $booking->booking_id }}, 'approve', '{{ addslashes($booking->user->name) }}', '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-200">
-                                                <span class="material-symbols-outlined text-[16px]">check</span>
-                                                Setujui
-                                            </button>
-                                            <button onclick="openProcessModal({{ $booking->booking_id }}, 'reject', '{{ addslashes($booking->user->name) }}', '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 transition-all shadow-sm shadow-rose-200">
-                                                <span class="material-symbols-outlined text-[16px]">close</span>
-                                                Tolak
-                                            </button>
-                                        </div>
-                                    @elseif($booking->status === 'disetujui')
-                                        <div class="flex justify-center items-center gap-2">
-                                            <form action="{{ route('petugas.bookings.realize', $booking->booking_id) }}" method="POST" onsubmit="return confirm('Realisasikan booking ini menjadi peminjaman aktif?')" class="inline-block">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all shadow-sm shadow-primary/20">
-                                                    <span class="material-symbols-outlined text-[16px]">assignment_returned</span>
-                                                    Proses Pinjam
-                                                </button>
-                                            </form>
-                                            <button onclick="openProcessModal({{ $booking->booking_id }}, 'cancel', '{{ addslashes($booking->user->name) }}', '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 transition-all shadow-sm shadow-rose-200">
-                                                <span class="material-symbols-outlined text-[16px]">close</span>
-                                                Batalkan
-                                            </button>
-                                        </div>
-                                    @else
-                                        <span class="text-xs text-outline font-medium">Selesai diproses</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-12 text-center text-outline font-medium">
-                                    Tidak ada data booking online.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <x-table :pagination="$bookings->hasPages() ? $bookings->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Anggota</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Buku</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tgl Booking</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Aksi</th>
+            </x-slot>
 
-            @if($bookings->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $bookings->links() }}
-                </div>
-            @endif
-        </section>
+            @forelse($bookings as $booking)
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/10 shadow-xs">
+                                {{ substr($booking->user->name, 0, 2) }}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $booking->user->name }}</span>
+                                <span class="text-[10px] text-slate-500 font-bold tracking-wider uppercase">
+                                    @if($booking->user->role?->role_name === 'mahasiswa')
+                                        Mahasiswa • NIM {{ $booking->user->mahasiswa->nim ?? '-' }}
+                                    @else
+                                        Dosen • NIP {{ $booking->user->dosen->nip ?? '-' }}
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm">{{ $booking->collection?->display_title ?? 'Buku tidak ditemukan' }}</span>
+                            <span class="text-[10px] text-slate-500 font-semibold">
+                                Stok: {{ $booking->collection?->stock ?? 0 }} eks
+                            </span>
+                            @if($booking->note)
+                                <span class="text-[10px] text-teal-800 font-bold mt-1 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-200 w-fit">
+                                    Catatan: {{ $booking->note }}
+                                </span>
+                            @endif
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d M Y') }}
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @if($booking->status === 'pending')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-amber-600 mr-2 animate-pulse"></span>
+                                Pending
+                            </span>
+                        @elseif($booking->status === 'disetujui')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
+                                Disetujui
+                            </span>
+                        @elseif($booking->status === 'dibatalkan')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2"></span>
+                                Dibatalkan
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                {{ $booking->status }}
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 text-center whitespace-nowrap">
+                        @if($booking->status === 'pending')
+                            <div class="flex justify-center items-center gap-2">
+                                <button onclick="openProcessModal({{ $booking->booking_id }}, 'approve', '{{ addslashes($booking->user->name) }}', '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition-all shadow-xs active:scale-95 shadow-emerald-200">
+                                    <span class="material-symbols-outlined text-[16px]">check</span>
+                                    Setujui
+                                </button>
+                                <button onclick="openProcessModal({{ $booking->booking_id }}, 'reject', '{{ addslashes($booking->user->name) }}', '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 transition-all shadow-xs active:scale-95 shadow-rose-200">
+                                    <span class="material-symbols-outlined text-[16px]">close</span>
+                                    Tolak
+                                </button>
+                            </div>
+                        @elseif($booking->status === 'disetujui')
+                            <div class="flex justify-center items-center gap-2">
+                                <form action="{{ route('petugas.bookings.realize', $booking->booking_id) }}" method="POST" onsubmit="return confirm('Realisasikan booking ini menjadi peminjaman aktif?')" class="inline-block">
+                                    @csrf
+                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition-all shadow-xs active:scale-95">
+                                        <span class="material-symbols-outlined text-[16px]">assignment_returned</span>
+                                        Proses Pinjam
+                                    </button>
+                                </form>
+                                <button onclick="openProcessModal({{ $booking->booking_id }}, 'cancel', '{{ addslashes($booking->user->name) }}', '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 transition-all shadow-xs active:scale-95 shadow-rose-200">
+                                    <span class="material-symbols-outlined text-[16px]">close</span>
+                                    Batalkan
+                                </button>
+                            </div>
+                        @else
+                            <span class="text-xs text-slate-400 font-medium">Selesai diproses</span>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-8 py-14 text-center text-slate-500 font-medium">
+                        Tidak ada data booking online.
+                    </td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 
     {{-- Modal Proses Booking --}}

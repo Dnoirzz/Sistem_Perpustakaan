@@ -139,7 +139,7 @@
     @include('petugas.layouts.sidebar')
 
     <!-- Main Content Area -->
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Kelola Kategori Buku',
             'subtitle' => 'Atur pengelompokan klasifikasi kategori koleksi pustaka perpustakaan.'
@@ -179,7 +179,7 @@
             <a href="{{ route('petugas.books.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-slate-50 hover:text-primary transition-all">
                 Daftar Buku
             </a>
-            <a href="{{ route('petugas.categories.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-primary text-white shadow-lg shadow-primary/20 transition-all">
+            <a href="{{ route('petugas.categories.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-primary text-white shadow-sm transition-all">
                 Kategori Buku
             </a>
         </div>
@@ -189,66 +189,47 @@
             
             <!-- Left Column: Categories List -->
             <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-                    <div class="p-8 border-b border-outline-variant/10">
-                        <h2 class="font-headline-md text-on-surface text-lg">Daftar Kategori</h2>
-                        <p class="text-xs text-outline mt-1">Total kategori yang terdaftar dalam sistem perpustakaan.</p>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-surface-container-low/50">
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Nama Kategori</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Jumlah Buku</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs text-center uppercase tracking-widest w-40">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-outline-variant/10">
-                                @forelse($categories as $cat)
-                                    <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                        <td class="px-8 py-5">
-                                            <div class="font-semibold text-on-surface text-sm">
-                                                {{ $cat->kategori_name }}
-                                            </div>
-                                        </td>
-                                        <td class="px-8 py-5 text-sm font-semibold text-on-surface-variant">
-                                            {{ $cat->books_count }} buku
-                                        </td>
-                                        <td class="px-8 py-5 text-center">
-                                            <div class="flex items-center justify-center gap-2">
-                                                <!-- Edit button -->
-                                                <a href="{{ route('petugas.categories.edit', $cat->kategori_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center justify-center transition-all" title="Edit Kategori">
-                                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                                </a>
-                                                
-                                                <!-- Delete form -->
-                                                <form action="{{ route('petugas.categories.destroy', $cat->kategori_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?')" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-all" title="Hapus Kategori">
-                                                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="px-8 py-8 text-center text-outline font-medium">Belum ada kategori buku terdaftar.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                <x-table :pagination="$categories->hasPages() ? $categories->links() : null">
+                    <x-slot name="headers">
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Nama Kategori</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Jumlah Buku</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap w-40">Aksi</th>
+                    </x-slot>
 
-                    <!-- Pagination -->
-                    @if($categories->hasPages())
-                        <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                            {{ $categories->links() }}
-                        </div>
-                    @endif
-                </div>
+                    @forelse($categories as $cat)
+                        <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                            <td class="px-8 py-5 whitespace-nowrap">
+                                <div class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">
+                                    {{ $cat->kategori_name }}
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-sm font-bold text-slate-700 whitespace-nowrap">
+                                {{ $cat->books_count }} buku
+                            </td>
+                            <td class="px-8 py-5 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-2">
+                                    <!-- Edit button -->
+                                    <a href="{{ route('petugas.categories.edit', $cat->kategori_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-600 hover:text-white hover:border-amber-600 flex items-center justify-center transition-all active:scale-95" title="Edit Kategori">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </a>
+                                    
+                                    <!-- Delete form -->
+                                    <form action="{{ route('petugas.categories.destroy', $cat->kategori_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?')" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 flex items-center justify-center transition-all active:scale-95" title="Hapus Kategori">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-8 py-14 text-center text-slate-500 font-medium">Belum ada kategori buku terdaftar.</td>
+                        </tr>
+                    @endforelse
+                </x-table>
             </div>
 
             <!-- Right Column: Add Category Form -->

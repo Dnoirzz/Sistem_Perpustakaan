@@ -13,6 +13,8 @@ use App\Models\LaporanTugasAkhir;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\Collection;
+
 class DashboardController extends Controller
 {
     public function index()
@@ -40,8 +42,36 @@ class DashboardController extends Controller
             ->where('user_id', $user->user_id)
             ->whereIn('status', ['dipinjam', 'terlambat'])
             ->orderBy('tgl_pinjam', 'desc')
+            ->take(5)
             ->get();
 
-        return view('mahasiswa.dashboard', compact('stats', 'currentLoans'));
+        // 5 Rekomendasi Koleksi (Buku Umum & Arsip Digital: Populer & Terbaru)
+        $popularCollections = Collection::with(['book.category', 'laporanPkl.mahasiswa', 'proposalTa.mahasiswa', 'laporanTa.mahasiswa'])
+            ->withCount('loans')
+            ->orderBy('loans_count', 'desc')
+            ->take(3)
+            ->get();
+
+        $popularIds = $popularCollections->pluck('koleksi_id')->toArray();
+
+        $latestCollections = Collection::with(['book.category', 'laporanPkl.mahasiswa', 'proposalTa.mahasiswa', 'laporanTa.mahasiswa'])
+            ->whereNotIn('koleksi_id', $popularIds)
+            ->orderBy('koleksi_id', 'desc')
+            ->take(5 - count($popularIds))
+            ->get();
+
+        $recommendedCollections = $popularCollections->concat($latestCollections);
+
+        if ($recommendedCollections->count() < 5) {
+            $existingIds = $recommendedCollections->pluck('koleksi_id')->toArray();
+            $additional = Collection::with(['book.category', 'laporanPkl.mahasiswa', 'proposalTa.mahasiswa', 'laporanTa.mahasiswa'])
+                ->whereNotIn('koleksi_id', $existingIds)
+                ->orderBy('koleksi_id', 'asc')
+                ->take(5 - count($existingIds))
+                ->get();
+            $recommendedCollections = $recommendedCollections->concat($additional);
+        }
+
+        return view('mahasiswa.dashboard', compact('stats', 'currentLoans', 'recommendedCollections'));
     }
 }

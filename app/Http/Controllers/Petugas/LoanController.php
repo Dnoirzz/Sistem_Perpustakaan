@@ -234,6 +234,9 @@ class LoanController extends Controller
         }
 
         $koleksiIds = array_values(array_unique($validated['koleksi_ids']));
+        // A stable lock order prevents deadlocks when two multi-item loan
+        // requests contain the same collections in different UI order.
+        sort($koleksiIds, SORT_NUMERIC);
 
         $createdLoans = DB::transaction(function () use ($validated, $koleksiIds) {
             $loans = [];

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\AppSetting;
 use App\Models\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Antrian extends Model
 {
@@ -44,21 +45,39 @@ class Antrian extends Model
      */
     public static function checkAndNotifyAvailableQueue($koleksiId)
     {
-        $collection = Collection::find($koleksiId);
-        if (! $collection || $collection->stock < 1) {
-            return null;
-        }
+        $allocate = function () use ($koleksiId) {
+            // Serialize allocation for one collection. Without this lock two
+            // concurrent returns can both promote the same waiting member.
+            $collection = Collection::query()
+                ->whereKey($koleksiId)
+                ->lockForUpdate()
+                ->first();
 
-        $nextInQueue = static::where('koleksi_id', $koleksiId)
-            ->where('status', 'menunggu')
-            ->orderBy('no_antrian', 'asc')
-            ->first();
+            if (! $collection || $collection->stock < 1) {
+                return null;
+            }
 
-        if ($nextInQueue) {
+            $nextInQueue = static::where('koleksi_id', $koleksiId)
+                ->where('status', 'menunggu')
+                ->orderBy('no_antrian', 'asc')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $nextInQueue) {
+                return null;
+            }
+
             $nextInQueue->update(['status' => 'tersedia']);
 
+            return $nextInQueue->load(['user', 'collection.book']);
+        };
+
+        $nextInQueue = DB::transactionLevel() > 0
+            ? $allocate()
+            : DB::transaction($allocate);
+
+        if ($nextInQueue) {
             try {
-                $nextInQueue->load(['user', 'collection.book']);
                 if ($nextInQueue->user && ! empty($nextInQueue->user->no_hp)) {
                     $judulBuku = $nextInQueue->collection?->display_title ?? 'Koleksi Perpustakaan';
                     $namaAnggota = $nextInQueue->user->name;
@@ -95,4 +114,3 @@ class Antrian extends Model
         return $nextInQueue;
     }
 }
-

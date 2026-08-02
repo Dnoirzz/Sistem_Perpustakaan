@@ -10,7 +10,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE antrian MODIFY COLUMN status ENUM('menunggu', 'tersedia', 'selesai', 'dibatalkan') NOT NULL DEFAULT 'menunggu'");
+        // The base transactions migration already includes `dibatalkan`.
+        // Only MySQL needs this ALTER for databases created before that
+        // status was added; SQLite cannot alter an enum column this way.
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE antrian MODIFY COLUMN status ENUM('menunggu', 'tersedia', 'selesai', 'dibatalkan') NOT NULL DEFAULT 'menunggu'");
+        }
     }
 
     /**
@@ -18,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE antrian MODIFY COLUMN status ENUM('menunggu', 'tersedia', 'selesai') NOT NULL DEFAULT 'menunggu'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE antrian MODIFY COLUMN status ENUM('menunggu', 'tersedia', 'selesai') NOT NULL DEFAULT 'menunggu'");
+        }
     }
 };

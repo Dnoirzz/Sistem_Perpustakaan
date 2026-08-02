@@ -146,7 +146,7 @@
     <!-- Main Content Area -->
     <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
-            'title' => 'Dashboard Mahasiswa',
+            'title' => 'Dashboard',
             'subtitle' => 'Selamat datang kembali di portal perpustakaan Anda.'
         ])
 
@@ -217,200 +217,176 @@
             </div>
 
             <!-- Denda Tertunggak -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <a href="{{ route('mahasiswa.loans.penalties') }}" class="block bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-200">
                         <span class="material-symbols-outlined">payments</span>
                     </div>
+                    <span class="material-symbols-outlined text-outline text-[18px]">chevron_right</span>
                 </div>
                 <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Denda yang Harus Dibayar</h3>
                 <span class="text-2xl font-bold {{ $stats['unpaid_fines'] > 0 ? 'text-rose-600' : 'text-on-surface' }}">Rp{{ number_format($stats['unpaid_fines'], 0, ',', '.') }}</span>
-            </div>
+            </a>
         </section>
 
-        <!-- Two Column Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Left Column: Active Loans & Recommendations -->
-            <div class="lg:col-span-2 space-y-8">
-                <!-- Active Loans Table -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-                    <div class="p-8 border-b border-outline-variant/10 flex items-center justify-between">
-                        <div>
-                            <h2 class="font-headline-md text-on-surface">Peminjaman Aktif</h2>
-                            <p class="text-sm text-outline">Pantau pengembalian koleksi Anda tepat waktu.</p>
-                        </div>
-                        <a href="{{ route('mahasiswa.books.index') }}" class="text-primary font-label-md text-sm hover:underline">Cari Buku</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-surface-container-low/50">
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Judul Buku</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Pinjam</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Kembali</th>
-                                    <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-outline-variant/10">
-                                @forelse($currentLoans as $loan)
-                                    <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                        <td class="px-8 py-5">
-                                            <div class="flex flex-col">
-                                                <span class="font-semibold text-on-surface text-sm">
-                                                    {{ $loan->collection?->display_title ?? 'Dokumen' }}
-                                                </span>
-                                                <span class="text-[10px] text-outline font-bold uppercase tracking-tighter">
-                                                    {{ $loan->collection?->display_type_label ?? 'Koleksi' }}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                            {{ \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d-m-Y') }}
-                                        </td>
-                                        <td class="px-8 py-5 text-sm font-medium {{ $loan->status === 'terlambat' ? 'text-error' : 'text-on-surface-variant' }}">
-                                            {{ \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d-m-Y') }}
-                                        </td>
-                                        <td class="px-8 py-5">
-                                            @if($loan->status === 'terlambat')
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-red-50 text-red-600 text-[10px] font-bold uppercase tracking-wide">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse"></span>
-                                                    Terlambat
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
-                                                    Dipinjam
-                                                </span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="px-8 py-8 text-center text-outline font-medium">Anda tidak memiliki pinjaman aktif saat ini.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Book Recommendations Section -->
-                <section>
-                    <div class="flex items-center justify-between mb-6 px-2">
-                        <h2 class="font-headline-md text-on-surface">Rekomendasi Untuk Anda</h2>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Book Card 1 -->
-                        <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group">
-                            <div class="h-48 bg-gradient-to-br from-primary to-surface-container-high relative flex items-center justify-center text-white/20">
-                                <span class="material-symbols-outlined text-[80px]">image</span>
-                                <div class="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-md rounded-xl p-2 flex items-center justify-between">
-                                    <span class="text-[10px] font-bold text-white uppercase tracking-wider">Informatika</span>
-                                    <div class="flex gap-1">
-                                        <span class="material-symbols-outlined text-[14px] text-yellow-400">star</span>
-                                        <span class="text-[10px] font-bold text-white">4.8</span>
-                                    </div>
-                                </div>
+        <!-- Two Column Layout: Active Loans & Status Arsip Digital -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Left Column: Active Loans Table -->
+            <div class="lg:col-span-2">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-6 sm:p-8 h-full flex flex-col justify-between">
+                    <div>
+                        <div class="mb-6 flex items-center justify-between">
+                            <div>
+                                <h2 class="font-headline-md text-on-surface text-lg font-bold">Peminjaman Aktif</h2>
+                                <p class="text-xs text-slate-500 font-medium">Pantau jadwal pengembalian koleksi Anda tepat waktu.</p>
                             </div>
-                            <div class="p-6">
-                                <h3 class="font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors">Struktur Data dan Algoritma</h3>
-                                <p class="text-xs text-outline mb-4">Dr. Suhardi, M.T.</p>
-                                <a href="{{ route('mahasiswa.books.index') }}" class="block w-full py-3 rounded-2xl bg-surface-container text-primary font-label-md text-center text-sm hover:bg-primary hover:text-white transition-all">Lihat Detail</a>
-                            </div>
+                            <a href="{{ route('mahasiswa.loans.active') }}" class="text-primary font-bold text-xs hover:underline flex items-center gap-1">
+                                Lihat Semua Pinjaman &rarr;
+                            </a>
                         </div>
                         
-                        <!-- Book Card 2 -->
-                        <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group">
-                            <div class="h-48 bg-gradient-to-br from-secondary to-secondary-container relative flex items-center justify-center text-white/20">
-                                <span class="material-symbols-outlined text-[80px]">image</span>
-                                <div class="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-md rounded-xl p-2 flex items-center justify-between">
-                                    <span class="text-[10px] font-bold text-white uppercase tracking-wider">Sistem Informasi</span>
-                                    <div class="flex gap-1">
-                                        <span class="material-symbols-outlined text-[14px] text-yellow-400">star</span>
-                                        <span class="text-[10px] font-bold text-white">4.9</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-6">
-                                <h3 class="font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors">Laporan PKL SIA POLNEP</h3>
-                                <p class="text-xs text-outline mb-4">Alumni Mahasiswa</p>
-                                <a href="{{ route('mahasiswa.books.index') }}" class="block w-full py-3 rounded-2xl bg-surface-container text-primary font-label-md text-center text-sm hover:bg-primary hover:text-white transition-all">Lihat Detail</a>
-                            </div>
-                        </div>
+                        {{-- Menggunakan Komponen Standar Tabel Aplikasi --}}
+                        <x-table>
+                            <x-slot name="headers">
+                                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 w-12 text-center">No</th>
+                                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Judul Koleksi</th>
+                                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Tgl Pinjam</th>
+                                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Jatuh Tempo</th>
+                                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 text-center">Status</th>
+                            </x-slot>
 
-                        <!-- Book Card 3 -->
-                        <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group">
-                            <div class="h-48 bg-gradient-to-br from-tertiary-container to-tertiary relative flex items-center justify-center text-white/20">
-                                <span class="material-symbols-outlined text-[80px]">image</span>
-                                <div class="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-md rounded-xl p-2 flex items-center justify-between">
-                                    <span class="text-[10px] font-bold text-white uppercase tracking-wider">Teknologi</span>
-                                    <div class="flex gap-1">
-                                        <span class="material-symbols-outlined text-[14px] text-yellow-400">star</span>
-                                        <span class="text-[10px] font-bold text-white">4.5</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-6">
-                                <h3 class="font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors">Perpustakaan Digital</h3>
-                                <p class="text-xs text-outline mb-4">Team Dev POLNEP</p>
-                                <a href="{{ route('mahasiswa.books.index') }}" class="block w-full py-3 rounded-2xl bg-surface-container text-primary font-label-md text-center text-sm hover:bg-primary hover:text-white transition-all">Lihat Detail</a>
-                            </div>
-                        </div>
+                            @forelse($currentLoans as $index => $loan)
+                                <tr class="even:bg-slate-50/50 hover:bg-slate-100/60 transition-colors group">
+                                    <td class="px-5 py-4 text-center text-xs font-bold text-slate-500">
+                                        {{ $index + 1 }}
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-1 group-hover:text-primary transition-colors">
+                                                {{ $loan->collection?->display_title ?? 'Dokumen / Buku' }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
+                                        {{ \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') }}
+                                    </td>
+                                    <td class="px-5 py-4 whitespace-nowrap">
+                                        @if($loan->status === 'terlambat')
+                                            <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200 inline-block">
+                                                {{ \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') }}
+                                            </span>
+                                        @else
+                                            <span class="text-xs font-bold text-slate-800">
+                                                {{ \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-4 text-center whitespace-nowrap">
+                                        @if($loan->status === 'terlambat')
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+                                                <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
+                                                Terlambat
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+                                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                                Dipinjam
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-8 py-12 text-center bg-slate-50/40">
+                                        <div class="flex flex-col items-center justify-center space-y-2">
+                                            <span class="material-symbols-outlined text-slate-300 text-4xl">auto_stories</span>
+                                            <p class="text-xs font-semibold text-slate-500">Anda tidak memiliki pinjaman aktif saat ini.</p>
+                                            <a href="{{ route('mahasiswa.books.index') }}" class="inline-block mt-2 text-xs font-bold text-primary hover:underline">Jelajahi Katalog Buku &rarr;</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </x-table>
                     </div>
                 </section>
             </div>
 
-            <!-- Right Column: Sidebar Widgets -->
-            <div class="space-y-8">
-                <!-- Status Validasi Arsip Digital -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="font-headline-md text-on-surface text-lg">Status Arsip Digital</h2>
-                        <span class="material-symbols-outlined text-primary">cloud_upload</span>
-                    </div>
-                    <div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/10 flex gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-primary/10 flex-shrink-0 flex items-center justify-center text-primary">
-                            <span class="material-symbols-outlined text-[20px]">assignment</span>
+            <!-- Right Column: Status Validasi Arsip Digital -->
+            <div class="lg:col-span-1">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8 h-full flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="font-headline-md text-on-surface text-lg font-bold">Status Arsip Digital</h2>
+                            <span class="material-symbols-outlined text-primary">cloud_upload</span>
                         </div>
-                        <div>
-                            <p class="text-xs font-bold text-on-surface leading-tight">Dokumen Terupload</p>
-                            <p class="text-sm font-semibold text-primary mt-1">{{ $stats['submitted_archives'] }} Dokumen</p>
-                            <span class="inline-block mt-2 text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Siap Diverifikasi</span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Library Announcements -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="font-headline-md text-on-surface text-lg">Pengumuman</h2>
-                        <span class="material-symbols-outlined text-primary">campaign</span>
-                    </div>
-                    <div class="space-y-6">
-                        <div class="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 flex gap-4">
-                            <div class="w-10 h-10 rounded-xl bg-blue-100 flex-shrink-0 flex items-center justify-center text-blue-600">
-                                <span class="material-symbols-outlined text-[20px]">info</span>
+                        <div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/10 flex gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex-shrink-0 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-[20px]">assignment</span>
                             </div>
                             <div>
-                                <p class="text-xs text-blue-800 font-medium">Segera lakukan pengembalian koleksi sebelum jatuh tempo untuk menghindari sanksi denda.</p>
-                                <p class="text-[10px] text-blue-400 mt-2">Aktif</p>
-                            </div>
-                        </div>
-                        <div class="p-4 rounded-2xl border border-outline-variant/10 flex gap-4">
-                            <div class="w-10 h-10 rounded-xl bg-surface-container flex-shrink-0 flex items-center justify-center text-outline">
-                                <span class="material-symbols-outlined text-[20px]">update</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-on-surface-variant font-medium">Layanan mandiri upload laporan PKL dan TA dibuka selama 24 jam penuh di web.</p>
-                                <p class="text-[10px] text-outline mt-2">Info Portal</p>
+                                <p class="text-xs font-bold text-on-surface leading-tight">Dokumen Terupload</p>
+                                <p class="text-sm font-semibold text-primary mt-1">{{ $stats['submitted_archives'] }} Dokumen</p>
+                                <span class="inline-block mt-2 text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Siap Diverifikasi</span>
                             </div>
                         </div>
                     </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span class="text-slate-400">Arsip Mandiri</span>
+                        <a href="{{ route('mahasiswa.arsip.index') }}" class="font-bold text-primary hover:underline">Kelola Arsip &rarr;</a>
+                    </div>
                 </section>
-
-
             </div>
         </div>
+
+        <!-- Full Width Dynamic Book Recommendations Section (5 Koleksi Penuh) -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-outline-variant/10">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[22px]">auto_awesome</span>
+                    </span>
+                    <div>
+                        <h2 class="font-headline-md text-on-surface text-lg font-bold">Rekomendasi Untuk Anda</h2>
+                        <p class="text-xs text-slate-500 font-medium">Koleksi terpopuler dan rilis terbaru di perpustakaan.</p>
+                    </div>
+                </div>
+                <a href="{{ route('mahasiswa.books.index') }}" class="text-xs font-bold text-primary hover:underline">Lihat Semua Katalog &rarr;</a>
+            </div>
+
+            <!-- Grid Container (5 Columns Full Width) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+                @forelse($recommendedCollections as $item)
+                    @php
+                        $title = $item->display_title;
+                        $author = $item->author_name;
+                        $coverUrl = $item->cover_url;
+                        $typeLabel = $item->display_type_label;
+                        $detailUrl = $item->item_type === 'book'
+                            ? route('mahasiswa.books.index', ['search' => $title])
+                            : route('mahasiswa.katalog-arsip.show', ['type' => $item->item_type, 'id' => $item->item_id]);
+                    @endphp
+                    <div class="bg-slate-50/70 rounded-3xl overflow-hidden border border-slate-200/80 hover:border-primary/40 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between">
+                        <div class="h-44 bg-slate-200/60 relative flex items-center justify-center overflow-hidden">
+                            <img src="{{ $coverUrl }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="{{ $title }}" onerror="this.onerror=null; this.src='{{ asset('img/logo_polnep.webp') }}';">
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+                            <div>
+                                <span class="inline-block text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded-md mb-2">
+                                    {{ $typeLabel }}
+                                </span>
+                                <h3 class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2 leading-snug group-hover:text-primary transition-colors mb-1" title="{{ $title }}">{{ $title }}</h3>
+                                <p class="text-[11px] text-slate-500 line-clamp-1 font-medium">{{ $author }}</p>
+                            </div>
+                            <a href="{{ $detailUrl }}" class="block w-full py-2 rounded-xl bg-white text-primary font-bold text-center text-xs border border-primary/20 hover:bg-primary hover:text-white transition-all shadow-xs">Lihat Detail</a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full p-8 text-center bg-slate-50 rounded-3xl border border-slate-200 text-slate-400 text-xs font-semibold">
+                        Belum ada data rekomendasi koleksi.
+                    </div>
+                @endforelse
+            </div>
+        </section>
     </main>
 
     <script>

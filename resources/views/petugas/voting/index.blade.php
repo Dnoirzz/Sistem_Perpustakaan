@@ -133,7 +133,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
     
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
             'title' => 'Kelola Sesi Voting Buku',
             'subtitle' => 'Kelola kegiatan voting pengadaan buku baru untuk perpustakaan.'
@@ -148,103 +148,91 @@
         @endif
 
         <section class="mb-6 flex justify-between items-center">
-            <h2 class="text-lg font-bold text-on-surface">Daftar Sesi Voting</h2>
-            <a href="{{ route('petugas.voting.create') }}" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-md">
+            <h2 class="text-lg font-bold text-slate-800">Daftar Sesi Voting</h2>
+            <a href="{{ route('petugas.voting.create') }}" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">add</span>
                 Buat Sesi Voting Baru
             </a>
         </section>
 
         <!-- Table Card -->
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Judul Sesi</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Tanggal Mulai</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Tanggal Selesai</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest text-center">Kandidat Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest text-center">Total Suara</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($votings as $voting)
-                            @php
-                                $today = now()->toDateString();
-                                $tglMulai = $voting->tgl_mulai->toDateString();
-                                $tglSelesai = $voting->tgl_selesai->toDateString();
-                                
-                                $totalVotes = $voting->votingItems->sum(function($item) {
-                                    return $item->votes->count();
-                                });
-                            @endphp
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $voting->title }}</span>
-                                        <span class="text-xs text-outline line-clamp-1 max-w-xs">{{ $voting->deskripsi ?: 'Tidak ada deskripsi.' }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ $voting->tgl_mulai->translatedFormat('d M Y') }}
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ $voting->tgl_selesai->translatedFormat('d M Y') }}
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant text-center font-semibold">
-                                    {{ $voting->votingItems->count() }}
-                                </td>
-                                <td class="px-8 py-5 text-sm text-primary text-center font-bold">
-                                    {{ $totalVotes }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($today < $tglMulai)
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Belum Mulai
-                                        </span>
-                                    @elseif($today <= $tglSelesai)
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Aktif
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-outline text-[10px] font-bold uppercase tracking-wider">
-                                            Selesai
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-right">
-                                    <div class="flex items-center justify-end gap-3">
-                                        <a href="{{ route('petugas.voting.show', $voting->voting_id) }}" class="p-2 rounded-xl text-primary hover:bg-primary/5 transition-all inline-flex items-center justify-center" title="Lihat Rekap Hasil">
-                                            <span class="material-symbols-outlined text-[20px]">analytics</span>
-                                        </a>
-                                        
-                                        <form action="{{ route('petugas.voting.destroy', $voting->voting_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus sesi voting ini? Semua kandidat dan hasil vote di dalamnya akan ikut terhapus.')" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-2 rounded-xl text-outline hover:text-rose-600 hover:bg-rose-50 transition-all inline-flex items-center justify-center" title="Hapus Sesi">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="px-8 py-8 text-center text-outline font-medium">Belum ada sesi voting pengadaan buku dibuat.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if($votings->hasPages())
-                <div class="p-6 border-t border-outline-variant/10">
-                    {{ $votings->links() }}
-                </div>
-            @endif
-        </section>
+        <x-table :pagination="$votings->hasPages() ? $votings->links() : null">
+            <x-slot name="headers">
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Judul Sesi</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Mulai</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Selesai</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Kandidat Buku</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Total Suara</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-right text-slate-700 whitespace-nowrap">Aksi</th>
+            </x-slot>
+
+            @forelse($votings as $voting)
+                @php
+                    $today = now()->toDateString();
+                    $tglMulai = $voting->tgl_mulai->toDateString();
+                    $tglSelesai = $voting->tgl_selesai->toDateString();
+                    
+                    $totalVotes = $voting->votingItems->sum(function($item) {
+                        return $item->votes->count();
+                    });
+                @endphp
+                <tr class="even:bg-slate-50/40 hover:bg-sky-50/40 transition-colors duration-150 group">
+                    <td class="px-4 sm:px-5 py-4">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm group-hover:text-primary transition-colors leading-snug">{{ $voting->title }}</span>
+                            <span class="text-xs text-slate-500 font-medium line-clamp-1 max-w-xs mt-0.5">{{ $voting->deskripsi ?: 'Tidak ada deskripsi.' }}</span>
+                        </div>
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ $voting->tgl_mulai->translatedFormat('d M Y') }}
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ $voting->tgl_selesai->translatedFormat('d M Y') }}
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm text-slate-900 text-center font-bold whitespace-nowrap">
+                        {{ $voting->votingItems->count() }}
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm text-primary text-center font-extrabold whitespace-nowrap">
+                        {{ $totalVotes }}
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 whitespace-nowrap">
+                        @if($today < $tglMulai)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                Belum Mulai
+                            </span>
+                        @elseif($today <= $tglSelesai)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                Aktif
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                Selesai
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-right whitespace-nowrap">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{{ route('petugas.voting.show', $voting->voting_id) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 flex items-center justify-center transition-all inline-flex active:scale-95" title="Lihat Rekap Hasil">
+                                <span class="material-symbols-outlined text-[18px]">analytics</span>
+                            </a>
+                            
+                            <form action="{{ route('petugas.voting.destroy', $voting->voting_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus sesi voting ini? Semua kandidat dan hasil vote di dalamnya akan ikut terhapus.')" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 flex items-center justify-center transition-all inline-flex active:scale-95" title="Hapus Sesi">
+                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="px-5 py-14 text-center text-slate-500 font-medium">Belum ada sesi voting pengadaan buku dibuat.</td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 </body>
 </html>

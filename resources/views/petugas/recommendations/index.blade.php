@@ -134,7 +134,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
     
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Kelola Usulan Buku',
             'subtitle' => 'Verifikasi usulan pengadaan buku baru dari mahasiswa dan dosen.'
@@ -171,139 +171,130 @@
         </section>
 
         <!-- Table Card -->
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Pengusul</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Judul & Penulis</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Alasan Usulan</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Tanggal Masuk</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($recommendations as $rec)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $rec->user?->name }}</span>
-                                        <span class="text-[10px] text-outline font-bold uppercase tracking-wider">{{ $rec->user?->role?->role_name }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $rec->title }}</span>
-                                        <span class="text-xs text-outline">Oleh: {{ $rec->author ?: 'Anonim' }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm text-outline" title="{{ $rec->reason }}">
-                                    {{ $rec->reason ?: '-' }}
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ $rec->created_at->translatedFormat('d-m-Y H:i') }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($rec->status === 'pending')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Pending
-                                        </span>
-                                    @elseif($rec->status === 'disetujui')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Disetujui
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Ditolak
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-right">
-                                    @if($rec->status === 'pending')
-                                        <div class="flex items-center justify-end gap-2" x-data="{ openVerify: false }">
-                                            <!-- Tombol Tolak -->
-                                            <form action="{{ route('petugas.recommendations.verify', $rec->rekomendasi_id) }}" method="POST" class="inline">
-                                                @csrf
-                                                <input type="hidden" name="status" value="ditolak">
-                                                <button type="submit" class="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 bg-rose-50 hover:bg-rose-100 text-xs font-bold transition-all">
-                                                    Tolak
-                                                </button>
-                                            </form>
+        <x-table :pagination="$recommendations->hasPages() ? $recommendations->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Pengusul</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Judul & Penulis</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Alasan Usulan</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Masuk</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-right text-slate-700 whitespace-nowrap">Aksi</th>
+            </x-slot>
 
-                                            <!-- Tombol Setujui dengan Dropdown Sesi Voting (Alpine.js) -->
-                                            <div class="relative">
-                                                <button @click="openVerify = !openVerify" class="px-3 py-1.5 rounded-xl bg-primary hover:bg-primary/95 text-white text-xs font-bold transition-all flex items-center gap-1">
-                                                    Setujui
-                                                    <span class="material-symbols-outlined text-[14px]">expand_more</span>
-                                                </button>
+            @forelse($recommendations as $rec)
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $rec->user?->name }}</span>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{{ $rec->user?->role?->role_name }}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm">{{ $rec->title }}</span>
+                            <span class="text-xs text-slate-500 font-medium">Oleh: {{ $rec->author ?: 'Anonim' }}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-700 font-medium" title="{{ $rec->reason }}">
+                        {{ $rec->reason ?: '-' }}
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ $rec->created_at->translatedFormat('d-m-Y H:i') }}
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @if($rec->status === 'pending')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-amber-600 mr-2 animate-pulse"></span>
+                                Pending
+                            </span>
+                        @elseif($rec->status === 'disetujui')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
+                                Disetujui
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2"></span>
+                                Ditolak
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 text-right whitespace-nowrap">
+                        @if($rec->status === 'pending')
+                            <div class="flex items-center justify-end gap-2" x-data="{ openVerify: false }">
+                                <!-- Tombol Tolak -->
+                                <form action="{{ route('petugas.recommendations.verify', $rec->rekomendasi_id) }}" method="POST" class="inline">
+                                    @csrf
+                                    <input type="hidden" name="status" value="ditolak">
+                                    <button type="submit" class="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 text-xs font-bold transition-all shadow-2xs active:scale-95">
+                                        Tolak
+                                    </button>
+                                </form>
 
-                                                <!-- Dropdown Menu -->
-                                                <div x-show="openVerify" @click.away="openVerify = false" x-transition class="absolute right-0 mt-2 w-72 bg-white rounded-2xl border border-outline-variant/30 shadow-xl z-50 p-4 text-left">
-                                                    <p class="text-xs font-bold text-outline uppercase tracking-wider mb-3">Tindakan Persetujuan</p>
-                                                    
-                                                    <!-- Aksi 1: Setujui langsung tanpa voting -->
-                                                    <form action="{{ route('petugas.recommendations.verify', $rec->rekomendasi_id) }}" method="POST" class="mb-3">
-                                                        @csrf
-                                                        <input type="hidden" name="status" value="disetujui">
-                                                        <button type="submit" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 text-xs font-bold text-on-surface transition-all flex items-center gap-2">
-                                                            <span class="material-symbols-outlined text-primary text-[18px]">done</span>
-                                                            Setujui Langsung (Tanpa Voting)
-                                                        </button>
-                                                    </form>
+                                <!-- Tombol Setujui dengan Dropdown Sesi Voting (Alpine.js) -->
+                                <div class="relative">
+                                    <button @click="openVerify = !openVerify" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1 shadow-2xs active:scale-95">
+                                        Setujui
+                                        <span class="material-symbols-outlined text-[14px]">expand_more</span>
+                                    </button>
 
-                                                    <!-- Aksi 2: Setujui dan masukkan ke voting -->
-                                                    @if($activeVotings->count() > 0)
-                                                        <div class="border-t border-outline-variant/10 pt-3">
-                                                            <p class="text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Setujui & Masukkan ke Sesi Voting:</p>
-                                                            <div class="space-y-1 max-h-40 overflow-y-auto pr-1">
-                                                                @foreach($activeVotings as $voting)
-                                                                    <form action="{{ route('petugas.recommendations.verify', $rec->rekomendasi_id) }}" method="POST">
-                                                                        @csrf
-                                                                        <input type="hidden" name="status" value="disetujui">
-                                                                        <input type="hidden" name="voting_id" value="{{ $voting->voting_id }}">
-                                                                        <button type="submit" class="w-full text-left px-3 py-2 rounded-xl hover:bg-primary/5 hover:text-primary text-xs font-semibold text-on-surface-variant transition-all truncate">
-                                                                            {{ $voting->title }}
-                                                                        </button>
-                                                                    </form>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    @else
-                                                        <div class="border-t border-outline-variant/10 pt-3">
-                                                            <p class="text-[10px] text-outline font-semibold">Tidak ada sesi voting aktif saat ini.</p>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @else
-                                        <!-- Hapus Usulan yang sudah diproses jika perlu -->
-                                        <form action="{{ route('petugas.recommendations.destroy', $rec->rekomendasi_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus usulan ini?')" class="inline">
+                                    <!-- Dropdown Menu -->
+                                    <div x-show="openVerify" @click.away="openVerify = false" x-transition class="absolute right-0 mt-2 w-72 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 p-4 text-left">
+                                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tindakan Persetujuan</p>
+                                        
+                                        <!-- Aksi 1: Setujui langsung tanpa voting -->
+                                        <form action="{{ route('petugas.recommendations.verify', $rec->rekomendasi_id) }}" method="POST" class="mb-3">
                                             @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-2 rounded-xl text-outline hover:text-rose-600 hover:bg-rose-50 transition-all inline-flex items-center justify-center">
-                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            <input type="hidden" name="status" value="disetujui">
+                                            <button type="submit" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 text-xs font-bold text-slate-800 transition-all flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-teal-600 text-[18px]">done</span>
+                                                Setujui Langsung (Tanpa Voting)
                                             </button>
                                         </form>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="px-8 py-8 text-center text-outline font-medium">Tidak ada usulan buku baru yang cocok dengan kriteria filter.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if($recommendations->hasPages())
-                <div class="p-6 border-t border-outline-variant/10">
-                    {{ $recommendations->links() }}
-                </div>
-            @endif
-        </section>
+
+                                        <!-- Aksi 2: Setujui dan masukkan ke voting -->
+                                        @if($activeVotings->count() > 0)
+                                            <div class="border-t border-slate-100 pt-3">
+                                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Setujui & Masukkan ke Sesi Voting:</p>
+                                                <div class="space-y-1 max-h-40 overflow-y-auto pr-1">
+                                                    @foreach($activeVotings as $voting)
+                                                        <form action="{{ route('petugas.recommendations.verify', $rec->rekomendasi_id) }}" method="POST">
+                                                            @csrf
+                                                            <input type="hidden" name="status" value="disetujui">
+                                                            <input type="hidden" name="voting_id" value="{{ $voting->voting_id }}">
+                                                            <button type="submit" class="w-full text-left px-3 py-2 rounded-xl hover:bg-teal-50 hover:text-teal-800 text-xs font-semibold text-slate-700 transition-all truncate">
+                                                                {{ $voting->title }}
+                                                            </button>
+                                                        </form>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="border-t border-slate-100 pt-3">
+                                                <p class="text-[10px] text-slate-400 font-semibold">Tidak ada sesi voting aktif saat ini.</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Hapus Usulan yang sudah diproses jika perlu -->
+                            <form action="{{ route('petugas.recommendations.destroy', $rec->rekomendasi_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus usulan ini?')" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 flex items-center justify-center transition-all inline-flex active:scale-95">
+                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                            </form>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="px-8 py-14 text-center text-slate-500 font-medium">Tidak ada usulan buku baru yang cocok dengan kriteria filter.</td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 </body>
 </html>

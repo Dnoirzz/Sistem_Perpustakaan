@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class Collection extends Model
 {
@@ -127,14 +128,77 @@ class Collection extends Model
             return;
         }
 
-        $this->increment('stock', $delta);
+        $sync = function () use ($delta): void {
+            // The collection row is the inventory source used by booking/loan
+            // decisions. Always lock it before calculating the new value.
+            $collection = static::query()
+                ->whereKey($this->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        if ($this->item_type === 'book' && $this->book) {
-            if ($delta > 0) {
-                $this->book->increment('stock', $delta);
-            } else {
-                $this->book->decrement('stock', abs($delta));
+            $newStock = (int) $collection->stock + $delta;
+            if ($newStock < 0) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'stock' => 'Stok koleksi tidak mencukupi.',
+                ]);
             }
+
+            $book = null;
+            if ($collection->item_type === 'book') {
+                // Lock the backing book after the collection, matching the
+                // lock order used by all circulation transactions.
+                $book = Book::query()
+                    ->whereKey($collection->item_id)
+                    ->lockForUpdate()
+                    ->first();
+            }
+
+            $collection->update(['stock' => $newStock]);
+
+            // Use a query update so Book's stock observer cannot perform a
+            // second, non-atomic collection update while this transaction is
+            // synchronizing the two inventory columns.
+            if ($book) {
+                Book::query()
+                    ->whereKey($book->getKey())
+                    ->update(['stock' => $newStock]);
+            }
+
+            $this->setAttribute('stock', $newStock);
+            if ($this->relationLoaded('book') && $this->book) {
+                $this->book->setAttribute('stock', $newStock);
+            }
+        };
+
+        if (DB::transactionLevel() > 0) {
+            $sync();
+        } else {
+            DB::transaction($sync);
         }
+    }
+
+    public function getCoverUrlAttribute(): string
+    {
+        if ($this->item_type === 'book' && $this->book) {
+            return $this->book->cover_url;
+        }
+        return asset('img/logo_polnep.webp');
+    }
+
+    public function getAuthorNameAttribute(): string
+    {
+        if ($this->item_type === 'book') {
+            return $this->book?->author ?? 'Penulis tidak diketahui';
+        }
+        if ($this->item_type === 'laporan_pkl') {
+            return $this->laporanPkl?->mahasiswa?->nama_lengkap ?? 'Alumni Mahasiswa';
+        }
+        if ($this->item_type === 'proposal_ta') {
+            return $this->proposalTa?->mahasiswa?->nama_lengkap ?? 'Mahasiswa TA';
+        }
+        if ($this->item_type === 'laporan_ta') {
+            return $this->laporanTa?->mahasiswa?->nama_lengkap ?? 'Alumni Mahasiswa';
+        }
+        return 'Penulis tidak diketahui';
     }
 }

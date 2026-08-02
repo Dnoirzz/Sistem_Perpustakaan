@@ -286,9 +286,10 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     Route::get('/antrian', [\App\Http\Controllers\AntrianController::class, 'myAntrian'])->name('antrian.my');
     Route::post('/antrian/{antrian}/cancel', [\App\Http\Controllers\AntrianController::class, 'cancel'])->name('antrian.cancel');
 
-    // Member Loans & History (Rak Pinjam)
+    // Member Loans, History & Penalties (Rak Pinjam & Denda Saya)
     Route::get('/loans', [\App\Http\Controllers\MemberLoanController::class, 'activeLoans'])->name('loans.active');
     Route::get('/loans/history', [\App\Http\Controllers\MemberLoanController::class, 'loanHistory'])->name('loans.history');
+    Route::get('/loans/penalties', [\App\Http\Controllers\MemberLoanController::class, 'myPenalties'])->name('loans.penalties');
 
     // Fase 5: Katalog Arsip
     Route::get('/katalog-arsip', [ArsipKatalogController::class, 'index'])->name('katalog-arsip.index');
@@ -330,9 +331,10 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
     Route::get('/antrian', [\App\Http\Controllers\AntrianController::class, 'myAntrian'])->name('antrian.my');
     Route::post('/antrian/{antrian}/cancel', [\App\Http\Controllers\AntrianController::class, 'cancel'])->name('antrian.cancel');
 
-    // Member Loans & History (Rak Pinjam)
+    // Member Loans, History & Penalties (Rak Pinjam & Denda Saya)
     Route::get('/loans', [\App\Http\Controllers\MemberLoanController::class, 'activeLoans'])->name('loans.active');
     Route::get('/loans/history', [\App\Http\Controllers\MemberLoanController::class, 'loanHistory'])->name('loans.history');
+    Route::get('/loans/penalties', [\App\Http\Controllers\MemberLoanController::class, 'myPenalties'])->name('loans.penalties');
 });
 
 require __DIR__.'/auth.php';

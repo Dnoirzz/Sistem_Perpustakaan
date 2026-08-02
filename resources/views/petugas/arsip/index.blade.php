@@ -139,7 +139,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
     
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Kelola Arsip Digital',
             'subtitle' => 'Verifikasi, tolak, aktifkan, dan koreksi data repositori mahasiswa.'
@@ -160,7 +160,7 @@
 
         <!-- Top Action Button -->
         <div class="flex justify-end items-center mb-6">
-            <a href="{{ route('petugas.arsip.import.form') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all">
+            <a href="{{ route('petugas.arsip.import.form') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all">
                 <span class="material-symbols-outlined text-[18px]">upload_file</span>
                 Import Excel
             </a>
@@ -190,7 +190,7 @@
                     </select>
                 </div>
                 <div class="flex gap-2">
-                    <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all text-center">
+                    <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition-all text-center shadow-sm">
                         Terapkan Filter
                     </button>
                     @if($search !== '' || $selectedType !== '' || $selectedStatus !== '')
@@ -202,73 +202,61 @@
             </form>
         </section>
 
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden font-body-md">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest whitespace-nowrap">Jenis</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Judul</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest whitespace-nowrap">Mahasiswa</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest whitespace-nowrap">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs text-center uppercase tracking-widest w-28 whitespace-nowrap">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($archives as $item)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
-                                        {{ $item['type_label'] }}
-                                    </span>
-                                </td>
-                                <td class="px-8 py-5 max-w-md">
-                                    <div class="font-bold text-on-surface text-sm line-clamp-2">{{ $item['title'] }}</div>
-                                    <div class="text-xs text-outline mt-1.5 flex items-center gap-2 font-medium">
-                                        <span class="material-symbols-outlined text-[14px]">calendar_month</span> Tahun {{ $item['year'] ?? '-' }}
-                                        <span class="text-outline-variant">•</span>
-                                        <span class="material-symbols-outlined text-[14px]">person</span> Pembimbing: {{ $item['pembimbing'] ?? '-' }}
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm shrink-0">
-                                            {{ substr($item['mahasiswa_name'] ?? 'M', 0, 2) }}
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-on-surface text-sm whitespace-nowrap">{{ $item['mahasiswa_name'] ?? '-' }}</span>
-                                            <span class="text-[10px] text-outline font-bold tracking-wider mt-0.5 whitespace-nowrap">NIM: {{ $item['nim'] ?? '-' }}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border whitespace-nowrap
-                                        {{ $item['status'] === 'ditolak' ? 'bg-error/15 text-error border-error/20' : 
-                                           ($item['status'] === 'aktif' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 
-                                           ($item['status'] === 'diverifikasi' ? 'bg-primary/15 text-primary border-primary/20' : 'bg-amber-500/15 text-amber-700 border-amber-500/20')) }}">
-                                        {{ $item['status'] }}
-                                    </span>
-                                </td>
-                                <td class="px-8 py-5 text-center whitespace-nowrap">
-                                    <a href="{{ route('petugas.arsip.show', [$item['type'], $item['id']]) }}" class="w-8 h-8 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 flex items-center justify-center transition-all inline-flex" title="Detail Arsip">
-                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
-                                    </a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-10 text-center text-outline font-medium">Belum ada data arsip digital.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if($archives->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $archives->links() }}
-                </div>
-            @endif
-        </section>
+        <x-table :pagination="$archives->hasPages() ? $archives->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Jenis</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Judul</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Mahasiswa</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap w-28">Aksi</th>
+            </x-slot>
+
+            @forelse($archives as $item)
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <span class="inline-flex items-center px-3.5 py-1 rounded-full bg-teal-100 text-teal-800 border border-teal-200 text-xs font-extrabold tracking-wide whitespace-nowrap">
+                            {{ $item['type_label'] }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 max-w-md">
+                        <div class="font-bold text-slate-900 text-sm line-clamp-2 group-hover:text-teal-700 transition-colors">{{ $item['title'] }}</div>
+                        <div class="text-xs text-slate-500 mt-1.5 flex items-center gap-2 font-medium">
+                            <span class="material-symbols-outlined text-[14px]">calendar_month</span> Tahun {{ $item['year'] ?? '-' }}
+                            <span class="text-slate-300">•</span>
+                            <span class="material-symbols-outlined text-[14px]">person</span> Pembimbing: {{ $item['pembimbing'] ?? '-' }}
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/10 shadow-xs shrink-0">
+                                {{ substr($item['mahasiswa_name'] ?? 'M', 0, 2) }}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-900 text-sm whitespace-nowrap group-hover:text-teal-700 transition-colors">{{ $item['mahasiswa_name'] ?? '-' }}</span>
+                                <span class="text-[10px] text-slate-500 font-bold tracking-wider mt-0.5 whitespace-nowrap">NIM: {{ $item['nim'] ?? '-' }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold tracking-wide border whitespace-nowrap shadow-2xs
+                            {{ $item['status'] === 'ditolak' ? 'bg-rose-100 text-rose-700 border-rose-200' : 
+                               ($item['status'] === 'aktif' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 
+                               ($item['status'] === 'diverifikasi' ? 'bg-sky-100 text-sky-800 border-sky-200' : 'bg-amber-100 text-amber-800 border-amber-200')) }}">
+                            {{ $item['status'] }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 text-center whitespace-nowrap">
+                        <a href="{{ route('petugas.arsip.show', [$item['type'], $item['id']]) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 flex items-center justify-center transition-all inline-flex active:scale-95" title="Detail Arsip">
+                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                        </a>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-8 py-14 text-center text-slate-500 font-medium">Belum ada data arsip digital.</td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 </body>
 </html>

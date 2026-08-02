@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
 use App\Models\Antrian;
+use App\Models\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AntrianController extends Controller
 {
@@ -64,15 +66,34 @@ class AntrianController extends Controller
     public function markDone($antrian_id)
 
     {
-        $antrian = Antrian::findOrFail($antrian_id);
+        $result = DB::transaction(function () use ($antrian_id) {
+            $antrianRef = Antrian::query()->whereKey($antrian_id)->firstOrFail();
 
-        if ($antrian->status === 'selesai') {
+            // Keep this in the same lock order as all other queue operations.
+            Collection::query()
+                ->whereKey($antrianRef->koleksi_id)
+                ->lockForUpdate()
+                ->first();
+
+            $antrian = Antrian::query()
+                ->whereKey($antrian_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($antrian->status === 'selesai') {
+                return false;
+            }
+
+            $antrian->update(['status' => 'selesai']);
+
+            return true;
+        });
+
+        if (! $result) {
             return redirect()
                 ->route('petugas.antrian.index')
                 ->with('error', 'Antrian ini sudah selesai.');
         }
-
-        $antrian->update(['status' => 'selesai']);
 
         return redirect()
             ->route('petugas.antrian.index')

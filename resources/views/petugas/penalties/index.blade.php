@@ -61,7 +61,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
 
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Denda & Sanksi',
             'subtitle' => 'Kelola denda keterlambatan, kehilangan, dan kerusakan buku perpustakaan.'
@@ -146,142 +146,132 @@
             </a>
         </div>
 
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Anggota</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Jenis</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Penyelesaian</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Nominal</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($penalties as $penalty)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
-                                            {{ substr($penalty->user->name ?? '', 0, 2) }}
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-on-surface text-sm">{{ $penalty->user->name ?? '-' }}</span>
-                                            <span class="text-[10px] text-outline font-bold tracking-wider uppercase">
-                                                @if($penalty->user?->role?->role_name === 'mahasiswa')
-                                                    NIM {{ $penalty->user->mahasiswa->nim ?? '-' }}
-                                                @elseif($penalty->user?->role?->role_name === 'dosen')
-                                                    NIP {{ $penalty->user->dosen->nip ?? '-' }}
-                                                @endif
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $penalty->loan?->collection?->display_title ?? '-' }}</span>
-                                        @if($penalty->loan?->collection)
-                                            <span class="text-[10px] text-outline font-semibold">{{ $penalty->loan->collection->display_type_label }}</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    @php
-                                        $typeColors = [
-                                            'keterlambatan' => 'bg-amber-50 text-amber-700 border-amber-200/60',
-                                            'kehilangan' => 'bg-rose-50 text-rose-700 border-rose-200/60',
-                                            'kerusakan' => 'bg-orange-50 text-orange-700 border-orange-200/60',
-                                        ];
-                                        $color = $typeColors[$penalty->type] ?? 'bg-slate-50 text-slate-700 border-slate-200/60';
-                                    @endphp
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full {{ $color }} border text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm">
-                                        {{ ucfirst($penalty->type) }}
-                                    </span>
-                                </td>
-                                <td class="px-8 py-5">
-                                    @php
-                                        $settlementColors = [
-                                            'uang_tunai' => 'bg-sky-50 text-sky-700 border-sky-200/60',
-                                            'denda' => 'bg-sky-50 text-sky-700 border-sky-200/60',
-                                            'ganti_buku' => 'bg-violet-50 text-violet-700 border-violet-200/60',
-                                            'kombinasi' => 'bg-emerald-50 text-emerald-700 border-emerald-200/60',
-                                        ];
-                                        $settlementColor = $settlementColors[$penalty->penalti_type] ?? 'bg-slate-50 text-slate-700 border-slate-200/60';
-                                    @endphp
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full {{ $settlementColor }} border text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm">
-                                        {{ $penalty->settlement_method_label }}
-                                    </span>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <span class="font-bold text-on-surface text-sm">Rp {{ number_format($penalty->amount, 0, ',', '.') }}</span>
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($penalty->status === 'belum_dibayar')
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200/60 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                                            Belum Dibayar
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                            Lunas
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <button
-                                            type="button"
-                                            class="inline-flex items-center justify-center w-10 h-10 rounded-2xl border border-outline-variant/20 bg-slate-50 text-on-surface-variant hover:bg-surface-container transition-all"
-                                            title="Lihat keterangan"
-                                            aria-label="Lihat keterangan denda"
-                                            data-penalty-info
-                                            data-member="{{ $penalty->user->name ?? '-' }}"
-                                            data-book="{{ $penalty->loan?->collection?->display_title ?? '-' }}"
-                                            data-type="{{ ucfirst($penalty->type) }}"
-                                            data-settlement="{{ $penalty->settlement_method_label }}"
-                                            data-amount="Rp {{ number_format($penalty->amount, 0, ',', '.') }}"
-                                            data-description="{{ $penalty->description ?: 'Tidak ada keterangan tambahan.' }}"
-                                        >
-                                            <span class="material-symbols-outlined text-[18px]">info</span>
-                                        </button>
+        <x-table :pagination="$penalties->hasPages() ? $penalties->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Anggota</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Buku</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Jenis</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Penyelesaian</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Nominal</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Aksi</th>
+            </x-slot>
 
-                                        @if($penalty->status === 'belum_dibayar')
-                                            <form method="POST" action="{{ route('petugas.penalties.mark-paid', $penalty->penalti_id) }}" onsubmit="return confirm('Tandai denda ini sebagai lunas?')">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button
-                                                    type="submit"
-                                                    class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-200"
-                                                    title="Tandai lunas"
-                                                    aria-label="Tandai denda sebagai lunas"
-                                                >
-                                                    <span class="material-symbols-outlined text-[18px]">check</span>
-                                                </button>
-                                            </form>
-                                        @else
-                                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-100 text-outline" title="Sudah lunas">
-                                                <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="px-8 py-12 text-center text-outline font-medium">Belum ada data denda atau sanksi.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if($penalties->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">{{ $penalties->links() }}</div>
-            @endif
-        </section>
+            @forelse($penalties as $penalty)
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
+                                {{ substr($penalty->user->name ?? '', 0, 2) }}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-on-surface text-sm">{{ $penalty->user->name ?? '-' }}</span>
+                                <span class="text-[10px] text-outline font-bold tracking-wider uppercase">
+                                    @if($penalty->user?->role?->role_name === 'mahasiswa')
+                                        NIM {{ $penalty->user->mahasiswa->nim ?? '-' }}
+                                    @elseif($penalty->user?->role?->role_name === 'dosen')
+                                        NIP {{ $penalty->user->dosen->nip ?? '-' }}
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-on-surface text-sm">{{ $penalty->loan?->collection?->display_title ?? '-' }}</span>
+                            @if($penalty->loan?->collection)
+                                <span class="text-[10px] text-outline font-semibold">{{ $penalty->loan->collection->display_type_label }}</span>
+                            @endif
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @php
+                            $typeColors = [
+                                'keterlambatan' => 'bg-amber-100 text-amber-800 border-amber-300',
+                                'kehilangan' => 'bg-rose-100 text-rose-800 border-rose-300',
+                                'kerusakan' => 'bg-orange-100 text-orange-800 border-orange-300',
+                            ];
+                            $color = $typeColors[$penalty->type] ?? 'bg-slate-100 text-slate-800 border-slate-300';
+                        @endphp
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full {{ $color }} border text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-2xs">
+                            {{ ucfirst($penalty->type) }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @php
+                            $settlementColors = [
+                                'uang_tunai' => 'bg-sky-100 text-sky-800 border-sky-300',
+                                'denda' => 'bg-sky-100 text-sky-800 border-sky-300',
+                                'ganti_buku' => 'bg-violet-100 text-violet-800 border-violet-300',
+                                'kombinasi' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                            ];
+                            $settlementColor = $settlementColors[$penalty->penalti_type] ?? 'bg-slate-100 text-slate-800 border-slate-300';
+                        @endphp
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full {{ $settlementColor }} border text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-2xs">
+                            {{ $penalty->settlement_method_label }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <span class="font-extrabold text-slate-900 text-sm">Rp {{ number_format($penalty->amount, 0, ',', '.') }}</span>
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @if($penalty->status === 'belum_dibayar')
+                            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
+                                Belum Dibayar
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                                Lunas
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="flex items-center justify-center gap-2">
+                            <button
+                                type="button"
+                                class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-xs active:scale-95"
+                                title="Lihat keterangan"
+                                aria-label="Lihat keterangan denda"
+                                data-penalty-info
+                                data-member="{{ $penalty->user->name ?? '-' }}"
+                                data-book="{{ $penalty->loan?->collection?->display_title ?? '-' }}"
+                                data-type="{{ ucfirst($penalty->type) }}"
+                                data-settlement="{{ $penalty->settlement_method_label }}"
+                                data-amount="Rp {{ number_format($penalty->amount, 0, ',', '.') }}"
+                                data-description="{{ $penalty->description ?: 'Tidak ada keterangan tambahan.' }}"
+                            >
+                                <span class="material-symbols-outlined text-[20px]">info</span>
+                            </button>
+
+                            @if($penalty->status === 'belum_dibayar')
+                                <form method="POST" action="{{ route('petugas.penalties.mark-paid', $penalty->penalti_id) }}" onsubmit="return confirm('Tandai denda ini sebagai lunas?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-xs active:scale-95 shadow-emerald-200"
+                                        title="Tandai lunas"
+                                        aria-label="Tandai denda sebagai lunas"
+                                    >
+                                        <span class="material-symbols-outlined text-[20px]">check</span>
+                                    </button>
+                                </form>
+                            @else
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 text-slate-400 border border-slate-200" title="Sudah lunas">
+                                    <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                                </span>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="px-8 py-14 text-center text-slate-500 font-medium">Belum ada data denda atau sanksi.</td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 
     <div id="penalty-info-modal" class="fixed inset-0 z-[60] hidden">

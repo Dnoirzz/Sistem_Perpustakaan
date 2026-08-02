@@ -283,7 +283,10 @@
                     <!-- Signature Block - Only Visible When Printed -->
                     <div class="hidden print-only-signature text-center text-xs space-y-12 pr-6">
                         <p>Sukamara, {{ now()->translatedFormat('d F Y') }}<br>Petugas Perpustakaan,</p>
-                        <p class="font-bold underline pt-8 text-slate-900">{{ Auth::user()->name }}</p>
+                        <div>
+                            <p class="font-bold underline pt-8 text-slate-900">{{ Auth::user()->name }}</p>
+                            <p class="text-slate-700">NIP. {{ Auth::user()->petugas?->nip ?: (Auth::user()->dosen?->nip ?: '-') }}</p>
+                        </div>
                     </div>
                 </div>
 

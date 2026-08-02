@@ -133,7 +133,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('dosen.layouts.sidebar')
     
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
             'title' => 'Usulan Buku Baru',
             'subtitle' => 'Rekomendasikan buku baru untuk pengadaan koleksi perpustakaan.'
@@ -148,70 +148,58 @@
 
         <section class="mb-6 flex justify-between items-center">
             <h2 class="text-lg font-bold text-on-surface">Daftar Usulan Anda</h2>
-            <a href="{{ route($rolePrefix . '.recommendations.create') }}" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-md">
+            <a href="{{ route($rolePrefix . '.recommendations.create') }}" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition-all shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">add</span>
                 Buat Usulan Baru
             </a>
         </section>
 
         <!-- Table Card -->
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Judul Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Penulis</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Alasan Usulan</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Tanggal Usul</th>
-                            <th class="px-8 py-4 font-label-md text-outline text-xs uppercase tracking-widest">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($recommendations as $rec)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5 text-sm font-bold text-on-surface">
-                                    {{ $rec->title }}
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ $rec->author ?: '-' }}
-                                </td>
-                                <td class="px-8 py-5 text-sm text-outline">
-                                    {{ $rec->reason ?: '-' }}
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ $rec->created_at->translatedFormat('d-m-Y') }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($rec->status === 'pending')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Pending
-                                        </span>
-                                    @elseif($rec->status === 'disetujui')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Disetujui
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-wider">
-                                            Ditolak
-                                        </span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-8 text-center text-outline font-medium">Anda belum pernah mengajukan usulan buku baru.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if($recommendations->hasPages())
-                <div class="p-6 border-t border-outline-variant/10">
-                    {{ $recommendations->links() }}
-                </div>
-            @endif
-        </section>
+        <x-table :pagination="$recommendations->hasPages() ? $recommendations->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Judul Buku</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Penulis</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Alasan Usulan</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Usul</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+            </x-slot>
+
+            @forelse($recommendations as $rec)
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                    <td class="px-8 py-5 text-sm font-bold text-slate-900 group-hover:text-teal-700 transition-colors">
+                        {{ $rec->title }}
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ $rec->author ?: '-' }}
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-600 font-medium">
+                        {{ $rec->reason ?: '-' }}
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ $rec->created_at->translatedFormat('d-m-Y') }}
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @if($rec->status === 'pending')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                Pending
+                            </span>
+                        @elseif($rec->status === 'disetujui')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                Disetujui
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                Ditolak
+                            </span>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-8 py-14 text-center text-slate-500 font-medium">Anda belum pernah mengajukan usulan buku baru.</td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 </body>
 </html>

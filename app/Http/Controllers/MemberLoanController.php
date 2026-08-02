@@ -131,4 +131,30 @@ class MemberLoanController extends Controller
 
         return view('mahasiswa.loans.history', ['history' => $paginatedHistory]);
     }
+
+    /**
+     * Tampilkan daftar denda/sanksi milik anggota (Dosen/Mahasiswa).
+     */
+    public function myPenalties()
+    {
+        $user = Auth::user();
+
+        $penalties = \App\Models\Penalty::with(['loan.collection.book'])
+            ->where('user_id', $user->user_id)
+            ->orderByRaw("CASE WHEN status = 'belum_dibayar' THEN 0 ELSE 1 END")
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        $stats = [
+            'unpaid_count' => \App\Models\Penalty::where('user_id', $user->user_id)->where('status', 'belum_dibayar')->count(),
+            'unpaid_total' => \App\Models\Penalty::where('user_id', $user->user_id)->where('status', 'belum_dibayar')->sum('amount'),
+            'paid_count' => \App\Models\Penalty::where('user_id', $user->user_id)->where('status', 'lunas')->count(),
+        ];
+
+        if ($user->isDosen()) {
+            return view('dosen.loans.penalties', compact('penalties', 'stats'));
+        }
+
+        return view('mahasiswa.loans.penalties', compact('penalties', 'stats'));
+    }
 }

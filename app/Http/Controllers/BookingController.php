@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Antrian;
+use App\Models\Collection;
 use App\Models\Loan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,32 +27,46 @@ class BookingController extends Controller
         $user = Auth::user();
         $koleksiId = $validated['koleksi_id'];
 
-        // Cek apakah pengguna sedang meminjam koleksi ini
-        $sedangDipinjam = Loan::where('user_id', $user->user_id)
-            ->where('koleksi_id', $koleksiId)
-            ->whereIn('status', ['dipinjam', 'terlambat'])
-            ->exists();
+        $errorMessage = null;
+        $booking = DB::transaction(function () use ($user, $koleksiId, &$errorMessage) {
+            // Serialize all booking/loan checks for this collection. The
+            // checks must happen after the lock to prevent duplicate bookings.
+            Collection::query()
+                ->whereKey($koleksiId)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        if ($sedangDipinjam) {
-            return back()->with('error', 'Anda sedang meminjam koleksi ini. Silakan kembalikan terlebih dahulu.');
+            $sedangDipinjam = Loan::where('user_id', $user->user_id)
+                ->where('koleksi_id', $koleksiId)
+                ->whereIn('status', ['dipinjam', 'terlambat'])
+                ->exists();
+
+            if ($sedangDipinjam) {
+                $errorMessage = 'Anda sedang meminjam koleksi ini. Silakan kembalikan terlebih dahulu.';
+                return null;
+            }
+
+            $existingBooking = Booking::where('user_id', $user->user_id)
+                ->where('koleksi_id', $koleksiId)
+                ->whereIn('status', ['pending', 'disetujui'])
+                ->exists();
+
+            if ($existingBooking) {
+                $errorMessage = 'Anda sudah memiliki booking aktif untuk koleksi ini.';
+                return null;
+            }
+
+            return Booking::create([
+                'user_id' => $user->user_id,
+                'koleksi_id' => $koleksiId,
+                'tgl_booking' => today(),
+                'status' => 'pending',
+            ])->load('collection.book');
+        });
+
+        if (! $booking) {
+            return back()->with('error', $errorMessage ?? 'Booking tidak dapat dibuat saat ini.');
         }
-
-        // Cek apakah sudah punya booking aktif untuk koleksi ini
-        $existingBooking = Booking::where('user_id', $user->user_id)
-            ->where('koleksi_id', $koleksiId)
-            ->whereIn('status', ['pending', 'disetujui'])
-            ->exists();
-
-        if ($existingBooking) {
-            return back()->with('error', 'Anda sudah memiliki booking aktif untuk koleksi ini.');
-        }
-
-        $booking = Booking::create([
-            'user_id' => $user->user_id,
-            'koleksi_id' => $koleksiId,
-            'tgl_booking' => today(),
-            'status' => 'pending',
-        ]);
 
         $bookTitle = $booking->collection?->display_title ?? 'buku';
         
@@ -112,29 +128,50 @@ class BookingController extends Controller
 
         $user = Auth::user();
 
-        $booking = Booking::with(['collection.book'])
-            ->where('booking_id', $booking_id)
-            ->where('user_id', $user->user_id)
-            ->firstOrFail();
-
-        if (! in_array($booking->status, ['pending', 'disetujui'], true)) {
-            return back()->with('error', 'Booking ini tidak dapat dibatalkan.');
-        }
-
-        $oldStatus = $booking->status;
         $cancelReason = trim($validated['cancel_reason']);
 
-        DB::transaction(function () use ($booking, $oldStatus, $cancelReason) {
+        $releasedCollectionId = null;
+        $cancelled = DB::transaction(function () use ($booking_id, $user, $cancelReason, &$releasedCollectionId) {
+            $booking = Booking::query()
+                ->where('booking_id', $booking_id)
+                ->where('user_id', $user->user_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (! in_array($booking->status, ['pending', 'disetujui'], true)) {
+                return false;
+            }
+
+            $oldStatus = $booking->status;
+            $collection = null;
+            if ($oldStatus === 'disetujui') {
+                $collection = Collection::query()
+                    ->whereKey($booking->koleksi_id)
+                    ->lockForUpdate()
+                    ->first();
+            }
+
             $booking->update([
                 'status' => 'dibatalkan',
                 'note' => 'Dibatalkan oleh anggota. Alasan: ' . $cancelReason,
                 'batas_waktu_ambil' => null,
             ]);
 
-            if ($oldStatus === 'disetujui' && $booking->collection) {
-                $booking->collection->syncBackingStock(1);
+            if ($oldStatus === 'disetujui' && $collection) {
+                $collection->syncBackingStock(1);
+                $releasedCollectionId = $collection->koleksi_id;
             }
+
+            return true;
         });
+
+        if (! $cancelled) {
+            return back()->with('error', 'Booking ini tidak dapat dibatalkan.');
+        }
+
+        if ($releasedCollectionId) {
+            Antrian::checkAndNotifyAvailableQueue($releasedCollectionId);
+        }
 
         return back()->with('success', 'Booking berhasil dibatalkan.');
     }

@@ -52,6 +52,22 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
+        // View Composer untuk Badge Sidebar Mahasiswa & Dosen (Denda Belum Dibayar)
+        View::composer(['mahasiswa.layouts.sidebar', 'dosen.layouts.sidebar'], function ($view) {
+            try {
+                $userId = \Illuminate\Support\Facades\Auth::id();
+                $unpaidPenalties = $userId ? \App\Models\Penalty::where('user_id', $userId)->where('status', 'belum_dibayar')->count() : 0;
+
+                $view->with('memberBadges', [
+                    'unpaid_penalties' => $unpaidPenalties,
+                ]);
+            } catch (\Throwable $e) {
+                $view->with('memberBadges', [
+                    'unpaid_penalties' => 0,
+                ]);
+            }
+        });
+
         // Force HTTPS when behind a reverse proxy (e.g. Cloudflare Tunnel / Ngrok HTTPS)
         if ($this->app->environment('production', 'staging') && !in_array(request()->getHost(), ['127.0.0.1', 'localhost'])) {
             URL::forceScheme('https');

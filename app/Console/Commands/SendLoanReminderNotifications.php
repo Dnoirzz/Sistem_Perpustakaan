@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Loan;
 use App\Models\AppSetting;
+use App\Models\NotificationCustom;
 use App\Services\WhatsAppService;
 use App\Services\TelegramService;
 use Carbon\Carbon;
@@ -24,7 +25,7 @@ class SendLoanReminderNotifications extends Command
      *
      * @var string
      */
-    protected $description = 'Kirim notifikasi pengingat H-1 jatuh tempo dan status terlambat via WhatsApp';
+    protected $description = 'Kirim notifikasi pengingat H-1 jatuh tempo dan status terlambat via WhatsApp, Telegram, dan Lonceng Web';
 
     /**
      * Execute the console command.
@@ -52,10 +53,24 @@ class SendLoanReminderNotifications extends Command
         
         $successH1Count = 0;
         foreach ($upcomingLoans as $loan) {
+            $judulBuku = $loan->collection?->display_title ?? 'Buku Perpustakaan';
+            $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
+
+            // Kirim Notifikasi Lonceng Web
+            if ($loan->user_id) {
+                $targetUrl = $loan->user?->isDosen() ? route('dosen.loans.active') : route('mahasiswa.loans.active');
+                NotificationCustom::create([
+                    'user_id' => $loan->user_id,
+                    'title' => 'Pengingat Pengembalian Buku (H-1)',
+                    'message' => "Buku \"{$judulBuku}\" akan jatuh tempo BESOK ({$btsWaktu}). Mohon persiapkan pengembalian.",
+                    'url' => $targetUrl,
+                    'type' => 'warning',
+                    'is_read' => false,
+                ]);
+            }
+
             if ($loan->user && !empty($loan->user->no_hp)) {
                 $namaAnggota = $loan->user->name;
-                $judulBuku = $loan->collection?->display_title ?? 'Buku Perpustakaan';
-                $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
 
                 $message = "Halo, {$namaAnggota}! ⏰\n\n" .
                            "Ini adalah pengingat bahwa batas pengembalian buku berikut jatuh tempo *BESOK*:\n" .
@@ -75,12 +90,11 @@ class SendLoanReminderNotifications extends Command
             // Kirim Telegram H-1 jika terkonfigurasi
             if ($loan->user && !empty($loan->user->telegram_chat_id)) {
                 $namaAnggota = e($loan->user->name);
-                $judulBuku = e($loan->collection?->display_title ?? 'Buku Perpustakaan');
-                $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
+                $judulBukuEsc = e($judulBuku);
 
                 $tgMessage = "<b>Halo, {$namaAnggota}!</b> ⏰\n\n" .
                              "Ini adalah pengingat bahwa batas pengembalian buku berikut jatuh tempo <b>BESOK</b>:\n" .
-                             "• Judul Buku: <b>{$judulBuku}</b>\n" .
+                             "• Judul Buku: <b>{$judulBukuEsc}</b>\n" .
                              "• Tanggal Jatuh Tempo: <b>{$btsWaktu}</b>\n\n" .
                              "Mohon kembalikan tepat waktu untuk menghindari denda keterlambatan.\n\n" .
                              "<i>SIPUS PSDKU POLNEP Sukamara</i>";
@@ -101,11 +115,25 @@ class SendLoanReminderNotifications extends Command
         
         $successOverdueCount = 0;
         foreach ($overdueLoans as $loan) {
+            $judulBuku = $loan->collection?->display_title ?? 'Buku Perpustakaan';
+            $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
+            $daysLate = Carbon::parse($loan->bts_waktu)->diffInDays(Carbon::today());
+
+            // Kirim Notifikasi Lonceng Web
+            if ($loan->user_id) {
+                $targetUrl = $loan->user?->isDosen() ? route('dosen.loans.active') : route('mahasiswa.loans.active');
+                NotificationCustom::create([
+                    'user_id' => $loan->user_id,
+                    'title' => 'Peringatan Terlambat Pengembalian',
+                    'message' => "Buku yang anda pinjam dengan judul \"{$judulBuku}\" telah melewati batas waktu pengembalian selama {$daysLate} hari. Segera lakukan pengembalian buku ke perpustakaan.",
+                    'url' => $targetUrl,
+                    'type' => 'danger',
+                    'is_read' => false,
+                ]);
+            }
+
             if ($loan->user && !empty($loan->user->no_hp)) {
                 $namaAnggota = $loan->user->name;
-                $judulBuku = $loan->collection?->display_title ?? 'Buku Perpustakaan';
-                $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
-                $daysLate = Carbon::parse($loan->bts_waktu)->diffInDays(Carbon::today());
 
                 $message = "Halo, {$namaAnggota}! ⚠️\n\n" .
                            "Buku yang Anda pinjam telah *MELEWATI BATAS WAKTU* pengembalian:\n" .
@@ -126,13 +154,11 @@ class SendLoanReminderNotifications extends Command
             // Kirim Telegram Terlambat jika terkonfigurasi
             if ($loan->user && !empty($loan->user->telegram_chat_id)) {
                 $namaAnggota = e($loan->user->name);
-                $judulBuku = e($loan->collection?->display_title ?? 'Buku Perpustakaan');
-                $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
-                $daysLate = Carbon::parse($loan->bts_waktu)->diffInDays(Carbon::today());
+                $judulBukuEsc = e($judulBuku);
 
                 $tgMessage = "<b>Halo, {$namaAnggota}!</b> ⚠️\n\n" .
                              "Buku yang Anda pinjam telah <b>MELEWATI BATAS WAKTU</b> pengembalian:\n" .
-                             "• Judul Buku: <b>{$judulBuku}</b>\n" .
+                             "• Judul Buku: <b>{$judulBukuEsc}</b>\n" .
                              "• Tanggal Jatuh Tempo: {$btsWaktu}\n" .
                              "• Keterlambatan: <b>{$daysLate} Hari</b>\n\n" .
                              "Mohon segera kembalikan buku tersebut ke perpustakaan untuk menghentikan akumulasi denda keterlambatan.\n\n" .

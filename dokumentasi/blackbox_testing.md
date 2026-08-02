@@ -172,11 +172,11 @@
 
 ---
 
-## 6. Pengujian Denda & Sanksi (Petugas)
+## 6. Pengujian Denda & Sanksi (Petugas & Anggota)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-FINE-01 | Lihat daftar denda yang belum dibayar | Buka halaman Denda | Semua denda "belum_dibayar" tampil dengan badge terformat rapi | ⬜ |
+| TC-FINE-01 | Lihat daftar denda yang belum dibayar | Buka halaman Denda Petugas | Semua denda "belum_dibayar" tampil dengan badge terformat rapi | ⬜ |
 | TC-FINE-02 | Penampilan nama koleksi (Buku Umum & Laporan PKL/TA) | Buka halaman Denda pada peminjaman Laporan PKL/TA | Judul Laporan PKL/TA tampil dengan benar (bukan `-`) beserta badge kategorinya | ⬜ |
 | TC-FINE-03 | Pencarian denda Laporan PKL / Tugas Akhir | Ketik judul Laporan PKL/TA di pencarian denda | Denda terkait Laporan PKL/TA berhasil ditemukan | ⬜ |
 | TC-FINE-04 | Modal Detail Keterangan Denda | Klik tombol Info (i) pada baris denda | Modal menampilkan detail anggota, judul koleksi, jenis, penyelesaian, dan rincian aturan | ⬜ |
@@ -184,6 +184,8 @@
 | TC-FINE-06 | Tambah denda manual oleh petugas | Isi form denda manual | Denda tersimpan | ⬜ |
 | TC-FINE-07 | Aturan denda keterlambatan per hari | Atur Rp 1.000/hari, kembalikan 5 hari terlambat | Denda otomatis = Rp 5.000 | ⬜ |
 | TC-FINE-08 | Aturan denda keterlambatan flat | Atur Rp 10.000 flat, kembalikan kapanpun terlambat | Denda = Rp 10.000 terlepas dari jumlah hari | ⬜ |
+| TC-FINE-09 | Akses Halaman **"Denda Saya"** (Mahasiswa/Dosen) | Buka menu Rak Pinjam $\rightarrow$ Denda Saya | Tampil rincian tagihan denda belum dibayar & riwayat lunas secara transparan | ⬜ |
+| TC-FINE-10 | Notifikasi Lonceng & WA Denda Baru | Petugas proses pengembalian buku rusak/hilang | Peminjam menerima Notifikasi Lonceng & WA/Telegram denda baru | ⬜ |
 
 ---
 
@@ -391,7 +393,7 @@
 | Manajemen Buku & Koleksi | 12 | 0 | 0 | 12 |
 | Peminjaman Buku | 8 | 0 | 0 | 8 |
 | Pengembalian Buku & Checklist | 8 | 0 | 0 | 8 |
-| Denda & Sanksi | 8 | 0 | 0 | 8 |
+| Denda & Sanksi | 10 | 0 | 0 | 10 |
 | Pengaturan Return | 4 | 0 | 0 | 4 |
 | Booking & Antrian | 7 | 0 | 0 | 7 |
 | Arsip Digital & Katalog Publik | 13 | 0 | 0 | 13 |
@@ -402,7 +404,7 @@
 | Pengaturan Sistem | 9 | 0 | 0 | 9 |
 | Log Aktivitas | 2 | 0 | 0 | 2 |
 | Profil Pengguna | 4 | 0 | 0 | 4 |
-| **TOTAL** | **142** | **13** | **0** | **129** |
+| **TOTAL** | **144** | **13** | **0** | **131** |
 
 ---
 

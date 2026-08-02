@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('petugas.reports.print-arsip', ['tgl_awal' => $tglAwal, 'tgl_akhir' => $tglAkhir, 'jenis_arsip' => $jenisArsip, 'tahun' => $tahun]) }}" target="_blank" class="px-5 py-2.5 rounded-2xl bg-teal-600 text-white hover:bg-teal-700 font-bold text-xs transition-all shadow-md shadow-teal-200 flex items-center gap-2">
+                <a href="{{ route('petugas.reports.print-arsip', ['tgl_awal' => $tglAwal, 'tgl_akhir' => $tglAkhir, 'jenis_arsip' => $jenisArsip, 'tahun' => $tahun]) }}" target="_blank" class="px-5 py-2.5 rounded-2xl bg-primary text-white hover:bg-primary/90 font-bold text-xs transition-all shadow-md shadow-primary/20 flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px]">print</span>
                     Cetak Dokumen (PDF)
                 </a>
@@ -200,7 +200,10 @@
                 <!-- Signature Block - Only Visible When Printed -->
                 <div class="hidden print-only-signature text-center text-xs space-y-12 pr-6">
                     <p>Sukamara, {{ now()->translatedFormat('d F Y') }}<br>Petugas Perpustakaan,</p>
-                    <p class="font-bold underline pt-8 text-slate-900">{{ Auth::user()->name }}</p>
+                    <div>
+                        <p class="font-bold underline pt-8 text-slate-900">{{ Auth::user()->name }}</p>
+                        <p class="text-slate-700">NIP. {{ Auth::user()->petugas?->nip ?: (Auth::user()->dosen?->nip ?: '-') }}</p>
+                    </div>
                 </div>
             </div>
         </div>

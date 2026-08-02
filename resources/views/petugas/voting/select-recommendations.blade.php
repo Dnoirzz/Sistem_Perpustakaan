@@ -119,7 +119,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
 
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
             'title' => 'Pilih Usulan Buku',
             'subtitle' => 'Pilih usulan buku civitas akademika untuk dimasukkan ke sesi voting.',
@@ -143,7 +143,7 @@
                         </select>
                     </div>
                     <div class="w-full md:w-auto flex gap-2">
-                        <button type="submit" class="flex-1 md:flex-initial px-6 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2">
+                        <button type="submit" class="flex-1 md:flex-initial px-6 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2">
                             Cari
                         </button>
                         @if($search)
@@ -163,75 +163,65 @@
 
                 <!-- Action Bar (Floating indicator style) -->
                 <div class="flex justify-between items-center pb-4 border-b border-outline-variant/10">
-                    <span class="text-xs text-outline font-semibold">Terpilih: <strong id="selected-count" class="text-primary text-sm font-bold">0</strong> usulan</span>
-                    <button type="submit" id="submit-btn" disabled class="px-8 py-3 rounded-2xl bg-primary hover:bg-primary/90 disabled:bg-slate-100 disabled:text-outline text-white text-xs font-bold transition-all shadow-md flex items-center gap-2">
+                    <span class="text-xs text-slate-600 font-semibold">Terpilih: <strong id="selected-count" class="text-primary text-sm font-extrabold">0</strong> usulan</span>
+                    <button type="submit" id="submit-btn" disabled class="px-8 py-3 rounded-2xl bg-primary hover:bg-primary/90 disabled:bg-slate-100 disabled:text-slate-400 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">add_circle</span>
                         Tambahkan Buku Terpilih
                     </button>
                 </div>
 
                 <!-- Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-outline-variant/15 text-outline uppercase tracking-wider text-[10px] font-bold">
-                                <th class="pb-4 pt-2 w-12 text-center">
-                                    <input type="checkbox" id="select-all" class="rounded text-primary focus:ring-primary/20 border-outline-variant/50 cursor-pointer">
-                                </th>
-                                <th class="pb-4 pt-2 w-12 text-center">No</th>
-                                <th class="pb-4 pt-2">Judul Buku & Riwayat Sesi</th>
-                                <th class="pb-4 pt-2">Penulis</th>
-                                <th class="pb-4 pt-2">Pengusul</th>
-                                <th class="pb-4 pt-2 text-center">Tanggal Usulan</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-outline-variant/10 text-xs font-semibold text-on-surface-variant">
-                            @forelse($recommendations as $index => $rec)
-                                <tr>
-                                    <td class="py-4 text-center">
-                                        <input type="checkbox" name="rekomendasi_ids[]" value="{{ $rec->rekomendasi_id }}" class="rec-checkbox rounded text-primary focus:ring-primary/20 border-outline-variant/50 cursor-pointer">
-                                    </td>
-                                    <td class="py-4 text-center text-outline">
-                                        {{ $recommendations->firstItem() + $index }}
-                                    </td>
-                                    <td class="py-4">
-                                        <div>
-                                            <span class="font-bold text-on-surface text-sm block leading-snug">{{ $rec->title }}</span>
-                                            
-                                            <!-- Riwayat Voting Sebelumnya -->
-                                            @foreach($rec->votingItems as $vi)
-                                                @if($vi->voting)
-                                                    <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded bg-amber-50 text-amber-700 text-[10px] font-semibold border border-amber-200">
-                                                        Pernah di-voting pada: {{ $vi->voting->title }}
-                                                    </span>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </td>
-                                    <td class="py-4 font-medium">{{ $rec->author ?: '-' }}</td>
-                                    <td class="py-4">
-                                        <div>
-                                            <span class="font-bold text-on-surface block">{{ $rec->user?->name ?: 'Umum' }}</span>
-                                            <span class="text-[10px] text-outline font-semibold uppercase tracking-wider">{{ $rec->user?->role?->role_name ?: 'Petugas' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 text-center font-medium text-outline">
-                                        {{ $rec->created_at->format('d/m/Y') }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="py-8 text-center text-outline font-medium">Tidak ada buku usulan baru yang tersedia.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                <x-table :pagination="$recommendations->appends(['search' => $search, 'sort_by' => $sortBy])->links()">
+                    <x-slot name="headers">
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap w-12 text-center">
+                            <input type="checkbox" id="select-all" class="rounded text-teal-600 focus:ring-teal-500/20 border-slate-300 cursor-pointer">
+                        </th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap w-12 text-center">No</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Judul Buku & Riwayat Sesi</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Penulis</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Pengusul</th>
+                        <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Tanggal Usulan</th>
+                    </x-slot>
 
-                <!-- Pagination -->
-                <div class="pt-4 border-t border-outline-variant/10">
-                    {{ $recommendations->appends(['search' => $search, 'sort_by' => $sortBy])->links() }}
-                </div>
+                    @forelse($recommendations as $index => $rec)
+                        <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                            <td class="px-8 py-5 text-center whitespace-nowrap">
+                                <input type="checkbox" name="rekomendasi_ids[]" value="{{ $rec->rekomendasi_id }}" class="rec-checkbox rounded text-teal-600 focus:ring-teal-500/20 border-slate-300 cursor-pointer">
+                            </td>
+                            <td class="px-8 py-5 text-center text-slate-500 font-bold whitespace-nowrap">
+                                {{ $recommendations->firstItem() + $index }}
+                            </td>
+                            <td class="px-8 py-5">
+                                <div>
+                                    <span class="font-bold text-slate-900 text-sm block leading-snug group-hover:text-teal-700 transition-colors">{{ $rec->title }}</span>
+                                    
+                                    <!-- Riwayat Voting Sebelumnya -->
+                                    @foreach($rec->votingItems as $vi)
+                                        @if($vi->voting)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 mt-1 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold border border-amber-200">
+                                                Pernah di-voting pada: {{ $vi->voting->title }}
+                                            </span>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-slate-700 font-semibold whitespace-nowrap">{{ $rec->author ?: '-' }}</td>
+                            <td class="px-8 py-5 whitespace-nowrap">
+                                <div>
+                                    <span class="font-bold text-slate-900 block">{{ $rec->user?->name ?: 'Umum' }}</span>
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{{ $rec->user?->role?->role_name ?: 'Petugas' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-center font-semibold text-slate-700 whitespace-nowrap">
+                                {{ $rec->created_at->format('d/m/Y') }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-8 py-14 text-center text-slate-500 font-medium">Tidak ada buku usulan baru yang tersedia.</td>
+                        </tr>
+                    @endforelse
+                </x-table>
             </form>
         </section>
     </main>

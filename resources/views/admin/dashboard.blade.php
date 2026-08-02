@@ -147,7 +147,7 @@
     <!-- Main Content Area -->
     <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
-            'title' => 'Dashboard Admin',
+            'title' => 'Dashboard',
             'subtitle' => 'Selamat datang kembali di pusat kontrol sistem perpustakaan.'
         ])
 

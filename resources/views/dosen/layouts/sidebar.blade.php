@@ -15,6 +15,7 @@
             || request()->routeIs('dosen.katalog-arsip.*');
         $rakPinjamOpen = request()->routeIs('dosen.loans.active')
             || request()->routeIs('dosen.loans.history')
+            || request()->routeIs('dosen.loans.penalties')
             || request()->routeIs('dosen.bookings.*')
             || request()->routeIs('dosen.antrian.*');
     @endphp
@@ -51,13 +52,31 @@
                     <span class="material-symbols-outlined">shelves</span>
                     <span class="font-label-md">Rak Pinjam</span>
                 </span>
-                <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
+                <div class="flex items-center gap-2">
+                    @if(($memberBadges['unpaid_penalties'] ?? 0) > 0)
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-600 text-white shadow-xs" title="{{ $memberBadges['unpaid_penalties'] }} denda belum dibayar">
+                            {{ $memberBadges['unpaid_penalties'] }}
+                        </span>
+                    @endif
+                    <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
+                </div>
             </summary>
 
             <div class="mt-2 ml-4 pl-3 border-l border-outline-variant/20 space-y-1">
                 <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('dosen.loans.active') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('dosen.loans.active') }}">
                     <span class="material-symbols-outlined text-[18px]">chrome_reader_mode</span>
                     <span class="text-sm">Pinjaman</span>
+                </a>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('dosen.loans.penalties') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('dosen.loans.penalties') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">gavel</span>
+                        <span class="text-sm">Denda Saya</span>
+                    </div>
+                    @if(($memberBadges['unpaid_penalties'] ?? 0) > 0)
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-600 text-white shadow-xs" title="{{ $memberBadges['unpaid_penalties'] }} denda belum dibayar">
+                            {{ $memberBadges['unpaid_penalties'] }}
+                        </span>
+                    @endif
                 </a>
                 <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('dosen.bookings.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('dosen.bookings.my') }}">
                     <span class="material-symbols-outlined text-[18px]">event_available</span>

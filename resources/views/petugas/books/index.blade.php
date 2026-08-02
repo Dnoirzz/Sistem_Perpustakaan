@@ -139,7 +139,7 @@
     @include('petugas.layouts.sidebar')
 
     <!-- Main Content Area -->
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Kelola Buku Perpustakaan',
             'subtitle' => 'Tambahkan, ubah, dan kelola informasi serta stok buku perpustakaan.'
@@ -163,7 +163,7 @@
         <!-- Tab Navigation for Pustaka -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div class="flex gap-4">
-                <a href="{{ route('petugas.books.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-primary text-white shadow-lg shadow-primary/20 transition-all">
+                <a href="{{ route('petugas.books.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-primary text-white shadow-sm transition-all">
                     Daftar Buku
                 </a>
                 <a href="{{ route('petugas.categories.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-slate-50 hover:text-primary transition-all">
@@ -172,11 +172,11 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <a href="{{ route('petugas.books.import.form') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all">
+                <a href="{{ route('petugas.books.import.form') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all">
                     <span class="material-symbols-outlined text-[18px]">upload_file</span>
                     Import Excel
                 </a>
-                <a href="{{ route('petugas.books.create') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all">
+                <a href="{{ route('petugas.books.create') }}" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-bold text-sm shadow-sm hover:bg-primary/90 transition-all">
                     <span class="material-symbols-outlined text-[18px]">add</span>
                     Tambah Buku Baru
                 </a>
@@ -206,7 +206,7 @@
 
                 <!-- Action buttons -->
                 <div class="flex gap-2">
-                    <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all">
+                    <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition-all shadow-sm">
                         Terapkan Filter
                     </button>
                     @if(request()->filled('search') || request()->filled('category'))
@@ -219,110 +219,96 @@
         </section>
 
         <!-- Books Table Card -->
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest w-24">Cover</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Informasi Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Kategori</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest w-28">Stok</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest w-28">Dipinjam</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs text-center uppercase tracking-widest w-40">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($books as $book)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <!-- Cover Column -->
-                                <td class="px-8 py-4">
-                                    <div class="w-12 h-16 bg-white rounded-lg overflow-hidden border border-outline-variant/20 flex items-center justify-center text-outline">
-                                        <img src="{{ $book->cover_url }}" alt="Cover Buku" class="w-full h-full {{ $book->cover_image ? 'object-cover' : 'object-contain p-1' }}"/>
-                                    </div>
-                                </td>
-                                
-                                <!-- Info Column -->
-                                <td class="px-8 py-4">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm leading-snug">{{ $book->judul }}</span>
-                                        <span class="text-xs text-outline mt-0.5">Penulis: {{ $book->author }}</span>
-                                        <span class="text-[10px] text-outline font-semibold">Penerbit: {{ $book->publisher ?? '-' }} ({{ $book->release ?? '-' }})</span>
-                                    </div>
-                                </td>
-                                
-                                <!-- Category Column -->
-                                <td class="px-8 py-4">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
-                                        {{ $book->category->kategori_name ?? 'Umum' }}
-                                    </span>
-                                </td>
-                                
-                                <!-- Stock Column -->
-                                <td class="px-8 py-4">
-                                    @if($book->stock > 0)
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-bold text-on-surface">{{ $book->stock }}</span>
-                                            <span class="text-[10px] text-emerald-600 font-bold uppercase">Tersedia</span>
-                                        </div>
-                                    @else
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-bold text-rose-600">{{ $book->stock }}</span>
-                                            <span class="text-[10px] text-rose-500 font-bold uppercase">Habis</span>
-                                        </div>
-                                    @endif
-                                </td>
-                                
-                                <!-- Dipinjam Column -->
-                                <td class="px-8 py-4">
-                                    @if($book->active_loans_count > 0)
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-bold text-amber-600">{{ $book->active_loans_count }}</span>
-                                            <span class="text-[10px] text-amber-500 font-bold uppercase">Dipinjam</span>
-                                        </div>
-                                    @else
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-bold text-outline-variant">0</span>
-                                            <span class="text-[10px] text-outline-variant font-bold uppercase">—</span>
-                                        </div>
-                                    @endif
-                                </td>
-                                
-                                <!-- Actions Column -->
-                                <td class="px-8 py-4 text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <!-- Edit button -->
-                                        <a href="{{ route('petugas.books.edit', $book->buku_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center justify-center transition-all" title="Edit Buku">
-                                            <span class="material-symbols-outlined text-[18px]">edit</span>
-                                        </a>
-                                        
-                                        <!-- Delete form -->
-                                        <form action="{{ route('petugas.books.destroy', $book->buku_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus buku ini? Semua data sirkulasi terkait buku ini juga dapat terpengaruh.')" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-all" title="Hapus Buku">
-                                                <span class="material-symbols-outlined text-[18px]">delete</span>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="px-8 py-10 text-center text-outline font-medium">Data buku tidak ditemukan atau belum ditambahkan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <x-table :pagination="$books->hasPages() ? $books->links() : null">
+            <x-slot name="headers">
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap w-20">Cover</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Informasi Buku</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Kategori</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap w-24">Stok</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap w-24">Dipinjam</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap w-36">Aksi</th>
+            </x-slot>
 
-            <!-- Pagination -->
-            @if($books->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $books->links() }}
-                </div>
-            @endif
-        </section>
+            @forelse($books as $book)
+                <tr class="even:bg-slate-50/40 hover:bg-sky-50/40 transition-colors duration-150 group">
+                    <!-- Cover Column -->
+                    <td class="px-4 sm:px-5 py-4 whitespace-nowrap">
+                        <div class="w-12 h-16 bg-white rounded-lg overflow-hidden border border-outline-variant/20 flex items-center justify-center text-outline shadow-2xs">
+                            <img src="{{ $book->cover_url }}" alt="Cover Buku" class="w-full h-full {{ $book->cover_image ? 'object-cover' : 'object-contain p-1' }}"/>
+                        </div>
+                    </td>
+                    
+                    <!-- Info Column -->
+                    <td class="px-4 sm:px-5 py-4">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm leading-snug group-hover:text-primary transition-colors">{{ $book->judul }}</span>
+                            <span class="text-xs text-slate-500 font-medium mt-0.5">Penulis: {{ $book->author }}</span>
+                            <span class="text-[10px] text-slate-500 font-bold">Penerbit: {{ $book->publisher ?? '-' }} ({{ $book->release ?? '-' }})</span>
+                        </div>
+                    </td>
+                    
+                    <!-- Category Column -->
+                    <td class="px-4 sm:px-5 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200 text-xs font-extrabold tracking-wide">
+                            {{ $book->category->kategori_name ?? 'Umum' }}
+                        </span>
+                    </td>
+                    
+                    <!-- Stock Column -->
+                    <td class="px-4 sm:px-5 py-4 whitespace-nowrap">
+                        @if($book->stock > 0)
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-slate-900">{{ $book->stock }}</span>
+                                <span class="text-[10px] text-emerald-700 font-bold uppercase">Tersedia</span>
+                            </div>
+                        @else
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-rose-600">{{ $book->stock }}</span>
+                                <span class="text-[10px] text-rose-600 font-bold uppercase">Habis</span>
+                            </div>
+                        @endif
+                    </td>
+                    
+                    <!-- Dipinjam Column -->
+                    <td class="px-4 sm:px-5 py-4 whitespace-nowrap">
+                        @if($book->active_loans_count > 0)
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-amber-700">{{ $book->active_loans_count }}</span>
+                                <span class="text-[10px] text-amber-700 font-bold uppercase">Dipinjam</span>
+                            </div>
+                        @else
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-slate-400">0</span>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase">—</span>
+                            </div>
+                        @endif
+                    </td>
+                    
+                    <!-- Actions Column -->
+                    <td class="px-4 sm:px-5 py-4 text-center whitespace-nowrap">
+                        <div class="flex items-center justify-center gap-2">
+                            <!-- Edit button -->
+                            <a href="{{ route('petugas.books.edit', $book->buku_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-600 hover:text-white hover:border-amber-600 flex items-center justify-center transition-all active:scale-95" title="Edit Buku">
+                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                            </a>
+                            
+                            <!-- Delete form -->
+                            <form action="{{ route('petugas.books.destroy', $book->buku_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus buku ini? Semua data sirkulasi terkait buku ini juga dapat terpengaruh.')" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 flex items-center justify-center transition-all active:scale-95" title="Hapus Buku">
+                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="px-5 py-14 text-center text-slate-500 font-medium">Data buku tidak ditemukan atau belum ditambahkan.</td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 </body>
 </html>

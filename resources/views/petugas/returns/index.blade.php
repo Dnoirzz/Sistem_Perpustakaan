@@ -133,7 +133,7 @@
 <body class="font-body-md text-body-md antialiased min-h-screen">
     @include('petugas.layouts.sidebar')
 
-    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Transaksi Pengembalian Buku',
             'subtitle' => 'Proses pengembalian buku yang sedang dipinjam oleh anggota perpustakaan.'
@@ -226,7 +226,7 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all">
+                        <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all shadow-sm">
                             Terapkan Filter
                         </button>
                         @if(request()->filled('search') || request()->filled('status'))
@@ -240,119 +240,106 @@
         </div>
 
         {{-- Tabel --}}
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Anggota</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Pinjam</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Batas Pengembalian</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($loans as $loan)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
-                                            {{ substr($loan->user->name, 0, 2) }}
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-on-surface text-sm">{{ $loan->user->name }}</span>
-                                            <span class="text-[10px] text-outline font-bold tracking-wider uppercase">
-                                                @if($loan->user->role?->role_name === 'mahasiswa')
-                                                    Mahasiswa • NIM {{ $loan->user->mahasiswa->nim ?? '-' }}
-                                                @else
-                                                    Dosen • NIP {{ $loan->user->dosen->nip ?? '-' }}
-                                                @endif
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $loan->collection?->display_title ?? 'Buku tidak ditemukan' }}</span>
-                                        <span class="text-[10px] text-outline font-semibold">
-                                            {{ $loan->collection?->book?->author ?? $loan->collection?->display_type_label ?? 'Koleksi' }}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') }}
-                                </td>
-                                <td class="px-8 py-5 text-sm {{ $loan->status === 'terlambat' ? 'text-rose-600 font-semibold' : 'text-on-surface-variant' }}">
-                                    {{ \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') }}
-                                    @if($loan->status === 'terlambat')
-                                        <div class="text-[10px] text-rose-500 font-bold mt-0.5">
-                                            {{ \Carbon\Carbon::parse($loan->bts_waktu)->diffInDays(today()) }} hari terlambat
-                                        </div>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($loan->status === 'terlambat')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span>
-                                            Terlambat
-                                        </span>
-                                    @elseif($loan->status === 'dikembalikan')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                            Dikembalikan
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-sky-50 text-sky-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-sky-500 mr-1.5"></span>
-                                            Dipinjam
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-center">
-                                    @if(in_array($loan->status, ['dipinjam', 'terlambat']))
-                                        <button
-                                            type="button"
-                                            data-return-trigger="true"
-                                            data-loan-id="{{ $loan->loan_id }}"
-                                            data-member-name="{{ $loan->user->name }}"
-                                            data-book-title="{{ $loan->collection?->display_title ?? 'Buku' }}"
-                                            data-status="{{ $loan->status }}"
-                                            onclick="openReturnModalFromButton(this)"
-                                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-200"
-                                        >
-                                            <span class="material-symbols-outlined text-[16px]">assignment_turned_in</span>
-                                            Kembalikan
-                                        </button>
-                                    @else
-                                        <span class="text-xs text-outline font-medium">
-                                            {{ $loan->tgl_kembali ? \Carbon\Carbon::parse($loan->tgl_kembali)->translatedFormat('d M Y') : '-' }}
-                                        </span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="px-8 py-12 text-center text-outline font-medium">
-                                    @if(request()->filled('search') || request()->filled('status'))
-                                        Tidak ada transaksi yang cocok dengan filter pencarian.
-                                    @else
-                                        Tidak ada peminjaman aktif yang perlu diproses pengembalian.
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <x-table :pagination="$loans->hasPages() ? $loans->links() : null">
+            <x-slot name="headers">
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Anggota</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Buku</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tgl Pinjam</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Batas Pengembalian</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-4 sm:px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Aksi</th>
+            </x-slot>
 
-            @if($loans->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $loans->links() }}
-                </div>
-            @endif
-        </section>
+            @forelse($loans as $loan)
+                <tr class="even:bg-slate-50/40 hover:bg-sky-50/40 transition-colors duration-150 group">
+                    <td class="px-4 sm:px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-xs flex-shrink-0">
+                                {{ substr($loan->user->name, 0, 2) }}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-900 text-sm group-hover:text-primary transition-colors leading-snug">{{ $loan->user->name }}</span>
+                                <span class="text-[10px] text-slate-500 font-bold tracking-wider uppercase">
+                                    @if($loan->user->role?->role_name === 'mahasiswa')
+                                        Mahasiswa • NIM {{ $loan->user->mahasiswa->nim ?? '-' }}
+                                    @else
+                                        Dosen • NIP {{ $loan->user->dosen->nip ?? '-' }}
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 sm:px-5 py-4">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm leading-snug">{{ $loan->collection?->display_title ?? 'Buku tidak ditemukan' }}</span>
+                            <span class="text-[10px] text-slate-500 font-semibold mt-0.5">
+                                {{ $loan->collection?->book?->author ?? $loan->collection?->display_type_label ?? 'Koleksi' }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ \Carbon\Carbon::parse($loan->tgl_pinjam)->translatedFormat('d M Y') }}
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-sm {{ $loan->status === 'terlambat' ? 'text-rose-600 font-bold' : 'text-slate-900 font-medium' }} whitespace-nowrap">
+                        {{ \Carbon\Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y') }}
+                        @if($loan->status === 'terlambat')
+                            <div class="text-[10px] text-rose-600 font-extrabold mt-0.5">
+                                {{ \Carbon\Carbon::parse($loan->bts_waktu)->diffInDays(today()) }} hari terlambat
+                            </div>
+                        @endif
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 whitespace-nowrap">
+                        @if($loan->status === 'terlambat')
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2 animate-pulse"></span>
+                                Terlambat
+                            </span>
+                        @elseif($loan->status === 'dikembalikan')
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
+                                Dikembalikan
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-sky-600 mr-2"></span>
+                                Dipinjam
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-4 sm:px-5 py-4 text-center whitespace-nowrap">
+                        @if(in_array($loan->status, ['dipinjam', 'terlambat']))
+                            <button
+                                type="button"
+                                data-return-trigger="true"
+                                data-loan-id="{{ $loan->loan_id }}"
+                                data-member-name="{{ $loan->user->name }}"
+                                data-book-title="{{ $loan->collection?->display_title ?? 'Buku' }}"
+                                data-status="{{ $loan->status }}"
+                                onclick="openReturnModalFromButton(this)"
+                                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition-all shadow-xs active:scale-95 shadow-emerald-200"
+                            >
+                                <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+                                Kembalikan
+                            </button>
+                        @else
+                            <span class="text-xs text-slate-500 font-semibold">
+                                {{ $loan->tgl_kembali ? \Carbon\Carbon::parse($loan->tgl_kembali)->translatedFormat('d M Y') : '-' }}
+                            </span>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="px-8 py-14 text-center text-slate-500 font-medium">
+                        @if(request()->filled('search') || request()->filled('status'))
+                            Tidak ada transaksi yang cocok dengan filter pencarian.
+                        @else
+                            Tidak ada peminjaman aktif yang perlu diproses pengembalian.
+                        @endif
+                    </td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 
     {{-- Modal Konfirmasi Pengembalian --}}

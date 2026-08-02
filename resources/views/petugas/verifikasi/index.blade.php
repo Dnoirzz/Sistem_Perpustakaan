@@ -104,7 +104,7 @@
     @include('petugas.layouts.sidebar')
 
     <!-- Main Content Area -->
-    <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 flex-1 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
             'title' => 'Verifikasi Anggota Baru',
             'subtitle' => 'Tinjau identitas Kartu Tanda Mahasiswa (KTM) dan setujui atau tolak pendaftaran mandiri.'
@@ -150,128 +150,111 @@
             </form>
         </div>
 
-        <!-- Table Container -->
-        <div class="bg-white rounded-3xl border border-outline-variant/20 shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-outline-variant/10 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-2xl">how_to_reg</span>
-                    <h2 class="font-headline-md text-lg text-on-surface">Antrian Pendaftaran Pending</h2>
+        <div class="mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-amber-600 text-2xl">how_to_reg</span>
+                <div>
+                    <h2 class="font-bold text-sm text-slate-800">Antrian Pendaftaran Pending</h2>
+                    <p class="text-xs text-slate-600">Periksa Kartu Tanda Mahasiswa (KTM) dan setujui/tolak pendaftaran.</p>
                 </div>
-                <span class="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold rounded-full">
-                    {{ $pendingMembers->total() }} Pendaftaran Menunggu
-                </span>
             </div>
-
-            @if($pendingMembers->isEmpty())
-                <div class="p-12 text-center">
-                    <span class="material-symbols-outlined text-slate-300 text-6xl mb-3">verified</span>
-                    <h3 class="font-bold text-slate-700 text-base mb-1">Tidak Ada Antrian Verifikasi</h3>
-                    <p class="text-xs text-slate-400">Seluruh pendaftaran anggota baru telah terverifikasi atau tidak ada data yang cocok dengan pencarian Anda.</p>
-                </div>
-            @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
-                                <th class="p-4 pl-6">Calon Anggota</th>
-                                <th class="p-4">Peran & Prodi</th>
-                                <th class="p-4">Identitas (NIM/NIP)</th>
-                                <th class="p-4">Bukti Identitas</th>
-                                <th class="p-4 text-center">Aksi Verifikasi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @foreach($pendingMembers as $user)
-                                <tr class="hover:bg-slate-50/80 transition-colors">
-                                    <!-- User Info -->
-                                    <td class="p-4 pl-6">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-full bg-sky-100 text-sky-700 font-bold flex items-center justify-center shrink-0 uppercase">
-                                                {{ substr($user->name, 0, 2) }}
-                                            </div>
-                                            <div>
-                                                <p class="font-bold text-slate-800">{{ $user->name }}</p>
-                                                <p class="text-xs text-slate-400">{{ $user->email }} • {{ $user->no_hp }}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <!-- Role & Prodi -->
-                                    <td class="p-4">
-                                        <div class="space-y-1">
-                                            <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase {{ $user->isMahasiswa() ? 'bg-sky-50 text-sky-700 border border-sky-200' : 'bg-purple-50 text-purple-700 border border-purple-200' }}">
-                                                {{ $user->role->role_name ?? '-' }}
-                                            </span>
-                                            <p class="text-xs text-slate-600 font-medium">
-                                                @if($user->isMahasiswa())
-                                                    {{ $user->mahasiswa->prodi->nama_prodi ?? '-' }} (Sem {{ $user->mahasiswa->semester ?? '-' }})
-                                                @elseif($user->isDosen())
-                                                    {{ $user->dosen->prodi->nama_prodi ?? '-' }}
-                                                @else
-                                                    -
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </td>
-
-                                    <!-- Identitas -->
-                                    <td class="p-4 font-mono text-xs font-semibold text-slate-700">
-                                        @if($user->isMahasiswa())
-                                            NIM: {{ $user->mahasiswa->nim ?? '-' }}
-                                        @elseif($user->isDosen())
-                                            NIP: {{ $user->dosen->nip ?? '-' }}
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-
-                                    <!-- Preview KTM -->
-                                    <td class="p-4">
-                                        @if(!empty($user->foto_ktm))
-                                            <button type="button" 
-                                                    onclick="previewKtm('{{ route('petugas.verifikasi.ktm', $user->user_id) }}', '{{ e($user->name) }}')"
-                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all">
-                                                <span class="material-symbols-outlined text-[16px]">badge</span>
-                                                Lihat KTM
-                                            </button>
-                                        @else
-                                            <span class="text-xs text-slate-400 italic">Tanpa Berkas</span>
-                                        @endif
-                                    </td>
-
-                                    <!-- Action Buttons -->
-                                    <td class="p-4 text-center">
-                                        <div class="flex items-center justify-center gap-2">
-                                            <!-- Approve Form -->
-                                            <form action="{{ route('petugas.verifikasi.approve', $user->user_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui akun {{ e($user->name) }}?')">
-                                                @csrf
-                                                <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1">
-                                                    <span class="material-symbols-outlined text-[16px]">check</span>
-                                                    Setujui
-                                                </button>
-                                            </form>
-
-                                            <!-- Reject Button -->
-                                            <button type="button" 
-                                                    onclick="openRejectModal('{{ $user->user_id }}', '{{ e($user->name) }}')"
-                                                    class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-xl transition-all flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-[16px]">close</span>
-                                                Tolak
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination Links -->
-                <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-                    {{ $pendingMembers->links() }}
-                </div>
-            @endif
+            <span class="px-3 py-1 bg-amber-100 text-amber-900 border border-amber-300 text-xs font-extrabold rounded-full whitespace-nowrap">
+                {{ $pendingMembers->total() }} Pendaftaran Menunggu
+            </span>
         </div>
+
+        <x-table :pagination="$pendingMembers->hasPages() ? $pendingMembers->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Calon Anggota</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Peran & Prodi</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Identitas (NIM/NIP)</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Bukti Identitas</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap w-48">Aksi Verifikasi</th>
+            </x-slot>
+
+            @forelse($pendingMembers as $user)
+                <tr class="even:bg-slate-50/40 hover:bg-amber-50/30 transition-colors duration-150 group">
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-800 font-bold flex items-center justify-center text-xs uppercase border border-sky-200 shadow-xs">
+                                {{ substr($user->name, 0, 2) }}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-900 text-sm group-hover:text-sky-800 transition-colors">{{ $user->name }}</span>
+                                <span class="text-xs text-slate-500 font-medium">{{ $user->email }} • {{ $user->no_hp }}</span>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        <div class="space-y-1">
+                            <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $user->isMahasiswa() ? 'bg-sky-100 text-sky-800 border border-sky-200' : 'bg-purple-100 text-purple-800 border border-purple-200' }}">
+                                {{ $user->role->role_name ?? '-' }}
+                            </span>
+                            <p class="text-xs text-slate-600 font-semibold">
+                                @if($user->isMahasiswa())
+                                    {{ $user->mahasiswa->prodi->nama_prodi ?? '-' }} (Sem {{ $user->mahasiswa->semester ?? '-' }})
+                                @elseif($user->isDosen())
+                                    {{ $user->dosen->prodi->nama_prodi ?? '-' }}
+                                @else
+                                    -
+                                @endif
+                            </p>
+                        </div>
+                    </td>
+
+                    <td class="px-8 py-5 font-mono text-xs font-bold text-slate-800 whitespace-nowrap">
+                        @if($user->isMahasiswa())
+                            NIM: {{ $user->mahasiswa->nim ?? '-' }}
+                        @elseif($user->isDosen())
+                            NIP: {{ $user->dosen->nip ?? '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
+
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @if(!empty($user->foto_ktm))
+                            <button type="button" 
+                                    onclick="previewKtm('{{ route('petugas.verifikasi.ktm', $user->user_id) }}', '{{ e($user->name) }}')"
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200">
+                                <span class="material-symbols-outlined text-[16px]">badge</span>
+                                Lihat KTM
+                            </button>
+                        @else
+                            <span class="text-xs text-slate-400 italic">Tanpa Berkas</span>
+                        @endif
+                    </td>
+
+                    <td class="px-8 py-5 text-center whitespace-nowrap">
+                        <div class="flex items-center justify-center gap-2">
+                            <form action="{{ route('petugas.verifikasi.approve', $user->user_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui akun {{ e($user->name) }}?')">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1 active:scale-95">
+                                    <span class="material-symbols-outlined text-[16px]">check</span>
+                                    Setujui
+                                </button>
+                            </form>
+
+                            <button type="button" 
+                                    onclick="openRejectModal('{{ $user->user_id }}', '{{ e($user->name) }}')"
+                                    class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-xl transition-all flex items-center gap-1 active:scale-95">
+                                <span class="material-symbols-outlined text-[16px]">close</span>
+                                Tolak
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-8 py-14 text-center">
+                        <span class="material-symbols-outlined text-slate-300 text-6xl mb-2">verified</span>
+                        <p class="font-bold text-slate-700 text-sm">Tidak Ada Antrian Verifikasi</p>
+                        <p class="text-xs text-slate-400">Seluruh pendaftaran anggota baru telah terverifikasi atau tidak ada data yang cocok dengan pencarian Anda.</p>
+                    </td>
+                </tr>
+            @endforelse
+        </x-table>
     </main>
 
     <!-- MODAL PREVIEW KTM -->

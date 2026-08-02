@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Booking extends Model
 {
@@ -30,25 +31,49 @@ class Booking extends Model
      */
     public static function checkExpiredBookings()
     {
-        $expiredBookings = self::with('collection.book')
+        $expiredBookingIds = self::query()
             ->where('status', 'disetujui')
             ->whereNotNull('batas_waktu_ambil')
             ->where('batas_waktu_ambil', '<', now())
-            ->get();
+            ->pluck('booking_id');
 
-        if ($expiredBookings->isNotEmpty()) {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($expiredBookings) {
-                foreach ($expiredBookings as $booking) {
-                    $booking->update([
-                        'status' => 'dibatalkan',
-                        'note' => 'Booking dibatalkan otomatis karena melewati batas waktu pengambilan.'
-                    ]);
+        foreach ($expiredBookingIds as $bookingId) {
+            $releasedCollectionId = DB::transaction(function () use ($bookingId) {
+                // Re-check status after taking the booking lock. An approval,
+                // cancellation, or realization may have won the race.
+                $booking = self::query()
+                    ->whereKey($bookingId)
+                    ->lockForUpdate()
+                    ->first();
 
-                    if ($booking->collection) {
-                        $booking->collection->syncBackingStock(1);
-                    }
+                if (! $booking
+                    || $booking->status !== 'disetujui'
+                    || ! $booking->batas_waktu_ambil
+                    || $booking->batas_waktu_ambil->isFuture()) {
+                    return null;
                 }
+
+                $collection = Collection::query()
+                    ->whereKey($booking->koleksi_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                $booking->update([
+                    'status' => 'dibatalkan',
+                    'note' => 'Booking dibatalkan otomatis karena melewati batas waktu pengambilan.',
+                    'batas_waktu_ambil' => null,
+                ]);
+
+                if ($collection) {
+                    $collection->syncBackingStock(1);
+                }
+
+                return $collection?->koleksi_id;
             });
+
+            if ($releasedCollectionId) {
+                Antrian::checkAndNotifyAvailableQueue($releasedCollectionId);
+            }
         }
     }
 

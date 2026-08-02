@@ -130,93 +130,80 @@
         }
     </style>
 </head>
-<body class="font-body-md text-body-md antialiased min-h-screen flex">
+<body class="font-body-md text-body-md antialiased min-h-screen">
     @include('dosen.layouts.sidebar')
 
-    <main class="ml-64 flex-1 p-margin-desktop bg-[#f8faff] min-h-screen">
+    <main class="ml-64 p-margin-desktop bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
             'title' => 'Riwayat Aktivitas Perpustakaan',
             'subtitle' => 'Daftar riwayat peminjaman buku fisik dan pembacaan arsip digital secara online.'
         ])
 
         {{-- Tampilan Desktop Tabel --}}
-        <section class="hidden lg:block bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku / Arsip</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tipe Aktivitas</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Pinjam / Akses</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tgl Kembali</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Keterangan / Kondisi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($history as $item)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors">
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $item['judul'] }}</span>
-                                        <span class="text-xs text-outline">
-                                            {{ $item['penulis'] }}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($item['tipe_riwayat'] === 'fisik')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide border border-blue-200">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
-                                            Buku Fisik
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide border border-emerald-200">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                            Baca Online (Digital)
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant font-semibold">
-                                    @if($item['tipe_riwayat'] === 'fisik')
-                                        {{ $item['tgl_pinjam'] ? \Carbon\Carbon::parse($item['tgl_pinjam'])->translatedFormat('d M Y') : '-' }}
-                                    @else
-                                        {{ $item['tgl_pinjam'] ? \Carbon\Carbon::parse($item['tgl_pinjam'])->translatedFormat('d M Y, H:i') : '-' }} WIB
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant font-semibold">
-                                    @if($item['tipe_riwayat'] === 'fisik')
-                                        {{ $item['tgl_kembali'] ? \Carbon\Carbon::parse($item['tgl_kembali'])->translatedFormat('d M Y') : '-' }}
-                                    @else
-                                        @if($item['tgl_kembali'])
-                                            {{ \Carbon\Carbon::parse($item['tgl_kembali'])->translatedFormat('d M Y, H:i') }} WIB
-                                        @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide border border-emerald-200 animate-pulse">
-                                                Membaca
-                                            </span>
-                                        @endif
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant font-medium">
-                                    {{ $item['keterangan'] }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-12 text-center text-outline font-medium">
-                                    Belum ada riwayat aktivitas peminjaman fisik maupun baca online.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <x-table :pagination="$history->hasPages() ? $history->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Buku / Arsip</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Aktivitas</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Pinjam</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Kembali</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Keterangan</th>
+            </x-slot>
 
-            @if($history->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $history->links() }}
-                </div>
-            @endif
-        </section>
+            @forelse($history as $item)
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
+                    <td class="px-8 py-5">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $item['judul'] }}</span>
+                            <span class="text-xs font-semibold text-slate-500 mt-0.5">
+                                {{ $item['penulis'] }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @if($item['tipe_riwayat'] === 'fisik')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-sky-600 mr-2"></span>
+                                Buku Fisik
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
+                                Baca Online
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        @if($item['tipe_riwayat'] === 'fisik')
+                            {{ $item['tgl_pinjam'] ? \Carbon\Carbon::parse($item['tgl_pinjam'])->translatedFormat('d M Y') : '-' }}
+                        @else
+                            {{ $item['tgl_pinjam'] ? \Carbon\Carbon::parse($item['tgl_pinjam'])->translatedFormat('d M Y, H:i') : '-' }} WIB
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-900 font-bold whitespace-nowrap">
+                        @if($item['tipe_riwayat'] === 'fisik')
+                            {{ $item['tgl_kembali'] ? \Carbon\Carbon::parse($item['tgl_kembali'])->translatedFormat('d M Y') : '-' }}
+                        @else
+                            @if($item['tgl_kembali'])
+                                {{ \Carbon\Carbon::parse($item['tgl_kembali'])->translatedFormat('d M Y, H:i') }} WIB
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wide border border-emerald-200 animate-pulse">
+                                    Membaca
+                                </span>
+                            @endif
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-700 font-semibold whitespace-nowrap">
+                        {{ $item['keterangan'] }}
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-8 py-14 text-center text-slate-500 font-medium">
+                        Belum ada riwayat aktivitas peminjaman fisik maupun baca online.
+                    </td>
+                </tr>
+            @endforelse
+        </x-table>
 
         {{-- Tampilan Mobile Card List --}}
         <div class="lg:hidden space-y-4">

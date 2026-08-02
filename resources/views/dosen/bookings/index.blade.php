@@ -168,98 +168,85 @@
         @endif
 
         {{-- Tampilan Desktop Tabel --}}
-        <section class="hidden lg:block bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-surface-container-low/50">
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Buku</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Tanggal Booking</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest">Keterangan</th>
-                            <th class="px-8 py-4 font-label-md text-outline-variant text-xs uppercase tracking-widest text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/10">
-                        @forelse($bookings as $booking)
-                            <tr class="hover:bg-surface-container-low/30 transition-colors" data-booking-id="{{ $booking->booking_id }}" data-book-title="{{ $booking->collection?->display_title ?? 'Buku' }}" data-booking-status="{{ $booking->status }}">
-                                <td class="px-8 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-on-surface text-sm">{{ $booking->collection?->display_title ?? 'Buku tidak ditemukan' }}</span>
-                                        <span class="text-xs text-outline">
-                                            {{ $booking->collection?->book?->author ?? 'Penulis' }}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm text-on-surface-variant">
-                                    {{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d M Y') }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    @if($booking->status === 'pending')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
-                                            Menunggu Persetujuan
-                                        </span>
-                                    @elseif($booking->status === 'disetujui')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                            Disetujui
-                                        </span>
-                                    @elseif($booking->status === 'dibatalkan')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>
-                                            Ditolak
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
-                                            {{ $booking->status }}
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-xs text-on-surface-variant font-medium">
-                                    @if($booking->note)
-                                        <span class="text-primary font-semibold block mb-1">Catatan:</span>
-                                        {{ $booking->note }}
-                                    @else
-                                        @if($booking->status === 'pending')
-                                            Permintaan Anda sedang ditinjau oleh staf petugas perpustakaan.
-                                        @elseif($booking->status === 'disetujui')
-                                            Buku siap diambil di meja sirkulasi perpustakaan.
-                                        @elseif($booking->status === 'dibatalkan')
-                                            Booking ditolak. Silakan hubungi petugas untuk informasi lebih lanjut.
-                                        @else
-                                            -
-                                        @endif
-                                    @endif
-                                </td>
-                                <td class="px-8 py-5 text-center">
-                                    @if(in_array($booking->status, ['pending', 'disetujui'], true))
-                                        <button type="button" onclick="openCancelModal({{ $booking->booking_id }}, '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}', '{{ $booking->status }}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 transition-all shadow-sm shadow-rose-200">
-                                            <span class="material-symbols-outlined text-[16px]">cancel</span>
-                                            Batalkan
-                                        </button>
-                                    @else
-                                        <span class="text-xs text-outline font-medium">Tidak ada aksi</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-12 text-center text-outline font-medium">
-                                    Anda belum pernah melakukan booking buku online.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <x-table :pagination="$bookings->hasPages() ? $bookings->links() : null">
+            <x-slot name="headers">
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Buku</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Booking</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Keterangan</th>
+                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap">Aksi</th>
+            </x-slot>
 
-            @if($bookings->hasPages())
-                <div class="p-6 border-t border-outline-variant/10 bg-slate-50/50">
-                    {{ $bookings->links() }}
-                </div>
-            @endif
-        </section>
+            @forelse($bookings as $booking)
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group" data-booking-id="{{ $booking->booking_id }}" data-book-title="{{ $booking->collection?->display_title ?? 'Buku' }}" data-booking-status="{{ $booking->status }}">
+                    <td class="px-8 py-5">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $booking->collection?->display_title ?? 'Buku tidak ditemukan' }}</span>
+                            <span class="text-xs font-semibold text-slate-500 mt-0.5">
+                                {{ $booking->collection?->book?->author ?? 'Penulis' }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-sm text-slate-700 font-medium whitespace-nowrap">
+                        {{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d M Y') }}
+                    </td>
+                    <td class="px-8 py-5 whitespace-nowrap">
+                        @if($booking->status === 'pending')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-amber-600 mr-2 animate-pulse"></span>
+                                Menunggu Persetujuan
+                            </span>
+                        @elseif($booking->status === 'disetujui')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
+                                Disetujui
+                            </span>
+                        @elseif($booking->status === 'dibatalkan')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2"></span>
+                                Ditolak
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                {{ $booking->status }}
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 text-xs text-slate-700 font-medium">
+                        @if($booking->note)
+                            <span class="text-teal-700 font-bold block mb-1">Catatan:</span>
+                            {{ $booking->note }}
+                        @else
+                            @if($booking->status === 'pending')
+                                Permintaan Anda sedang ditinjau oleh staf petugas perpustakaan.
+                            @elseif($booking->status === 'disetujui')
+                                Buku siap diambil di meja sirkulasi perpustakaan.
+                            @elseif($booking->status === 'dibatalkan')
+                                Booking ditolak. Silakan hubungi petugas untuk informasi lebih lanjut.
+                            @else
+                                -
+                            @endif
+                        @endif
+                    </td>
+                    <td class="px-8 py-5 text-center whitespace-nowrap">
+                        @if(in_array($booking->status, ['pending', 'disetujui'], true))
+                            <button type="button" onclick="openCancelModal({{ $booking->booking_id }}, '{{ addslashes($booking->collection?->display_title ?? 'Buku') }}', '{{ $booking->status }}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500 text-white font-bold text-xs hover:bg-rose-600 transition-all shadow-xs active:scale-95 shadow-rose-200">
+                                <span class="material-symbols-outlined text-[18px]">cancel</span>
+                                Batalkan
+                            </button>
+                        @else
+                            <span class="text-xs text-slate-400 font-medium">Tidak ada aksi</span>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="px-8 py-14 text-center text-slate-500 font-medium">
+                        Anda belum pernah melakukan booking buku online.
+                    </td>
+                </tr>
+            @endforelse
+        </x-table>
 
         {{-- Tampilan Mobile Card List --}}
         <div class="lg:hidden space-y-4">

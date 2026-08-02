@@ -316,7 +316,7 @@
         <p><b>Petugas Perpustakaan</b></p>
         <div class="ttd-space"></div>
         <p><u>{{ Auth::user()->name }}</u></p>
-        <p>NIP/NIP. -</p>
+        <p>NIP. {{ Auth::user()->petugas?->nip ?: (Auth::user()->dosen?->nip ?: '-') }}</p>
     </div>
 
 </body>
