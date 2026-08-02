@@ -18,7 +18,7 @@
 
 ---
 
-## 1. Pengujian Autentikasi (Auth)
+## 1. Pengujian Autentikasi & Registrasi (Auth & Registration)
 
 ### 1.1 Login
 
@@ -48,9 +48,24 @@
 | TC-AUTH-12 | Dosen akses URL petugas | Login Dosen, akses `/petugas/loans` | Ditolak (403 Forbidden) | ✅ |
 | TC-AUTH-13 | Petugas akses URL admin | Login Petugas, akses `/admin/users` | Ditolak (403 Forbidden) | ✅ |
 
+### 1.4 Registrasi Mandiri & Verifikasi Identitas (KTM / Kartu Pegawai)
+
+| ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
+|---|---|---|---|---|
+| TC-REG-01 | Registrasi Mahasiswa dengan data valid | Nama, email, NIM, prodi, semester, no. HP, foto KTM valid | Akun terbuat dengan status `pending`, notifikasi terkirim ke Petugas/Admin, diarahkan ke Login | ⬜ |
+| TC-REG-02 | Registrasi Dosen dengan data valid | Nama, email, NIP, prodi, no. HP, foto kartu identitas valid | Akun terbuat dengan status `pending`, notifikasi terkirim ke Petugas/Admin | ⬜ |
+| TC-REG-03 | Registrasi dengan NIM/NIP duplikat | NIM/NIP yang sudah terdaftar di sistem | Muncul error validasi "NIM/NIP sudah terdaftar" | ⬜ |
+| TC-REG-04 | Registrasi tanpa upload foto KTM/Kartu Pegawai | Field `foto_ktm` dikosongkan | Muncul validasi "foto KTM wajib diunggah" | ⬜ |
+| TC-REG-05 | Registrasi dengan format file KTM bukan gambar | Upload file `.pdf` atau `.txt` | Muncul validasi "file harus berupa gambar (jpg, png)" | ⬜ |
+| TC-REG-06 | Registrasi dengan ukuran file KTM > 2MB | Upload gambar ukuran > 2MB | Muncul validasi ukuran file maksimal 2MB | ⬜ |
+| TC-REG-07 | Login akun anggota berstatus `pending` (belum diverifikasi) | Email & password anggota yang baru mendaftar | Login berhasil namun muncul notifikasi status verifikasi belum disetujui | ⬜ |
+| TC-REG-08 | Petugas verifikasi (Approve) anggota baru | Klik "Setujui" pada daftar anggota pending | Status anggota berubah `aktif`, anggota dapat menggunakan seluruh layanan | ⬜ |
+| TC-REG-09 | Petugas tolak (Reject) pendaftaran anggota | Klik "Tolak" pada pendaftaran anggota pending | Status pendaftaran ditolak dengan alasan penolakan | ⬜ |
+| TC-REG-10 | Petugas lihat foto KTM pendaftar | Klik ikon/tombol "Lihat KTM" pada tabel anggota | Modal/tab terbuka menampilkan foto KTM pendaftar | ⬜ |
+
 ---
 
-## 2. Pengujian Manajemen Pengguna (Admin)
+## 2. Pengujian Manajemen Pengguna & Akademik (Admin)
 
 ### 2.1 Tambah Pengguna Manual
 
@@ -78,6 +93,15 @@
 | TC-USER-10 | Import dengan file format salah | File `.pdf` atau `.txt` | Muncul error format file tidak valid | ⬜ |
 | TC-USER-11 | Import dengan data duplikat di file | NIM/email yang sudah ada | Baris duplikat diskip/error, sisanya berhasil | ⬜ |
 | TC-USER-12 | Download template import | Klik tombol "Download Template" | File template `.xlsx` berhasil diunduh | ⬜ |
+
+### 2.4 Kelola Program Studi & Jurusan
+
+| ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
+|---|---|---|---|---|
+| TC-PRODI-01 | Tambah Program Studi baru | Nama prodi & jenjang valid | Prodi tersimpan di sistem | ⬜ |
+| TC-PRODI-02 | Edit nama Program Studi | Ubah nama prodi | Nama prodi berhasil diperbarui | ⬜ |
+| TC-PRODI-03 | Tambah Jurusan baru | Nama jurusan valid | Jurusan tersimpan di sistem | ⬜ |
+| TC-PRODI-04 | Hapus Prodi yang tidak digunakan | Klik hapus prodi | Prodi berhasil terhapus | ⬜ |
 
 ---
 
@@ -122,27 +146,29 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-LOAN-01 | Catat peminjaman baru dengan data valid | Anggota valid, buku tersedia, tanggal valid | Peminjaman tersimpan, stok berkurang 1 | ⬜ |
+| TC-LOAN-01 | Catat peminjaman baru dengan data valid | Anggota valid, koleksi buku/arsip tersedia | Peminjaman tersimpan, stok berkurang 1 | ⬜ |
 | TC-LOAN-02 | Catat peminjaman buku stok habis | Pilih buku dengan stok = 0 | Muncul error "stok habis" | ⬜ |
 | TC-LOAN-03 | Catat peminjaman dengan batas waktu sebelum tanggal pinjam | `bts_waktu` < `tgl_pinjam` | Muncul validasi tanggal tidak valid | ⬜ |
-| TC-LOAN-04 | Catat peminjaman anggota yang sudah meminjam buku sama | Anggota + buku yang sama dengan pinjaman aktif | Muncul error duplikasi peminjaman aktif | ⬜ |
+| TC-LOAN-04 | Catat peminjaman anggota yang sudah meminjam koleksi sama | Anggota + koleksi sama dengan pinjaman aktif | Muncul error duplikasi peminjaman aktif | ⬜ |
 | TC-LOAN-05 | Notifikasi WA terkirim setelah peminjaman dicatat | Peminjaman berhasil + WA aktif | Log menunjukkan WA terkirim | ⬜ |
 | TC-LOAN-06 | Sinkronisasi status "terlambat" otomatis | Buka halaman peminjaman | Peminjaman melewati batas waktu berubah jadi "terlambat" | ⬜ |
 | TC-LOAN-07 | Filter peminjaman berdasarkan status | Pilih filter "terlambat" | Hanya tampil data terlambat | ⬜ |
-| TC-LOAN-08 | Pencarian peminjaman berdasarkan nama anggota | Ketik nama anggota di search | Data peminjaman anggota tersebut tampil | ⬜ |
+| TC-LOAN-08 | Pencarian peminjaman (Buku & Laporan PKL/TA) | Ketik nama anggota, NIM, NIP, atau judul Laporan PKL | Data peminjaman ditemukan secara presisi | ⬜ |
 
 ---
 
-## 5. Pengujian Pengembalian Buku (Petugas)
+## 5. Pengujian Pengembalian Buku & Checklist (Petugas)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-RET-01 | Proses pengembalian buku kondisi baik | Semua checklist centang "Baik" | Status berubah "dikembalikan", stok bertambah 1 | ⬜ |
-| TC-RET-02 | Proses pengembalian buku terlambat | Buku terlambat, kondisi baik | Denda keterlambatan otomatis dicatat | ⬜ |
-| TC-RET-03 | Proses pengembalian buku rusak | Ada checklist yang tidak lulus | Wajib isi catatan & jenis sanksi, denda fisik dicatat | ⬜ |
-| TC-RET-04 | Proses pengembalian buku hilang | Checklist "kehilangan" dipilih | Status "kehilangan", stok tidak bertambah | ⬜ |
-| TC-RET-05 | Notifikasi WA antrian tersedia setelah return | Ada antrian menunggu pada buku tersebut | WA dikirim ke anggota berikutnya di antrian | ⬜ |
-| TC-RET-06 | Proses pengembalian buku yang sudah dikembalikan | Buka pinjaman berstatus "dikembalikan" | Muncul error "sudah dikembalikan sebelumnya" | ⬜ |
+| TC-RET-01 | Proses pengembalian buku kondisi baik | Opsi "Ada (Inspeksi Fisik)", semua checklist centang "Baik" | Status berubah "dikembalikan", stok bertambah 1 | ⬜ |
+| TC-RET-02 | Proses pengembalian buku terlambat | Buku terlambat, kondisi baik | Denda keterlambatan otomatis dicatat sesuai aturan | ⬜ |
+| TC-RET-03 | Proses pengembalian buku rusak | Opsi "Ada", 1/lebih checklist di-uncheck | Wajib isi catatan & sanksi fisik, denda terbuat | ⬜ |
+| TC-RET-04 | Proses pengembalian mode **"Buku Hilang"** (Bayar Tunai) | Pilih opsi "Buku Hilang", metode penyelesaian "Uang Tunai" | Checklist fisik tersembunyi, sanksi `kehilangan` terbuat, **stok TIDAK bertambah** | ⬜ |
+| TC-RET-05 | Proses pengembalian mode **"Buku Hilang"** (Ganti Buku Fisik) | Pilih opsi "Buku Hilang", metode penyelesaian "Ganti Buku" | Sanksi `kehilangan` terbuat, **stok bertambah 1** | ⬜ |
+| TC-RET-06 | Placeholder otomatis pada Keterangan Sanksi | Pilih jenis sanksi pada modal pengembalian | Placeholder textarea otomatis menampilkan deskripsi aturan sanksi aktif | ⬜ |
+| TC-RET-07 | Notifikasi WA antrian tersedia setelah return | Ada antrian menunggu pada buku tersebut | WA dikirim ke anggota berikutnya di antrian | ⬜ |
+| TC-RET-08 | Proses pengembalian buku yang sudah dikembalikan | Buka pinjaman berstatus "dikembalikan" | Muncul error "sudah dikembalikan sebelumnya" | ⬜ |
 
 ---
 
@@ -150,24 +176,38 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-FINE-01 | Lihat daftar denda yang belum dibayar | Buka halaman Denda | Semua denda "belum_dibayar" tampil | ⬜ |
-| TC-FINE-02 | Tandai denda sebagai lunas | Klik "Tandai Lunas" | Status denda berubah menjadi "lunas" | ⬜ |
-| TC-FINE-03 | Tambah denda manual oleh petugas | Isi form denda manual | Denda tersimpan | ⬜ |
-| TC-FINE-04 | Aturan denda keterlambatan per hari | Atur Rp 1.000/hari, kembalikan 5 hari terlambat | Denda otomatis = Rp 5.000 | ⬜ |
-| TC-FINE-05 | Aturan denda keterlambatan flat | Atur Rp 10.000 flat, kembalikan kapanpun terlambat | Denda = Rp 10.000 terlepas dari jumlah hari | ⬜ |
+| TC-FINE-01 | Lihat daftar denda yang belum dibayar | Buka halaman Denda | Semua denda "belum_dibayar" tampil dengan badge terformat rapi | ⬜ |
+| TC-FINE-02 | Penampilan nama koleksi (Buku Umum & Laporan PKL/TA) | Buka halaman Denda pada peminjaman Laporan PKL/TA | Judul Laporan PKL/TA tampil dengan benar (bukan `-`) beserta badge kategorinya | ⬜ |
+| TC-FINE-03 | Pencarian denda Laporan PKL / Tugas Akhir | Ketik judul Laporan PKL/TA di pencarian denda | Denda terkait Laporan PKL/TA berhasil ditemukan | ⬜ |
+| TC-FINE-04 | Modal Detail Keterangan Denda | Klik tombol Info (i) pada baris denda | Modal menampilkan detail anggota, judul koleksi, jenis, penyelesaian, dan rincian aturan | ⬜ |
+| TC-FINE-05 | Tandai denda sebagai lunas | Klik "Tandai Lunas" | Status denda berubah menjadi "lunas", notifikasi terkirim | ⬜ |
+| TC-FINE-06 | Tambah denda manual oleh petugas | Isi form denda manual | Denda tersimpan | ⬜ |
+| TC-FINE-07 | Aturan denda keterlambatan per hari | Atur Rp 1.000/hari, kembalikan 5 hari terlambat | Denda otomatis = Rp 5.000 | ⬜ |
+| TC-FINE-08 | Aturan denda keterlambatan flat | Atur Rp 10.000 flat, kembalikan kapanpun terlambat | Denda = Rp 10.000 terlepas dari jumlah hari | ⬜ |
 
 ---
 
-## 7. Pengujian Booking & Antrian (Petugas & Anggota)
+## 7. Pengujian Pengaturan Return (Petugas)
 
-### 7.1 Booking (Anggota)
+| ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
+|---|---|---|---|---|
+| TC-SET-RET-01 | Tambah item checklist pengembalian baru | Nama item & deskripsi valid | Item checklist tersimpan & tampil di modal pengembalian | ⬜ |
+| TC-SET-RET-02 | Edit item checklist pengembalian | Ubah nama item atau sort order | Item checklist berhasil diperbarui | ⬜ |
+| TC-SET-RET-03 | Toggle aktif/nonaktif item checklist | Matikan toggle `is_active` | Item checklist non-aktif tidak muncul di modal pengembalian | ⬜ |
+| TC-SET-RET-04 | Edit deskripsi & metode default Aturan Sanksi | Ubah deskripsi sanksi `kehilangan` | Deskripsi baru tersimpan & menjadi placeholder pada modal pengembalian | ⬜ |
+
+---
+
+## 8. Pengujian Booking & Antrian (Petugas & Anggota)
+
+### 8.1 Booking (Anggota)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
 | TC-BKG-01 | Mahasiswa buat booking buku tersedia | Pilih buku, ajukan booking | Booking tersimpan dengan status "menunggu" | ⬜ |
 | TC-BKG-02 | Mahasiswa batalkan booking | Klik tombol batalkan | Status booking berubah jadi "dibatalkan" | ⬜ |
 
-### 7.2 Kelola Booking (Petugas)
+### 8.2 Kelola Booking (Petugas)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -175,7 +215,7 @@
 | TC-BKG-04 | Petugas tolak booking | Klik "Tolak" pada booking | Status booking berubah "ditolak" | ⬜ |
 | TC-BKG-05 | Petugas realisasi booking jadi peminjaman | Klik "Realisasi" | Booking jadi peminjaman aktif | ⬜ |
 
-### 7.3 Antrian
+### 8.3 Antrian
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -184,9 +224,9 @@
 
 ---
 
-## 8. Pengujian Arsip Digital (Petugas & Mahasiswa)
+## 9. Pengujian Arsip Digital & Katalog Publik (Petugas, Mahasiswa & Dosen)
 
-### 8.1 Upload Arsip (Mahasiswa)
+### 9.1 Upload Arsip (Mahasiswa)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -196,7 +236,7 @@
 | TC-ARSIP-04 | Mahasiswa edit arsip yang belum diverifikasi | Ubah judul atau file | Data berhasil diperbarui | ⬜ |
 | TC-ARSIP-05 | Mahasiswa hapus arsip milik sendiri | Klik hapus | Arsip terhapus | ⬜ |
 
-### 8.2 Verifikasi Arsip (Petugas)
+### 9.2 Verifikasi Arsip (Petugas)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -206,17 +246,17 @@
 | TC-ARSIP-09 | Download file arsip | Klik download pada arsip | File PDF berhasil diunduh | ⬜ |
 | TC-ARSIP-10 | Import arsip via Excel (batch) | File `.xlsx` template arsip | Semua arsip berhasil diimpor | ⬜ |
 
-### 8.3 Katalog Arsip (Dosen & Mahasiswa)
+### 9.3 Katalog Publik, Stream PDF & Log Pembacaan
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
 | TC-ARSIP-11 | Lihat katalog arsip yang sudah terverifikasi | Buka halaman katalog arsip | Hanya arsip terverifikasi yang tampil | ⬜ |
-| TC-ARSIP-12 | Preview PDF arsip di browser | Klik preview | PDF terbuka di browser / tab baru | ⬜ |
-| TC-ARSIP-13 | Baca arsip full & log terbaca | Buka halaman baca penuh | Log pembacaan tercatat | ⬜ |
+| TC-ARSIP-12 | Stream PDF arsip di browser | Klik tombol "Baca Full / Stream" | PDF terbuka dalam viewer terproteksi (`/stream/{slug}.pdf`) | ⬜ |
+| TC-ARSIP-13 | Pencatatan Log Pembacaan saat tab ditutup | Buka dokumen lalu tutup tab browser | Event `closeReadLog` mencatat durasi & aktivitas pembacaan di server | ⬜ |
 
 ---
 
-## 9. Pengujian Usulan Buku (Rekomendasi)
+## 10. Pengujian Usulan Buku (Rekomendasi)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -227,7 +267,7 @@
 
 ---
 
-## 10. Pengujian Voting Buku (Petugas, Dosen & Mahasiswa)
+## 11. Pengujian Voting Buku (Petugas, Dosen & Mahasiswa)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -239,20 +279,44 @@
 
 ---
 
-## 11. Pengujian Notifikasi Otomatis (Scheduler)
+## 12. Pengujian Notifikasi Multichannel (WA, Telegram, Email & Lonceng)
+
+### 12.1 Notifikasi WhatsApp (Fonnte)
 
 | ID | Skenario Uji | Kondisi | Output yang Diharapkan | Status |
 |---|---|---|---|---|
 | TC-NOTIF-01 | WA terkirim saat peminjaman baru dicatat | Fitur WA aktif, no. HP valid, Fonnte terhubung | Pesan konfirmasi pinjam terkirim via WA | ⬜ |
-| TC-NOTIF-02 | WA H-1 jatuh tempo terkirim via scheduler | Ada peminjaman jatuh tempo besok, scheduler jalan | Pesan pengingat H-1 terkirim | ⬜ |
-| TC-NOTIF-03 | WA status terlambat terkirim via scheduler | Ada peminjaman berstatus "terlambat", scheduler jalan | Pesan keterlambatan terkirim | ⬜ |
+| TC-NOTIF-02 | WA H-1 jatuh tempo terkirim via scheduler | Ada peminjaman jatuh tempo besok, scheduler jalan | Pesan pengingat H-1 terkirim via WA | ⬜ |
+| TC-NOTIF-03 | WA status terlambat terkirim via scheduler | Ada peminjaman berstatus "terlambat", scheduler jalan | Pesan keterlambatan terkirim via WA | ⬜ |
 | TC-NOTIF-04 | WA di-skip saat fitur dinonaktifkan | `wa_notification_enabled = false` | Tidak ada WA yang dikirim, log muncul "di-skip" | ⬜ |
-| TC-NOTIF-05 | WA gagal jika token Fonnte kosong | Token dikosongkan di pengaturan | Log warning "token belum dikonfigurasi" | ⬜ |
-| TC-NOTIF-06 | Test kirim WA dari halaman pengaturan | Isi no. HP & pesan, klik "Test Kirim" | Pesan WA terkirim ke nomor yang diinput | ⬜ |
+
+### 12.2 Notifikasi Bot Telegram
+
+| ID | Skenario Uji | Kondisi | Output yang Diharapkan | Status |
+|---|---|---|---|---|
+| TC-NOTIF-05 | Telegram terkirim saat transaksi/pendaftaran | Fitur Telegram aktif, Chat ID terhubung | Pesan notifikasi terkirim via Bot Telegram | ⬜ |
+| TC-NOTIF-06 | Test kirim Telegram dari halaman pengaturan | Isi Chat ID & pesan, klik "Test Kirim" | Pesan uji coba berhasil masuk di aplikasi Telegram | ⬜ |
+| TC-NOTIF-07 | Telegram di-skip saat fitur dinonaktifkan | `telegram_notification_enabled = false` | Tidak ada pesan Telegram dikirim | ⬜ |
+
+### 12.3 Notifikasi Email SMTP
+
+| ID | Skenario Uji | Kondisi | Output yang Diharapkan | Status |
+|---|---|---|---|---|
+| TC-NOTIF-08 | Email konfirmasi/pengingat terkirim | Mailer SMTP terkonfigurasi | Email otomatis masuk ke Inbox user | ⬜ |
+| TC-NOTIF-09 | Test kirim email dari halaman pengaturan | Isi email tujuan, subject, body, klik "Test Kirim" | Email uji coba berhasil diterima di inbox | ⬜ |
+
+### 12.4 Notifikasi In-App Lonceng (Bell Feed)
+
+| ID | Skenario Uji | Kondisi | Output yang Diharapkan | Status |
+|---|---|---|---|---|
+| TC-NOTIF-10 | Real-time counter unread pada ikon lonceng | Ada notifikasi baru masuk | Counter merah di lonceng bertambah secara real-time (`/notifications/feed`) | ⬜ |
+| TC-NOTIF-11 | Klik item notifikasi lonceng | Klik salah satu notifikasi di feed | Notifikasi ditandai dibaca (`is_read = true`) dan diarahkan ke halaman tujuan | ⬜ |
+| TC-NOTIF-12 | Tandai semua notifikasi dibaca | Klik "Tandai Semua Dibaca" | Counter unread menjadi 0 dan seluruh notifikasi bertanda dibaca | ⬜ |
+| TC-NOTIF-13 | Hapus notifikasi lonceng | Klik hapus pada salah satu notifikasi | Notifikasi terhapus dari daftar | ⬜ |
 
 ---
 
-## 12. Pengujian Laporan & Ekspor Data (Petugas)
+## 13. Pengujian Laporan & Ekspor Data (Petugas)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -265,34 +329,40 @@
 
 ---
 
-## 13. Pengujian Pengaturan Sistem (Admin)
+## 14. Pengujian Pengaturan Sistem (Admin)
 
-### 13.1 Pengaturan WhatsApp
+### 14.1 Pengaturan WhatsApp
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
 | TC-SET-01 | Simpan token Fonnte valid | Token valid diinput | Pengaturan tersimpan, notifikasi sukses | ⬜ |
 | TC-SET-02 | Toggle aktif/nonaktif notifikasi WA | Ubah toggle | Pengaturan tersimpan | ⬜ |
 
-### 13.2 Pengaturan Email SMTP
+### 14.2 Pengaturan Bot Telegram
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-SET-03 | Simpan pengaturan SMTP valid | Host, port, kredensial valid | Pengaturan tersimpan | ⬜ |
-| TC-SET-04 | Test kirim email dari form pengaturan | Isi email tujuan & pesan | Email terkirim ke tujuan | ⬜ |
-| TC-SET-05 | Simpan pengaturan SMTP dengan format email salah | `from_address` bukan format email | Muncul validasi format email | ⬜ |
+| TC-SET-03 | Simpan Token Bot & Username Telegram | Token valid & username bot diinput | Pengaturan tersimpan | ⬜ |
+| TC-SET-04 | Toggle aktif/nonaktif notifikasi Telegram | Ubah toggle | Pengaturan tersimpan | ⬜ |
 
-### 13.3 Pengaturan Surat Tanda Terima
+### 14.3 Pengaturan Email SMTP
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-SET-06 | Simpan pengaturan template surat | Ubah nama penerima, NIP, kop surat | Pengaturan tersimpan | ⬜ |
-| TC-SET-07 | Preview surat tanda terima | Klik "Preview" | PDF preview surat terbuka di browser | ⬜ |
-| TC-SET-08 | Upload logo kop surat | File `.png` valid | Logo tersimpan & muncul di preview | ⬜ |
+| TC-SET-05 | Simpan pengaturan SMTP valid | Host, port, kredensial valid | Pengaturan tersimpan | ⬜ |
+| TC-SET-06 | Simpan pengaturan SMTP dengan format email salah | `from_address` bukan format email | Muncul validasi format email | ⬜ |
+
+### 14.4 Pengaturan Surat Tanda Terima & Kop Surat
+
+| ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
+|---|---|---|---|---|
+| TC-SET-07 | Simpan pengaturan template surat | Ubah nama penerima, NIP, kop surat | Pengaturan tersimpan | ⬜ |
+| TC-SET-08 | Preview Surat Tanda Terima real-time | Klik "Preview" | PDF preview surat terbuka di browser dengan inputan saat ini | ⬜ |
+| TC-SET-09 | Upload logo kop surat | Upload file `.png` valid | Logo tersimpan & muncul di preview kop surat | ⬜ |
 
 ---
 
-## 14. Pengujian Log Aktivitas (Admin)
+## 15. Pengujian Log Aktivitas (Admin)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -301,7 +371,7 @@
 
 ---
 
-## 15. Pengujian Profil Pengguna (Semua Role)
+## 16. Pengujian Profil Pengguna (Semua Role)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
@@ -316,22 +386,23 @@
 
 | Modul | Total TC | Berhasil (✅) | Gagal (❌) | Belum Diuji (⬜) |
 |---|---|---|---|---|
-| Autentikasi | 13 | | | |
-| Manajemen Pengguna | 12 | | | |
-| Manajemen Buku & Koleksi | 12 | | | |
-| Peminjaman Buku | 8 | | | |
-| Pengembalian Buku | 6 | | | |
-| Denda & Sanksi | 5 | | | |
-| Booking & Antrian | 7 | | | |
-| Arsip Digital | 13 | | | |
-| Usulan Buku | 4 | | | |
-| Voting Buku | 5 | | | |
-| Notifikasi Otomatis | 6 | | | |
-| Laporan & Ekspor | 6 | | | |
-| Pengaturan Sistem | 8 | | | |
-| Log Aktivitas | 2 | | | |
-| Profil Pengguna | 4 | | | |
-| **TOTAL** | **111** | | | |
+| Autentikasi & Registrasi | 23 | 13 | 0 | 10 |
+| Manajemen Pengguna & Akademik | 16 | 0 | 0 | 16 |
+| Manajemen Buku & Koleksi | 12 | 0 | 0 | 12 |
+| Peminjaman Buku | 8 | 0 | 0 | 8 |
+| Pengembalian Buku & Checklist | 8 | 0 | 0 | 8 |
+| Denda & Sanksi | 8 | 0 | 0 | 8 |
+| Pengaturan Return | 4 | 0 | 0 | 4 |
+| Booking & Antrian | 7 | 0 | 0 | 7 |
+| Arsip Digital & Katalog Publik | 13 | 0 | 0 | 13 |
+| Usulan Buku | 4 | 0 | 0 | 4 |
+| Voting Buku | 5 | 0 | 0 | 5 |
+| Notifikasi Multichannel | 13 | 0 | 0 | 13 |
+| Laporan & Ekspor | 6 | 0 | 0 | 6 |
+| Pengaturan Sistem | 9 | 0 | 0 | 9 |
+| Log Aktivitas | 2 | 0 | 0 | 2 |
+| Profil Pengguna | 4 | 0 | 0 | 4 |
+| **TOTAL** | **142** | **13** | **0** | **129** |
 
 ---
 
@@ -347,4 +418,4 @@
 
 ---
 
-*Dokumen ini dibuat untuk keperluan pengujian sistem pada Tugas Akhir Semester 6 Program Studi Teknologi Informasi POLNEP.*
+*Dokumen ini diperbarui untuk pengujian ulang fitur Sirkulasi, Pengembalian Buku Hilang, Denda Arsip Digital, Pengaturan Return, Registrasi & Verifikasi Anggota, Notifikasi Multichannel, Stream PDF & Reading Log, serta Manajemen Akademik pada Tugas Akhir Semester 6 Program Studi Teknologi Informasi POLNEP.*

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Loan;
 use App\Models\Penalty;
 use App\Models\PenaltyRule;
+use App\Support\ArsipDigital;
 use Illuminate\Http\Request;
 
 class PenaltyController extends Controller
@@ -42,6 +43,13 @@ class PenaltyController extends Controller
                 })->orWhereHas('loan.collection.book', function ($bq) use ($search) {
                     $bq->where('judul', 'like', "%{$search}%");
                 });
+
+                $matchingCollectionIds = ArsipDigital::matchingCollectionIds($search);
+                if ($matchingCollectionIds !== []) {
+                    $q->orWhereHas('loan', function ($lq) use ($matchingCollectionIds) {
+                        $lq->whereIn('koleksi_id', $matchingCollectionIds);
+                    });
+                }
             });
         }
 

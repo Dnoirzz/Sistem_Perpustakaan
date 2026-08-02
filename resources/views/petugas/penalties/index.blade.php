@@ -181,32 +181,37 @@
                                     </div>
                                 </td>
                                 <td class="px-8 py-5">
-                                    <span class="font-bold text-on-surface text-sm">{{ $penalty->loan?->collection?->book?->judul ?? '-' }}</span>
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-on-surface text-sm">{{ $penalty->loan?->collection?->display_title ?? '-' }}</span>
+                                        @if($penalty->loan?->collection)
+                                            <span class="text-[10px] text-outline font-semibold">{{ $penalty->loan->collection->display_type_label }}</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="px-8 py-5">
                                     @php
                                         $typeColors = [
-                                            'keterlambatan' => 'bg-amber-50 text-amber-700',
-                                            'kehilangan' => 'bg-rose-50 text-rose-700',
-                                            'kerusakan' => 'bg-orange-50 text-orange-700',
+                                            'keterlambatan' => 'bg-amber-50 text-amber-700 border-amber-200/60',
+                                            'kehilangan' => 'bg-rose-50 text-rose-700 border-rose-200/60',
+                                            'kerusakan' => 'bg-orange-50 text-orange-700 border-orange-200/60',
                                         ];
-                                        $color = $typeColors[$penalty->type] ?? 'bg-slate-50 text-slate-700';
+                                        $color = $typeColors[$penalty->type] ?? 'bg-slate-50 text-slate-700 border-slate-200/60';
                                     @endphp
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full {{ $color }} text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full {{ $color }} border text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm">
                                         {{ ucfirst($penalty->type) }}
                                     </span>
                                 </td>
                                 <td class="px-8 py-5">
                                     @php
                                         $settlementColors = [
-                                            'uang_tunai' => 'bg-sky-50 text-sky-700',
-                                            'denda' => 'bg-sky-50 text-sky-700',
-                                            'ganti_buku' => 'bg-violet-50 text-violet-700',
-                                            'kombinasi' => 'bg-emerald-50 text-emerald-700',
+                                            'uang_tunai' => 'bg-sky-50 text-sky-700 border-sky-200/60',
+                                            'denda' => 'bg-sky-50 text-sky-700 border-sky-200/60',
+                                            'ganti_buku' => 'bg-violet-50 text-violet-700 border-violet-200/60',
+                                            'kombinasi' => 'bg-emerald-50 text-emerald-700 border-emerald-200/60',
                                         ];
-                                        $settlementColor = $settlementColors[$penalty->penalti_type] ?? 'bg-slate-50 text-slate-700';
+                                        $settlementColor = $settlementColors[$penalty->penalti_type] ?? 'bg-slate-50 text-slate-700 border-slate-200/60';
                                     @endphp
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full {{ $settlementColor }} text-[10px] font-bold uppercase tracking-wide">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full {{ $settlementColor }} border text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm">
                                         {{ $penalty->settlement_method_label }}
                                     </span>
                                 </td>
@@ -215,13 +220,13 @@
                                 </td>
                                 <td class="px-8 py-5">
                                     @if($penalty->status === 'belum_dibayar')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span>
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200/60 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                                             Belum Dibayar
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-sm">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                             Lunas
                                         </span>
                                     @endif
@@ -235,7 +240,7 @@
                                             aria-label="Lihat keterangan denda"
                                             data-penalty-info
                                             data-member="{{ $penalty->user->name ?? '-' }}"
-                                            data-book="{{ $penalty->loan?->collection?->book?->judul ?? '-' }}"
+                                            data-book="{{ $penalty->loan?->collection?->display_title ?? '-' }}"
                                             data-type="{{ ucfirst($penalty->type) }}"
                                             data-settlement="{{ $penalty->settlement_method_label }}"
                                             data-amount="Rp {{ number_format($penalty->amount, 0, ',', '.') }}"

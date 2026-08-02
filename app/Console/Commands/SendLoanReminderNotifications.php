@@ -54,7 +54,7 @@ class SendLoanReminderNotifications extends Command
         foreach ($upcomingLoans as $loan) {
             if ($loan->user && !empty($loan->user->no_hp)) {
                 $namaAnggota = $loan->user->name;
-                $judulBuku = $loan->collection->book->judul ?? 'Buku Perpustakaan';
+                $judulBuku = $loan->collection?->display_title ?? 'Buku Perpustakaan';
                 $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
 
                 $message = "Halo, {$namaAnggota}! ⏰\n\n" .
@@ -103,12 +103,12 @@ class SendLoanReminderNotifications extends Command
         foreach ($overdueLoans as $loan) {
             if ($loan->user && !empty($loan->user->no_hp)) {
                 $namaAnggota = $loan->user->name;
-                $judulBuku = $loan->collection->book->judul ?? 'Buku Perpustakaan';
+                $judulBuku = $loan->collection?->display_title ?? 'Buku Perpustakaan';
                 $btsWaktu = Carbon::parse($loan->bts_waktu)->translatedFormat('d M Y');
                 $daysLate = Carbon::parse($loan->bts_waktu)->diffInDays(Carbon::today());
 
                 $message = "Halo, {$namaAnggota}! ⚠️\n\n" .
-                           "Buku yang Anda pinjam telah *MELEWATI BATAS WAKTU* pengembalian (TERLAMBAT):\n" .
+                           "Buku yang Anda pinjam telah *MELEWATI BATAS WAKTU* pengembalian:\n" .
                            "• Judul Buku: *{$judulBuku}*\n" .
                            "• Tanggal Jatuh Tempo: {$btsWaktu}\n" .
                            "• Keterlambatan: *{$daysLate} Hari*\n\n" .
@@ -131,7 +131,7 @@ class SendLoanReminderNotifications extends Command
                 $daysLate = Carbon::parse($loan->bts_waktu)->diffInDays(Carbon::today());
 
                 $tgMessage = "<b>Halo, {$namaAnggota}!</b> ⚠️\n\n" .
-                             "Buku yang Anda pinjam telah <b>MELEWATI BATAS WAKTU</b> pengembalian (TERLAMBAT):\n" .
+                             "Buku yang Anda pinjam telah <b>MELEWATI BATAS WAKTU</b> pengembalian:\n" .
                              "• Judul Buku: <b>{$judulBuku}</b>\n" .
                              "• Tanggal Jatuh Tempo: {$btsWaktu}\n" .
                              "• Keterlambatan: <b>{$daysLate} Hari</b>\n\n" .
