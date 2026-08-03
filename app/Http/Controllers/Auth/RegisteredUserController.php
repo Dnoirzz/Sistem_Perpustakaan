@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Prodi;
 use App\Models\Mahasiswa;
+use App\Models\Dosen;
 use App\Models\NotificationCustom;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;

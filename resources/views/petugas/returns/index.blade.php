@@ -223,6 +223,7 @@
                             <option value="dipinjam" {{ request('status') === 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
                             <option value="terlambat" {{ request('status') === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
                             <option value="dikembalikan" {{ request('status') === 'dikembalikan' ? 'selected' : '' }}>Sudah Dikembalikan</option>
+                            <option value="hilang" {{ request('status') === 'hilang' ? 'selected' : '' }}>Buku Hilang</option>
                         </select>
                     </div>
                     <div class="flex gap-2">
@@ -298,6 +299,11 @@
                             <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
                                 <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
                                 Dikembalikan
+                            </span>
+                        @elseif($loan->status === 'hilang')
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2"></span>
+                                Buku Hilang
                             </span>
                         @else
                             <span class="inline-flex items-center px-3 py-1 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">
@@ -379,27 +385,6 @@
                     @csrf
                     <input type="hidden" id="return-loan-id" name="return_loan_id" value="{{ old('return_loan_id') }}">
 
-                    {{-- Mode Pengembalian Buku --}}
-                    <div class="p-4 bg-slate-50 border border-outline-variant/20 rounded-2xl">
-                        <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Status Pengembalian Buku</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <label class="flex items-center gap-3 p-3 rounded-xl bg-white border border-outline-variant/30 cursor-pointer hover:border-primary transition-all shadow-sm">
-                                <input type="radio" name="is_lost" value="0" id="return-mode-normal" checked class="text-primary focus:ring-primary">
-                                <div>
-                                    <span class="block text-sm font-bold text-on-surface">Ada (Inspeksi Fisik)</span>
-                                    <span class="block text-[11px] text-outline">Buku dikembalikan fisik & diinspeksi</span>
-                                </div>
-                            </label>
-                            <label class="flex items-center gap-3 p-3 rounded-xl bg-white border border-outline-variant/30 cursor-pointer hover:border-rose-400 transition-all shadow-sm">
-                                <input type="radio" name="is_lost" value="1" id="return-mode-lost" class="text-rose-600 focus:ring-rose-500">
-                                <div>
-                                    <span class="block text-sm font-bold text-rose-700">Buku Hilang</span>
-                                    <span class="block text-[11px] text-rose-500 font-medium">Inspeksi dilewati, buat sanksi</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
                     {{-- Checklist Section --}}
                     <div id="checklist-container" class="space-y-4">
                         <div class="flex items-center justify-between">
@@ -433,17 +418,6 @@
                         @endif
                     </div>
 
-                    {{-- Lost Book Alert --}}
-                    <div id="lost-book-alert" class="hidden p-4 bg-rose-50 border border-rose-200 rounded-2xl">
-                        <div class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-rose-600 text-[20px]">menu_book</span>
-                            <div>
-                                <p class="text-sm font-bold text-rose-800">Status: Buku Dilaporkan Hilang</p>
-                                <p class="text-xs text-rose-700 mt-1">Pengecekan fisik buku dilewati. Silakan tentukan metode ganti rugi (ganti tunai / ganti buku baru) di bawah ini.</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <div id="condition-issue-alert" class="hidden p-4 bg-rose-50 border border-rose-200 rounded-2xl">
                         <div class="flex items-start gap-3">
                             <span class="material-symbols-outlined text-rose-600 text-[18px]">report</span>
@@ -455,15 +429,15 @@
                     </div>
 
                     <div>
-                        <label for="return_condition_notes" class="block text-sm font-bold text-on-surface mb-2">Catatan hasil inspeksi / laporan</label>
-                        <textarea id="return_condition_notes" name="return_condition_notes" rows="3" placeholder="Catat kondisi fisik buku atau riwayat kehilangan..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('return_condition_notes') }}</textarea>
+                        <label for="return_condition_notes" class="block text-sm font-bold text-on-surface mb-2">Catatan hasil inspeksi</label>
+                        <textarea id="return_condition_notes" name="return_condition_notes" rows="3" placeholder="Catat kondisi fisik buku yang bermasalah..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('return_condition_notes') }}</textarea>
                     </div>
 
                     <div id="penalty-fields" class="hidden space-y-4 border border-outline-variant/20 rounded-3xl p-5 bg-slate-50/80">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h4 class="text-sm font-bold text-on-surface">Sanksi Tambahan</h4>
-                                <p class="text-xs text-outline">Isi sanksi berdasarkan hasil pemeriksaan atau kehilangan buku.</p>
+                                <p class="text-xs text-outline">Isi sanksi berdasarkan hasil pemeriksaan kerusakan buku.</p>
                             </div>
                             <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold uppercase tracking-wide">
                                 Wajib diisi
@@ -475,7 +449,7 @@
                                 <label for="penalty_type" class="block text-xs font-bold text-on-surface-variant mb-2">Jenis sanksi</label>
                                 <select id="penalty_type" name="penalty_type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
                                     <option value="">Pilih jenis sanksi...</option>
-                                    @foreach($penaltyRules as $code => $rule)
+                                    @foreach($penaltyRules->where('code', 'kerusakan') as $code => $rule)
                                         <option value="{{ $code }}" {{ old('penalty_type') === $code ? 'selected' : '' }}>{{ $rule->rule_name }}</option>
                                     @endforeach
                                 </select>
@@ -538,9 +512,6 @@
         const penaltyRuleMap = @json($penaltyRuleMap);
 
         function resetReturnFormFields() {
-            const normalMode = document.getElementById('return-mode-normal');
-            if (normalMode) normalMode.checked = true;
-
             document.getElementById('return-loan-id').value = '';
             document.getElementById('return_condition_notes').value = '';
             document.getElementById('return_condition_notes').dataset.autoFill = 'false';
@@ -611,9 +582,6 @@
         }
 
         function syncInspectionState() {
-            const isLost = document.getElementById('return-mode-lost')?.checked ?? false;
-            const checklistContainer = document.getElementById('checklist-container');
-            const lostAlert = document.getElementById('lost-book-alert');
             const issueAlert = document.getElementById('condition-issue-alert');
             const penaltyFields = document.getElementById('penalty-fields');
             const notesField = document.getElementById('return_condition_notes');
@@ -621,51 +589,20 @@
             const settlementMethod = document.getElementById('settlement_method');
             const penaltyDescription = document.getElementById('penalty_description');
 
-            if (isLost) {
-                if (checklistContainer) checklistContainer.classList.add('hidden');
-                if (lostAlert) lostAlert.classList.remove('hidden');
-                if (issueAlert) issueAlert.classList.add('hidden');
-                if (penaltyFields) penaltyFields.classList.remove('hidden');
+            const hasIssue = Array.from(document.querySelectorAll('[data-condition-checkbox]')).some((checkbox) => !checkbox.checked);
 
-                if (penaltyType && penaltyType.value !== 'kehilangan' && penaltyRuleMap['kehilangan']) {
-                    penaltyType.value = 'kehilangan';
-                    penaltyType.dataset.autoFill = 'true';
-                }
+            if (issueAlert) issueAlert.classList.toggle('hidden', !hasIssue);
+            if (penaltyFields) penaltyFields.classList.toggle('hidden', !hasIssue);
 
-                if (notesField && (!notesField.value || notesField.dataset.autoFill === 'true')) {
-                    notesField.value = 'Buku dilaporkan hilang oleh peminjam.';
-                    notesField.dataset.autoFill = 'true';
-                }
+            notesField.required = hasIssue;
+            penaltyType.required = hasIssue;
+            settlementMethod.required = hasIssue;
+            if (penaltyDescription) penaltyDescription.required = false;
 
-                notesField.required = true;
-                penaltyType.required = true;
-                settlementMethod.required = true;
-                if (penaltyDescription) penaltyDescription.required = false;
-            } else {
-                if (checklistContainer) checklistContainer.classList.remove('hidden');
-                if (lostAlert) lostAlert.classList.add('hidden');
-
-                const hasIssue = Array.from(document.querySelectorAll('[data-condition-checkbox]')).some((checkbox) => !checkbox.checked);
-
-                if (issueAlert) issueAlert.classList.toggle('hidden', !hasIssue);
-                if (penaltyFields) penaltyFields.classList.toggle('hidden', !hasIssue);
-
-                notesField.required = hasIssue;
-                penaltyType.required = hasIssue;
-                settlementMethod.required = hasIssue;
-                if (penaltyDescription) penaltyDescription.required = false;
-
-                if (!hasIssue) {
-                    if (notesField && (notesField.dataset.autoFill === 'true' || notesField.value === 'Buku dilaporkan hilang oleh peminjam.')) {
-                        notesField.value = '';
-                    }
-                    if (penaltyType && penaltyType.value === 'kehilangan') {
-                        penaltyType.value = '';
-                    }
-                    settlementMethod.value = '';
-                    document.getElementById('penalty_amount').value = '';
-                    if (penaltyDescription) penaltyDescription.value = '';
-                }
+            if (!hasIssue) {
+                settlementMethod.value = '';
+                document.getElementById('penalty_amount').value = '';
+                if (penaltyDescription) penaltyDescription.value = '';
             }
 
             syncPenaltyDefaults();
@@ -701,10 +638,6 @@
         function closeReturnModal() {
             document.getElementById('return-modal').classList.add('hidden');
         }
-
-        document.querySelectorAll('input[name="is_lost"]').forEach((radio) => {
-            radio.addEventListener('change', syncInspectionState);
-        });
 
         document.querySelectorAll('[data-condition-checkbox]').forEach((checkbox) => {
             checkbox.addEventListener('change', syncInspectionState);

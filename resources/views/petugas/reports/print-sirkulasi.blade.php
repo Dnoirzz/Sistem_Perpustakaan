@@ -158,7 +158,15 @@
                     <td class="text-center">{{ $loan->collection?->display_type_label ?: '-' }}</td>
                     <td class="text-center">{{ $loan->tgl_pinjam ? \Carbon\Carbon::parse($loan->tgl_pinjam)->format('d-m-Y') : '-' }}</td>
                     <td class="text-center">{{ $loan->tgl_kembali ? \Carbon\Carbon::parse($loan->tgl_kembali)->format('d-m-Y') : '-' }}</td>
-                    <td class="text-center" style="font-weight: bold; text-transform: uppercase;">{{ $loan->status }}</td>
+                    <td class="text-center" style="font-weight: bold; text-transform: uppercase;">
+                        {{ match ($loan->status) {
+                            'dipinjam' => 'Dipinjam',
+                            'terlambat' => 'Terlambat',
+                            'dikembalikan' => 'Dikembalikan',
+                            'hilang' => 'Buku Hilang',
+                            default => ucfirst((string) $loan->status),
+                        } }}
+                    </td>
                 </tr>
             @empty
                 <tr>

@@ -161,10 +161,17 @@
                     </td>
                     <td class="px-8 py-5 whitespace-nowrap">
                         @if($item['tipe_riwayat'] === 'fisik')
-                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">
-                                <span class="w-2 h-2 rounded-full bg-sky-600 mr-2"></span>
-                                Buku Fisik
-                            </span>
+                            @if(($item['status_peminjaman'] ?? null) === 'hilang')
+                                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                    <span class="w-2 h-2 rounded-full bg-rose-600 mr-2"></span>
+                                    Buku Hilang
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                    <span class="w-2 h-2 rounded-full bg-sky-600 mr-2"></span>
+                                    Buku Fisik
+                                </span>
+                            @endif
                         @else
                             <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
                                 <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
@@ -217,9 +224,15 @@
                         </div>
                         <div>
                             @if($item['tipe_riwayat'] === 'fisik')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide border border-blue-200">
-                                    Buku Fisik
-                                </span>
+                                @if(($item['status_peminjaman'] ?? null) === 'hilang')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide border border-rose-200">
+                                        Buku Hilang
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wide border border-blue-200">
+                                        Buku Fisik
+                                    </span>
+                                @endif
                             @else
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wide border border-emerald-200">
                                     Baca Online

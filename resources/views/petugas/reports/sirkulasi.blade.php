@@ -93,6 +93,7 @@
                         <option value="dipinjam" {{ $status === 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
                         <option value="terlambat" {{ $status === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
                         <option value="dikembalikan" {{ $status === 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
+                        <option value="hilang" {{ $status === 'hilang' ? 'selected' : '' }}>Buku Hilang</option>
                     </select>
                 </div>
                 <div>
@@ -169,6 +170,8 @@
                                         <span class="text-rose-600 uppercase text-[10px]">Terlambat</span>
                                     @elseif($loan->status === 'dikembalikan')
                                         <span class="text-emerald-600 uppercase text-[10px]">Dikembalikan</span>
+                                    @elseif($loan->status === 'hilang')
+                                        <span class="text-rose-600 uppercase text-[10px]">Buku Hilang</span>
                                     @else
                                         <span class="text-blue-600 uppercase text-[10px]">Dipinjam</span>
                                     @endif

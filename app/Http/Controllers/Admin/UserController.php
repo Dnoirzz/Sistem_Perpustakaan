@@ -76,7 +76,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'no_hp' => ['required', 'string', 'max:20'],
+            'no_hp' => ['required', 'digits_between:1,20'],
             'role_id' => ['required', 'exists:roles,role_id'],
         ];
 
@@ -84,14 +84,14 @@ class UserController extends Controller
 
         if ($role) {
             if ($role->role_name === 'mahasiswa') {
-                $rules['nim'] = ['required', 'string', 'max:50', 'unique:mahasiswas,nim'];
+                $rules['nim'] = ['required', 'digits:10', 'unique:mahasiswas,nim'];
                 $rules['prodi_id'] = ['required', 'exists:prodi,prodi_id'];
                 $rules['semester'] = ['required', 'string', 'max:10'];
             } elseif ($role->role_name === 'dosen') {
-                $rules['nip'] = ['required', 'string', 'max:50', 'unique:dosens,nip'];
+                $rules['nip'] = ['required', 'digits:18', 'unique:dosens,nip'];
                 $rules['prodi_id'] = ['required', 'exists:prodi,prodi_id'];
             } elseif ($role->role_name === 'petugas') {
-                $rules['nip'] = ['required', 'string', 'max:50', 'unique:petugas,nip'];
+                $rules['nip'] = ['required', 'digits:18', 'unique:petugas,nip'];
                 $rules['jabatan'] = ['nullable', 'string', 'max:100'];
             }
         }
@@ -151,7 +151,7 @@ class UserController extends Controller
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($user->user_id, 'user_id')],
-            'no_hp' => ['required', 'string', 'max:20'],
+            'no_hp' => ['required', 'digits_between:1,20'],
             'role_id' => ['required', 'exists:roles,role_id'],
         ];
 
@@ -165,16 +165,16 @@ class UserController extends Controller
         if ($newRole) {
             if ($newRole->role_name === 'mahasiswa') {
                 $mhsId = $user->mahasiswa->mhs_id ?? 0;
-                $rules['nim'] = ['required', 'string', 'max:50', Rule::unique('mahasiswas', 'nim')->ignore($mhsId, 'mhs_id')];
+                $rules['nim'] = ['required', 'digits:10', Rule::unique('mahasiswas', 'nim')->ignore($mhsId, 'mhs_id')];
                 $rules['prodi_id'] = ['required', 'exists:prodi,prodi_id'];
                 $rules['semester'] = ['required', 'string', 'max:10'];
             } elseif ($newRole->role_name === 'dosen') {
                 $dosenId = $user->dosen->dosen_id ?? 0;
-                $rules['nip'] = ['required', 'string', 'max:50', Rule::unique('dosens', 'nip')->ignore($dosenId, 'dosen_id')];
+                $rules['nip'] = ['required', 'digits:18', Rule::unique('dosens', 'nip')->ignore($dosenId, 'dosen_id')];
                 $rules['prodi_id'] = ['required', 'exists:prodi,prodi_id'];
             } elseif ($newRole->role_name === 'petugas') {
                 $staffId = $user->petugas->staff_id ?? 0;
-                $rules['nip'] = ['required', 'string', 'max:50', Rule::unique('petugas', 'nip')->ignore($staffId, 'staff_id')];
+                $rules['nip'] = ['required', 'digits:18', Rule::unique('petugas', 'nip')->ignore($staffId, 'staff_id')];
                 $rules['jabatan'] = ['nullable', 'string', 'max:100'];
             }
         }

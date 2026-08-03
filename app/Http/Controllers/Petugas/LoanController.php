@@ -72,7 +72,9 @@ class LoanController extends Controller
         $stats = [
             'active_loans' => Loan::whereIn('status', ['dipinjam', 'terlambat'])->count(),
             'overdue_loans' => Loan::where('status', 'terlambat')->count(),
-            'returned_today' => Loan::whereDate('tgl_kembali', today())->count(),
+            'returned_today' => Loan::where('status', 'dikembalikan')
+                ->whereDate('tgl_kembali', today())
+                ->count(),
             'available_books' => Collection::sum('stock'),
         ];
 

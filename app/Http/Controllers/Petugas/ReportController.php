@@ -390,7 +390,14 @@ class ReportController extends Controller
             $sheet->setCellValue('E' . $rowNum, $loan->tgl_pinjam ? Carbon::parse($loan->tgl_pinjam)->format('d-m-Y') : '-');
             $sheet->setCellValue('F' . $rowNum, $loan->bts_waktu ? Carbon::parse($loan->bts_waktu)->format('d-m-Y') : '-');
             $sheet->setCellValue('G' . $rowNum, $loan->tgl_kembali ? Carbon::parse($loan->tgl_kembali)->format('d-m-Y') : '-');
-            $sheet->setCellValue('H' . $rowNum, strtoupper($loan->status));
+            $statusLabel = match ($loan->status) {
+                'dipinjam' => 'Dipinjam',
+                'terlambat' => 'Terlambat',
+                'dikembalikan' => 'Dikembalikan',
+                'hilang' => 'Buku Hilang',
+                default => ucfirst((string) $loan->status),
+            };
+            $sheet->setCellValue('H' . $rowNum, $statusLabel);
             $rowNum++;
         }
 

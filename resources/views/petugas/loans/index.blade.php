@@ -220,6 +220,7 @@
                             <option value="dipinjam" {{ request('status') === 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
                             <option value="terlambat" {{ request('status') === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
                             <option value="dikembalikan" {{ request('status') === 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
+                            <option value="hilang" {{ request('status') === 'hilang' ? 'selected' : '' }}>Buku Hilang</option>
                         </select>
                     </div>
                     <div class="flex gap-2">
@@ -297,6 +298,11 @@
                             <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
                                 <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
                                 Dikembalikan
+                            </span>
+                        @elseif($loan->status === 'hilang')
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2"></span>
+                                Buku Hilang
                             </span>
                         @else
                             <span class="inline-flex items-center px-3 py-1 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">

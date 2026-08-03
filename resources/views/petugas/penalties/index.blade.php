@@ -64,7 +64,7 @@
     <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('petugas.layouts.header', [
             'title' => 'Denda & Sanksi',
-            'subtitle' => 'Kelola denda keterlambatan, kehilangan, dan kerusakan buku perpustakaan.'
+            'subtitle' => 'Kelola denda keterlambatan, proses buku hilang, dan kerusakan buku perpustakaan.'
         ])
 
         @if(session('success'))
@@ -142,7 +142,7 @@
             </section>
             <a href="{{ route('petugas.penalties.create') }}" class="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all whitespace-nowrap">
                 <span class="material-symbols-outlined text-[18px]">add_circle</span>
-                Buat Denda Manual
+                Proses Buku Hilang
             </a>
         </div>
 
@@ -248,7 +248,6 @@
                             @if($penalty->status === 'belum_dibayar')
                                 <form method="POST" action="{{ route('petugas.penalties.mark-paid', $penalty->penalti_id) }}" onsubmit="return confirm('Tandai denda ini sebagai lunas?')">
                                     @csrf
-                                    @method('PATCH')
                                     <button
                                         type="submit"
                                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-xs active:scale-95 shadow-emerald-200"

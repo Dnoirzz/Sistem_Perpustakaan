@@ -191,6 +191,11 @@
                                    name="no_hp" 
                                    value="{{ old('no_hp') }}" 
                                    required 
+                                   inputmode="numeric"
+                                   pattern="[0-9]{1,20}"
+                                   maxlength="20"
+                                   oninput="this.value=this.value.replace(/[^0-9]/g, '').slice(0, 20)"
+                                   title="Nomor WhatsApp/HP hanya boleh berisi 1 sampai 20 digit angka."
                                    class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
                                    placeholder="08XXXXXXXXXX" />
                             <x-input-error :messages="$errors->get('no_hp')" class="mt-2 text-rose-500 text-xs" />
@@ -245,6 +250,12 @@
                                    name="nim" 
                                    ::required="roleName === 'mahasiswa'"
                                    value="{{ old('nim') }}" 
+                                   inputmode="numeric"
+                                   pattern="[0-9]{10}"
+                                   minlength="10"
+                                   maxlength="10"
+                                   oninput="this.value=this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                                   title="NIM harus berisi 10 digit angka."
                                    class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
                                    placeholder="320231XXXX" />
                             <x-input-error :messages="$errors->get('nim')" class="mt-2 text-rose-500 text-xs" />
@@ -272,7 +283,14 @@
                                    type="text" 
                                    name="nip" 
                                    ::required="roleName === 'dosen'"
+                                   x-bind:disabled="roleName !== 'dosen'"
                                    value="{{ old('nip') }}" 
+                                   inputmode="numeric"
+                                   pattern="[0-9]{18}"
+                                   minlength="18"
+                                   maxlength="18"
+                                   oninput="this.value=this.value.replace(/[^0-9]/g, '').slice(0, 18)"
+                                   title="NIP harus berisi 18 digit angka."
                                    class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
                                    placeholder="1990XXXXXXXXXXXXXXXX" />
                             <x-input-error :messages="$errors->get('nip')" class="mt-2 text-rose-500 text-xs" />
@@ -287,7 +305,14 @@
                                    type="text" 
                                    name="nip" 
                                    ::required="roleName === 'petugas'"
+                                   x-bind:disabled="roleName !== 'petugas'"
                                    value="{{ old('nip') }}" 
+                                   inputmode="numeric"
+                                   pattern="[0-9]{18}"
+                                   minlength="18"
+                                   maxlength="18"
+                                   oninput="this.value=this.value.replace(/[^0-9]/g, '').slice(0, 18)"
+                                   title="NIP harus berisi 18 digit angka."
                                    class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/45 focus:border-primary transition duration-200 text-sm" 
                                    placeholder="1985XXXXXXXXXXXXXXXX" />
                             <x-input-error :messages="$errors->get('nip')" class="mt-2 text-rose-500 text-xs" />
@@ -343,5 +368,90 @@
             </div>
         </div>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form[action="{{ route('admin.users.store') }}"]');
+
+            if (!form) {
+                return;
+            }
+
+            const selectMessages = {
+                role_id: 'Silakan pilih role/peran terlebih dahulu.',
+                prodi_id: 'Silakan pilih program studi terlebih dahulu.',
+                semester: 'Silakan pilih semester terlebih dahulu.'
+            };
+
+            const fieldMessages = {
+                name: 'Nama lengkap wajib diisi.',
+                email: 'Alamat email wajib diisi.',
+                no_hp: 'Nomor WhatsApp/HP wajib diisi.',
+                password: 'Password wajib diisi.',
+                password_confirmation: 'Konfirmasi password wajib diisi.',
+                nim: 'NIM wajib diisi.',
+                nip_dosen: 'NIP wajib diisi.',
+                nip_staff: 'NIP wajib diisi.'
+            };
+
+            form.addEventListener('invalid', function (event) {
+                const field = event.target;
+
+                if (field instanceof HTMLSelectElement && !field.value) {
+                    field.setCustomValidity(
+                        selectMessages[field.name] || 'Silakan pilih salah satu item dalam daftar.'
+                    );
+                    return;
+                }
+
+                if (!(field instanceof HTMLInputElement)) {
+                    return;
+                }
+
+                if (field.validity.valueMissing) {
+                    field.setCustomValidity(fieldMessages[field.id] || 'Kolom ini wajib diisi.');
+                } else if (field.validity.typeMismatch && field.type === 'email') {
+                    field.setCustomValidity('Format alamat email tidak valid.');
+                } else if (field.validity.patternMismatch || field.validity.tooShort || field.validity.tooLong) {
+                    if (field.id === 'nim') {
+                        field.setCustomValidity('NIM harus berisi 10 digit angka.');
+                    } else if (field.id === 'nip_dosen' || field.id === 'nip_staff') {
+                        field.setCustomValidity('NIP harus berisi 18 digit angka.');
+                    } else if (field.id === 'no_hp') {
+                        field.setCustomValidity('Nomor WhatsApp/HP hanya boleh berisi 1 sampai 20 digit angka.');
+                    } else {
+                        field.setCustomValidity('Format input tidak valid.');
+                    }
+                }
+            }, true);
+
+            form.addEventListener('input', function (event) {
+                if (event.target instanceof HTMLInputElement) {
+                    event.target.setCustomValidity('');
+
+                    if (event.target.id === 'password_confirmation' && event.target.value === document.getElementById('password')?.value) {
+                        event.target.setCustomValidity('');
+                    }
+                }
+            }, true);
+
+            form.addEventListener('change', function (event) {
+                if (event.target instanceof HTMLSelectElement) {
+                    event.target.setCustomValidity('');
+                }
+            }, true);
+
+            form.addEventListener('submit', function (event) {
+                const password = document.getElementById('password');
+                const passwordConfirmation = document.getElementById('password_confirmation');
+
+                if (password && passwordConfirmation && password.value !== passwordConfirmation.value) {
+                    passwordConfirmation.setCustomValidity('Konfirmasi password tidak cocok.');
+                    event.preventDefault();
+                    passwordConfirmation.reportValidity();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

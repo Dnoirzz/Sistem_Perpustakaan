@@ -187,9 +187,11 @@ class MemberController extends Controller
         // 2. Get completed physical loans (returned)
         $completedLoans = \App\Models\Loan::with(['collection.book'])
             ->where('user_id', $member->user_id)
-            ->where('status', 'dikembalikan')
+            ->whereIn('status', ['dikembalikan', 'hilang'])
             ->get()
             ->map(function ($loan) {
+                $isLost = $loan->status === 'hilang';
+
                 // Calculate lateness
                 $isLate = $loan->tgl_kembali && $loan->bts_waktu && $loan->tgl_kembali->greaterThan($loan->bts_waktu);
                 $daysLate = 0;
@@ -198,15 +200,17 @@ class MemberController extends Controller
                 }
 
                 // Check condition
-                $isDamaged = $loan->return_condition_status === 'bermasalah';
+                $isDamaged = ! $isLost && $loan->return_condition_status === 'bermasalah';
                 $notes = $loan->return_condition_notes;
 
                 // Build description (keterangan)
                 $keteranganParts = [];
-                if ($isLate) {
+                if ($isLate && ! $isLost) {
                     $keteranganParts[] = "Terlambat ({$daysLate} hari)";
                 }
-                if ($isDamaged) {
+                if ($isLost) {
+                    $keteranganParts[] = 'Buku Hilang' . ($notes ? ": {$notes}" : '');
+                } elseif ($isDamaged) {
                     $detailKerusakan = $notes ? ": {$notes}" : "";
                     $keteranganParts[] = "Buku rusak{$detailKerusakan}";
                 }
@@ -225,6 +229,7 @@ class MemberController extends Controller
                     'keterangan' => $keterangan,
                     'status_kondisi' => $loan->return_condition_status,
                     'catatan' => $loan->return_condition_notes,
+                    'status_peminjaman' => $loan->status,
                 ];
             });
 

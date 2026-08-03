@@ -35,8 +35,8 @@ class ReturnController extends Controller
             'collection.book.category',
         ]);
 
-        if ($status && $status === 'dikembalikan') {
-            $query->where('status', 'dikembalikan');
+        if ($status && in_array($status, ['dikembalikan', 'hilang'], true)) {
+            $query->where('status', $status);
         } elseif ($status) {
             $query->where('status', $status);
         } else {
@@ -72,12 +72,14 @@ class ReturnController extends Controller
         $stats = [
             'active_loans' => Loan::whereIn('status', ['dipinjam', 'terlambat'])->count(),
             'overdue_loans' => Loan::where('status', 'terlambat')->count(),
-            'returned_today' => Loan::whereDate('tgl_kembali', today())->count(),
+            'returned_today' => Loan::where('status', 'dikembalikan')
+                ->whereDate('tgl_kembali', today())
+                ->count(),
         ];
 
         $checklistItems = ReturnChecklist::active()->ordered()->get();
         $penaltyRules = PenaltyRule::active()
-            ->whereIn('code', ['kerusakan', 'kehilangan'])
+            ->whereIn('code', ['keterlambatan', 'kerusakan'])
             ->orderBy('rule_name')
             ->get()
             ->keyBy('code');
@@ -95,11 +97,14 @@ class ReturnController extends Controller
         if (! in_array($loan->status, ['dipinjam', 'terlambat'], true)) {
             return redirect()
                 ->route('petugas.returns.index')
-                ->with('error', 'Peminjaman ini sudah dikembalikan sebelumnya.');
+                ->with('error', 'Peminjaman ini sudah diproses sebelumnya.');
         }
 
         $checklistItems = ReturnChecklist::active()->ordered()->get();
-        $penaltyRules = PenaltyRule::active()->get()->keyBy('code');
+        $penaltyRules = PenaltyRule::active()
+            ->whereIn('code', ['keterlambatan', 'kerusakan'])
+            ->get()
+            ->keyBy('code');
         $physicalPenaltyCodes = $penaltyRules->keys()
             ->reject(fn ($code) => $code === 'keterlambatan')
             ->values()
@@ -126,18 +131,14 @@ class ReturnController extends Controller
                 ->with('error', 'Data pengembalian tidak sinkron. Silakan ulangi proses pengembalian.');
         }
 
-        $isLost = $request->boolean('is_lost') || $request->input('penalty_type') === 'kehilangan';
-        $conditionChecks = $this->extractConditionChecks($request, $checklistItems, $isLost);
+        $conditionChecks = $this->extractConditionChecks($request, $checklistItems);
         $failedConditions = $this->getFailedConditionLabels($conditionChecks);
-        if ($isLost && $failedConditions === []) {
-            $failedConditions = ['Buku Hilang'];
-        }
-        $hasPhysicalIssue = $isLost || $failedConditions !== [];
+        $hasPhysicalIssue = $failedConditions !== [];
 
         if ($hasPhysicalIssue && $physicalPenaltyCodes === []) {
             return redirect()
                 ->route('petugas.returns.index')
-                ->with('error', 'Aturan sanksi kerusakan/kehilangan belum aktif. Silakan atur terlebih dahulu di menu Pengaturan Return.');
+                ->with('error', 'Aturan sanksi kerusakan belum aktif. Silakan atur terlebih dahulu di menu Pengaturan Return.');
         }
 
         if ($hasPhysicalIssue) {
@@ -147,8 +148,8 @@ class ReturnController extends Controller
                 'settlement_method' => ['required', 'in:uang_tunai,ganti_buku,kombinasi'],
                 'penalty_description' => ['nullable', 'string', 'max:1000'],
             ], [
-                'return_condition_notes.required' => 'Catatan hasil pengecekan/laporan wajib diisi jika ada kondisi buku yang bermasalah atau hilang.',
-                'penalty_type.required' => 'Jenis sanksi wajib dipilih jika kondisi buku tidak memenuhi kriteria atau hilang.',
+                'return_condition_notes.required' => 'Catatan hasil inspeksi wajib diisi jika kondisi buku tidak memenuhi kriteria.',
+                'penalty_type.required' => 'Jenis sanksi wajib dipilih jika kondisi buku tidak memenuhi kriteria.',
                 'penalty_type.in' => 'Jenis sanksi harus mengikuti aturan yang aktif.',
                 'settlement_method.required' => 'Metode penyelesaian sanksi wajib dipilih.',
             ]);
@@ -168,9 +169,7 @@ class ReturnController extends Controller
         $wasOverdue = $loan->isOverdue();
         $today = today();
         
-        $settlementMethod = $request->input('settlement_method');
-        // Jika buku hilang, hanya restock stok fisik jika diselesaikan dengan mengganti buku fisik/kombinasi
-        $shouldRestock = ! ($request->input('penalty_type') === 'kehilangan' || $isLost) || in_array($settlementMethod, ['ganti_buku', 'kombinasi'], true);
+        $shouldRestock = true;
         $penaltyAmount = $request->filled('penalty_amount') ? (float) $request->input('penalty_amount') : 0;
 
         $releasedCollectionId = null;
@@ -308,7 +307,7 @@ class ReturnController extends Controller
         if (! $processed) {
             return redirect()
                 ->route('petugas.returns.index')
-                ->with('error', 'Peminjaman ini sudah dikembalikan sebelumnya.');
+                ->with('error', 'Peminjaman ini sudah diproses sebelumnya.');
         }
 
         if ($releasedCollectionId) {
@@ -330,7 +329,7 @@ class ReturnController extends Controller
         }
 
         if ($hasPhysicalIssue) {
-            $message .= ' Hasil inspeksi fisik/sanksi kehilangan telah disimpan.';
+            $message .= ' Hasil inspeksi fisik dan sanksi kerusakan telah disimpan.';
         }
 
         return redirect()
@@ -338,15 +337,15 @@ class ReturnController extends Controller
             ->with('success', $message);
     }
 
-    private function extractConditionChecks(Request $request, Collection $checklistItems, bool $isLost = false): array
+    private function extractConditionChecks(Request $request, Collection $checklistItems): array
     {
-        return $checklistItems->map(function (ReturnChecklist $item) use ($request, $isLost) {
-            $passed = $isLost ? false : $request->boolean('condition_checks.' . $item->return_checklist_id, true);
+        return $checklistItems->map(function (ReturnChecklist $item) use ($request) {
+            $passed = $request->boolean('condition_checks.' . $item->return_checklist_id, true);
 
             return [
                 'checklist_id' => $item->return_checklist_id,
                 'item_name' => $item->item_name,
-                'description' => $isLost ? 'Buku dilaporkan hilang (Inspeksi fisik dilewati)' : $item->description,
+                'description' => $item->description,
                 'passed' => $passed,
             ];
         })->values()->all();

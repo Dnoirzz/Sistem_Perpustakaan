@@ -135,7 +135,7 @@
 
     <main class="ml-64 p-6 sm:p-10 bg-[#f8faff] min-h-screen">
         @include('layouts.header', [
-            'title' => 'Buku Sedang Dipinjam',
+            'title' => 'Peminjaman Aktif',
             'subtitle' => 'Daftar koleksi buku fisik perpustakaan yang sedang Anda pinjam saat ini.'
         ])
 

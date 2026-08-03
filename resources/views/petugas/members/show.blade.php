@@ -289,10 +289,17 @@
                                     <!-- History Type Badge -->
                                     <td class="py-5 px-8">
                                         @if($item['tipe_riwayat'] === 'fisik')
-                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
-                                                <span class="material-symbols-outlined text-[14px]">menu_book</span>
-                                                Buku Fisik
-                                            </span>
+                                            @if(($item['status_peminjaman'] ?? null) === 'hilang')
+                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-wider">
+                                                    <span class="material-symbols-outlined text-[14px]">warning</span>
+                                                    Buku Hilang
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                                                    <span class="material-symbols-outlined text-[14px]">menu_book</span>
+                                                    Buku Fisik
+                                                </span>
+                                            @endif
                                         @else
                                             <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-[10px] font-bold uppercase tracking-wider">
                                                 <span class="material-symbols-outlined text-[14px]">picture_as_pdf</span>
