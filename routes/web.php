@@ -226,6 +226,7 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::get('/penalties/create', [PetugasPenaltyController::class, 'create'])->name('penalties.create');
     Route::post('/penalties', [PetugasPenaltyController::class, 'store'])->name('penalties.store');
     Route::post('/penalties/{penalty}/mark-paid', [PetugasPenaltyController::class, 'markPaid'])->name('penalties.mark-paid');
+    Route::post('/penalties/{penalty}/confirm-replacement', [PetugasPenaltyController::class, 'confirmReplacement'])->name('penalties.confirm-replacement');
 
     // Pengaturan Checklist & Denda Pengembalian
     Route::get('/return-settings', [PetugasReturnSettingController::class, 'index'])->name('return-settings.index');

@@ -20,10 +20,14 @@ class Penalty extends Model
         'amount',
         'description',
         'status',
+        'payment_received_at',
+        'replacement_received_at',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'payment_received_at' => 'datetime',
+        'replacement_received_at' => 'datetime',
     ];
 
     /**

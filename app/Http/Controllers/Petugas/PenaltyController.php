@@ -81,7 +81,7 @@ class PenaltyController extends Controller
      */
     public function markPaid($penalti_id)
     {
-        $penalty = Penalty::findOrFail($penalti_id);
+        $penalty = Penalty::with(['user.role', 'loan.collection.book'])->findOrFail($penalti_id);
 
         if ($penalty->status === 'lunas') {
             return redirect()
@@ -89,19 +89,149 @@ class PenaltyController extends Controller
                 ->with('error', 'Denda ini sudah lunas.');
         }
 
-        $penalty->update(['status' => 'lunas']);
+        $isCombination = $penalty->type === 'kehilangan' && $penalty->penalti_type === 'kombinasi';
 
-        \App\Models\NotificationCustom::send(
+        if ($isCombination && $penalty->payment_received_at !== null) {
+            return redirect()
+                ->route('petugas.penalties.index')
+                ->with('error', 'Pembayaran tunai untuk sanksi ini sudah pernah dikonfirmasi.');
+        }
+
+        if ($penalty->type === 'kehilangan'
+            && $penalty->penalti_type === 'ganti_buku'
+            && $penalty->replacement_received_at === null) {
+            return redirect()
+                ->route('petugas.penalties.index')
+                ->with('error', 'Gunakan aksi Konfirmasi Buku Pengganti Diterima untuk sanksi ganti buku.');
+        }
+
+        $paymentReceivedAt = now();
+        $isFullySettled = ! $isCombination || $penalty->replacement_received_at !== null;
+
+        $penalty->update([
+            'status' => $isFullySettled ? 'lunas' : 'belum_dibayar',
+            'payment_received_at' => $paymentReceivedAt,
+        ]);
+
+        $collectionTitle = $penalty->loan?->collection?->display_title ?? 'Koleksi';
+        $amountLabel = 'Rp ' . number_format((float) $penalty->amount, 0, ',', '.');
+        [$notificationTitle, $notificationMessage] = $isCombination && ! $isFullySettled
+            ? [
+                'Pembayaran Tunai Dikonfirmasi',
+                "Pembayaran tunai sebesar {$amountLabel} untuk sanksi kehilangan koleksi \"{$collectionTitle}\" telah dikonfirmasi. Buku pengganti masih menunggu penerimaan.",
+            ]
+            : match ($penalty->type) {
+            'keterlambatan' => [
+                'Denda Keterlambatan Lunas',
+                "Denda keterlambatan sebesar {$amountLabel} untuk koleksi \"{$collectionTitle}\" telah dikonfirmasi lunas.",
+            ],
+            'kerusakan' => [
+                'Sanksi Kerusakan Buku Lunas',
+                "Sanksi kerusakan buku sebesar {$amountLabel} untuk koleksi \"{$collectionTitle}\" telah dikonfirmasi lunas.",
+            ],
+            'kehilangan' => [
+                'Sanksi Kehilangan Buku Lunas',
+                "Sanksi kehilangan buku sebesar {$amountLabel} untuk koleksi \"{$collectionTitle}\" telah dikonfirmasi lunas.",
+            ],
+            default => [
+                'Pelunasan Denda Dikonfirmasi',
+                "Tagihan denda sebesar {$amountLabel} untuk koleksi \"{$collectionTitle}\" telah dikonfirmasi lunas.",
+            ],
+        };
+
+        NotificationCustom::send(
             $penalty->user_id,
-            'Pelunasan Denda Dikonfirmasi',
-            "Pembayaran denda sebesar Rp " . number_format($penalty->amount, 0, ',', '.') . " telah dikonfirmasi LUNAS.",
-            null,
+            $notificationTitle,
+            $notificationMessage,
+            $penalty->user?->isDosen() ? route('dosen.loans.penalties') : route('mahasiswa.loans.penalties'),
             'denda'
         );
 
         return redirect()
             ->route('petugas.penalties.index')
-            ->with('success', 'Denda berhasil ditandai sebagai lunas.');
+            ->with('success', $isCombination && ! $isFullySettled
+                ? 'Pembayaran tunai berhasil dikonfirmasi. Buku pengganti masih menunggu penerimaan.'
+                : 'Denda berhasil ditandai sebagai lunas.');
+    }
+
+    /**
+     * Konfirmasi bahwa buku pengganti sudah diterima perpustakaan.
+     */
+    public function confirmReplacement($penalti_id)
+    {
+        $releasedCollectionId = null;
+
+        DB::transaction(function () use ($penalti_id, &$releasedCollectionId) {
+            $penalty = Penalty::query()
+                ->whereKey($penalti_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($penalty->type !== 'kehilangan' || ! in_array($penalty->penalti_type, ['ganti_buku', 'kombinasi'], true)) {
+                throw ValidationException::withMessages([
+                    'penalty' => 'Konfirmasi buku pengganti hanya tersedia untuk sanksi kehilangan dengan metode ganti buku atau kombinasi.',
+                ]);
+            }
+
+            if ($penalty->replacement_received_at !== null) {
+                throw ValidationException::withMessages([
+                    'penalty' => 'Buku pengganti untuk sanksi ini sudah pernah dikonfirmasi diterima.',
+                ]);
+            }
+
+            $loan = Loan::with(['user', 'collection.book'])
+                ->whereKey($penalty->loan_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $collection = Collection::query()
+                ->whereKey($loan->koleksi_id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $collection) {
+                throw ValidationException::withMessages([
+                    'penalty' => 'Koleksi buku tidak ditemukan sehingga stok tidak dapat diperbarui.',
+                ]);
+            }
+
+            $collection->syncBackingStock(1);
+            $releasedCollectionId = $collection->koleksi_id;
+
+            $replacementReceivedAt = now();
+            $isCombination = $penalty->penalti_type === 'kombinasi';
+            $isFullySettled = ! $isCombination || $penalty->payment_received_at !== null;
+
+            $penalty->update([
+                'replacement_received_at' => $replacementReceivedAt,
+                'status' => $isFullySettled ? 'lunas' : 'belum_dibayar',
+            ]);
+
+            $collectionTitle = $loan->collection?->display_title ?? 'Koleksi';
+            $notificationMessage = $isCombination && ! $isFullySettled
+                ? "Buku pengganti untuk koleksi \"{$collectionTitle}\" telah diterima. Pembayaran tunai masih belum dikonfirmasi."
+                : "Buku pengganti untuk koleksi \"{$collectionTitle}\" telah diterima dan sanksi kehilangan dinyatakan lunas.";
+
+            NotificationCustom::send(
+                $penalty->user_id,
+                'Buku Pengganti Diterima',
+                $notificationMessage,
+                $penalty->user?->isDosen() ? route('dosen.loans.penalties') : route('mahasiswa.loans.penalties'),
+                'denda'
+            );
+
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'activity' => 'Mengonfirmasi buku pengganti untuk koleksi "' . $collectionTitle . '" telah diterima dari anggota: ' . ($penalty->user?->name ?? 'Anggota'),
+            ]);
+        });
+
+        if ($releasedCollectionId) {
+            Antrian::checkAndNotifyAvailableQueue($releasedCollectionId);
+        }
+
+        return redirect()
+            ->route('petugas.penalties.index')
+            ->with('success', 'Buku pengganti berhasil dikonfirmasi diterima dan stok koleksi bertambah 1.');
     }
 
     /**
@@ -153,20 +283,14 @@ class PenaltyController extends Controller
         ]);
 
         $amount = (float) ($validated['amount'] ?? 0);
-        $releasedCollectionId = null;
         $loan = null;
 
         try {
-            $loan = DB::transaction(function () use ($validated, $amount, &$releasedCollectionId) {
+            $loan = DB::transaction(function () use ($validated, $amount) {
                 $loanReference = Loan::query()
                     ->select(['loan_id', 'koleksi_id'])
                     ->whereKey($validated['loan_id'])
                     ->firstOrFail();
-
-                $collection = Collection::query()
-                    ->whereKey($loanReference->koleksi_id)
-                    ->lockForUpdate()
-                    ->first();
 
                 $loan = Loan::with(['user', 'collection.book'])
                     ->whereKey($loanReference->loan_id)
@@ -197,11 +321,6 @@ class PenaltyController extends Controller
                     'return_condition_checks' => null,
                     'return_condition_notes' => $validated['description'],
                 ]);
-
-                if (in_array($validated['settlement_method'], ['ganti_buku', 'kombinasi'], true) && $collection) {
-                    $collection->syncBackingStock(1);
-                    $releasedCollectionId = $loan->koleksi_id;
-                }
 
                 $createdPenalties = [];
 
@@ -284,10 +403,6 @@ class PenaltyController extends Controller
             });
         } catch (ValidationException $exception) {
             throw $exception;
-        }
-
-        if ($releasedCollectionId) {
-            Antrian::checkAndNotifyAvailableQueue($releasedCollectionId);
         }
 
         return redirect()

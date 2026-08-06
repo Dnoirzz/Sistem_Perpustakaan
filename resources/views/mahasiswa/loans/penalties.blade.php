@@ -110,7 +110,7 @@
 
         {{-- Widget Statistik Ringkasan Denda --}}
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">gavel</span>
@@ -122,7 +122,7 @@
                     <span class="text-xs text-outline font-semibold">denda</span>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">payments</span>
@@ -133,7 +133,7 @@
                     <span class="text-3xl font-bold text-on-surface">Rp {{ number_format($stats['unpaid_total'], 0, ',', '.') }}</span>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">check_circle</span>
@@ -159,6 +159,19 @@
             </x-slot>
 
             @forelse($penalties as $penalty)
+                @php
+                    $needsReplacement = $penalty->type === 'kehilangan'
+                        && in_array($penalty->penalti_type, ['ganti_buku', 'kombinasi'], true);
+                    $replacementReceived = $penalty->replacement_received_at !== null;
+                    $paymentReceived = $penalty->payment_received_at !== null;
+                    $settlementStatus = $penalty->status === 'lunas'
+                        ? 'Lunas'
+                        : ($needsReplacement && ! $replacementReceived && $paymentReceived
+                            ? 'Menunggu Buku Pengganti'
+                            : ($needsReplacement && $replacementReceived && ! $paymentReceived
+                                ? 'Menunggu Pembayaran'
+                                : ($needsReplacement && ! $replacementReceived ? 'Menunggu Penyelesaian' : 'Belum Dibayar')));
+                @endphp
                 <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
                     <td class="px-8 py-5">
                         <div class="flex flex-col">
@@ -204,15 +217,25 @@
                         @endif
                     </td>
                     <td class="px-8 py-5 whitespace-nowrap">
-                        @if($penalty->status === 'belum_dibayar')
-                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
-                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2 animate-pulse"></span>
-                                Belum Dibayar
-                            </span>
-                        @else
+                        @if($settlementStatus === 'Lunas')
                             <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
                                 <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
-                                Lunas
+                                {{ $settlementStatus }}
+                            </span>
+                        @elseif($settlementStatus === 'Menunggu Buku Pengganti')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-violet-600 mr-2 animate-pulse"></span>
+                                {{ $settlementStatus }}
+                            </span>
+                        @elseif($settlementStatus === 'Menunggu Pembayaran')
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-sky-600 mr-2 animate-pulse"></span>
+                                {{ $settlementStatus }}
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2 animate-pulse"></span>
+                                {{ $settlementStatus }}
                             </span>
                         @endif
                     </td>
@@ -260,13 +283,21 @@
                                 {{ $penalty->loan?->collection?->display_type_label ?? 'Buku' }}
                             </p>
                         </div>
-                        @if($penalty->status === 'belum_dibayar')
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
-                                Belum Dibayar
+                        @if($settlementStatus === 'Lunas')
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wide">
+                                {{ $settlementStatus }}
+                            </span>
+                        @elseif($settlementStatus === 'Menunggu Buku Pengganti')
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 text-[10px] font-bold uppercase tracking-wide">
+                                {{ $settlementStatus }}
+                            </span>
+                        @elseif($settlementStatus === 'Menunggu Pembayaran')
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 text-[10px] font-bold uppercase tracking-wide">
+                                {{ $settlementStatus }}
                             </span>
                         @else
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wide">
-                                Lunas
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
+                                {{ $settlementStatus }}
                             </span>
                         @endif
                     </div>

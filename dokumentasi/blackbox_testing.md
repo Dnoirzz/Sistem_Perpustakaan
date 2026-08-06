@@ -149,7 +149,7 @@
 | TC-LOAN-01 | Catat peminjaman baru dengan data valid | Anggota valid, koleksi buku/arsip tersedia | Peminjaman tersimpan, stok berkurang 1 | ✅ |
 | TC-LOAN-02 | Catat peminjaman buku stok habis | Pilih buku dengan stok = 0 | Muncul error "stok habis" | ✅ |
 | TC-LOAN-03 | Catat peminjaman dengan batas waktu sebelum tanggal pinjam | `bts_waktu` < `tgl_pinjam` | Muncul validasi tanggal tidak valid | ✅ |
-| TC-LOAN-04 | Catat peminjaman anggota yang sudah meminjam koleksi sama | Anggota + koleksi sama dengan pinjaman aktif | Muncul error duplikasi peminjaman aktif | ⬜ |
+| TC-LOAN-04 | Catat peminjaman anggota yang sudah meminjam koleksi sama | Anggota + koleksi sama dengan pinjaman aktif | Muncul error duplikasi peminjaman aktif | ✅ |
 | TC-LOAN-05 | Notifikasi WA terkirim setelah peminjaman dicatat | Peminjaman berhasil + WA aktif | Log menunjukkan WA terkirim | ❌ |
 | TC-LOAN-06 | Sinkronisasi status "terlambat" otomatis | Buka halaman peminjaman | Peminjaman melewati batas waktu berubah jadi "terlambat" | ✅ |
 | TC-LOAN-07 | Filter peminjaman berdasarkan status | Pilih filter "terlambat" | Hanya tampil data terlambat | ✅ |
@@ -164,11 +164,10 @@
 | TC-RET-01 | Proses pengembalian buku kondisi baik | Opsi "Ada (Inspeksi Fisik)", semua checklist centang "Baik" | Status berubah "dikembalikan", stok bertambah 1 | ✅ |
 | TC-RET-02 | Proses pengembalian buku terlambat | Buku terlambat, kondisi baik | Denda keterlambatan otomatis dicatat sesuai aturan | ✅ |
 | TC-RET-03 | Proses pengembalian buku rusak | Opsi "Ada", 1/lebih checklist di-uncheck | Wajib isi catatan & sanksi fisik, denda terbuat | ✅ |
-| TC-RET-04 | Memastikan modal pengembalian tidak memproses buku hilang | Buka modal Konfirmasi Pengembalian | Tidak ada pilihan "Buku Hilang"; kehilangan diproses dari halaman Proses Buku Hilang | ⬜ |
-| TC-RET-05 | Pengembalian buku kondisi baik setelah pemisahan alur kehilangan | Semua checklist tetap tercentang | Status berubah "dikembalikan", stok bertambah 1, tidak ada sanksi kerusakan | ⬜ |
-| TC-RET-06 | Placeholder otomatis pada Keterangan Sanksi | Pilih jenis sanksi kerusakan pada modal pengembalian | Placeholder textarea menampilkan deskripsi aturan sanksi aktif | ⬜ |
+| TC-RET-05 | Pengembalian buku kondisi baik setelah pemisahan alur kehilangan | Semua checklist tetap tercentang | Status berubah "dikembalikan", stok bertambah 1, tidak ada sanksi kerusakan | ✅ |
+| TC-RET-06 | Placeholder otomatis pada Keterangan Sanksi | Pilih jenis sanksi kerusakan pada modal pengembalian | Placeholder textarea menampilkan deskripsi aturan sanksi aktif | ✅ |
 | TC-RET-07 | Notifikasi WA antrian tersedia setelah return | Ada antrian menunggu pada buku tersebut | WA dikirim ke anggota berikutnya di antrian | ❌ |
-| TC-RET-08 | Proses pengembalian buku yang sudah dikembalikan atau hilang | Buka pinjaman berstatus "dikembalikan" atau "hilang" | Transaksi tidak muncul dalam daftar aktif dan tidak dapat diproses ulang | ⬜ |
+| TC-RET-08 | Proses pengembalian buku yang sudah dikembalikan atau hilang | Buka pinjaman berstatus "dikembalikan" atau "hilang" | Transaksi tidak muncul dalam daftar aktif dan tidak dapat diproses ulang | ✅ |
 
 ---
 
@@ -180,8 +179,8 @@
 | TC-FINE-02 | Penampilan nama koleksi (Buku Umum & Laporan PKL/TA) | Buka halaman Denda pada peminjaman Laporan PKL/TA | Judul Laporan PKL/TA tampil dengan benar (bukan `-`) beserta badge kategorinya | ✅ |
 | TC-FINE-03 | Pencarian denda Laporan PKL / Tugas Akhir | Ketik judul Laporan PKL/TA di pencarian denda | Denda terkait Laporan PKL/TA berhasil ditemukan | ✅ |
 | TC-FINE-04 | Modal Detail Keterangan Denda | Klik tombol Info (i) pada baris denda | Modal menampilkan detail anggota, judul koleksi, jenis, penyelesaian, dan rincian aturan | ✅ |
-| TC-FINE-05 | Tandai denda sebagai lunas | Klik "Tandai Lunas" | Status denda berubah menjadi "lunas", notifikasi terkirim | ✅(notifikasi terkirim hanay internal dan pesan tidak sesuai dengan jenis denda yang dikenakan) |
-| TC-FINE-06 | Proses buku hilang oleh petugas | Pilih transaksi aktif, isi keterangan kehilangan, metode penyelesaian | Loan berstatus `hilang`, sanksi `kehilangan` tersimpan, dan stok mengikuti metode penyelesaian | ⬜ |
+| TC-FINE-05 | Tandai denda sebagai lunas | Klik "Tandai Lunas" | Status denda berubah menjadi "lunas", notifikasi internal menampilkan jenis denda dan koleksi yang sesuai | ✅ |
+| TC-FINE-06 | Proses buku hilang oleh petugas | Pilih transaksi aktif, isi keterangan kehilangan, metode penyelesaian | Loan berstatus `hilang` dan sanksi `kehilangan` tersimpan; stok tidak berubah saat sanksi dibuat dan bertambah 1 setelah buku pengganti dikonfirmasi diterima untuk metode `ganti_buku`/`kombinasi` | ✅ |
 | TC-FINE-07 | Aturan denda keterlambatan per hari | Atur Rp 1.000/hari, kembalikan 5 hari terlambat | Denda otomatis = Rp 5.000 | ✅ |
 | TC-FINE-08 | Aturan denda keterlambatan flat | Atur Rp 10.000 flat, kembalikan kapanpun terlambat | Denda = Rp 10.000 terlepas dari jumlah hari | ⚠️ |
 | TC-FINE-09 | Akses Halaman **"Denda Saya"** (Mahasiswa/Dosen) | Buka menu Rak Pinjam $\rightarrow$ Denda Saya | Tampil rincian tagihan denda belum dibayar & riwayat lunas secara transparan | ✅ |
@@ -232,29 +231,28 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-ARSIP-01 | Upload laporan PKL dengan file PDF valid | File `.pdf`, judul, pembimbing valid | Arsip tersimpan dengan status "menunggu" | ⬜ |
-| TC-ARSIP-02 | Upload dengan file bukan PDF | File `.docx` atau `.jpg` | Muncul error format tidak valid | ⬜ |
-| TC-ARSIP-03 | Upload arsip dengan field wajib kosong | Judul dikosongkan | Muncul pesan validasi | ⬜ |
-| TC-ARSIP-04 | Mahasiswa edit arsip yang belum diverifikasi | Ubah judul atau file | Data berhasil diperbarui | ⬜ |
-| TC-ARSIP-05 | Mahasiswa hapus arsip milik sendiri | Klik hapus | Arsip terhapus | ⬜ |
+| TC-ARSIP-01 | Upload laporan PKL dengan file PDF valid | File `.pdf`, judul, pembimbing valid | Arsip tersimpan dengan status "menunggu" | ✅ |
+| TC-ARSIP-02 | Upload dengan file bukan PDF | File `.docx` atau `.jpg` | Muncul error format tidak valid | ✅ |
+| TC-ARSIP-03 | Upload arsip dengan field wajib kosong | Judul dikosongkan | Muncul pesan validasi | ✅ |
+| TC-ARSIP-04 | Mahasiswa edit arsip yang belum diverifikasi | Ubah judul atau file | Data berhasil diperbarui | ✅ |
 
 ### 9.2 Verifikasi Arsip (Petugas)
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-ARSIP-06 | Petugas verifikasi arsip | Klik "Verifikasi" | Status arsip berubah "terverifikasi" | ⬜ |
-| TC-ARSIP-07 | Petugas tolak arsip | Klik "Tolak" | Status arsip berubah "ditolak" | ⬜ |
-| TC-ARSIP-08 | Petugas konfirmasi penerimaan & generate surat | Klik "Konfirmasi Terima" | Surat Tanda Terima PDF berhasil digenerate | ⬜ |
-| TC-ARSIP-09 | Download file arsip | Klik download pada arsip | File PDF berhasil diunduh | ⬜ |
-| TC-ARSIP-10 | Import arsip via Excel (batch) | File `.xlsx` template arsip | Semua arsip berhasil diimpor | ⬜ |
+| TC-ARSIP-06 | Petugas verifikasi arsip | Klik "Verifikasi" | Status arsip berubah "terverifikasi" | ✅ |
+| TC-ARSIP-07 | Petugas tolak arsip | Klik "Tolak" | Status arsip berubah "ditolak" | ✅ |
+| TC-ARSIP-08 | Petugas konfirmasi penerimaan & generate surat | Klik "Konfirmasi Terima" | Surat Tanda Terima PDF berhasil digenerate | ✅ |
+| TC-ARSIP-09 | Download file arsip | Klik download pada arsip | File PDF berhasil diunduh | ✅ |
+| TC-ARSIP-10 | Import arsip via Excel (batch) | File `.xlsx` template arsip | Semua arsip berhasil diimpor | ✅ |
 
 ### 9.3 Katalog Publik, Stream PDF & Log Pembacaan
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
 | TC-ARSIP-11 | Lihat katalog arsip yang sudah terverifikasi | Buka halaman katalog arsip | Hanya arsip terverifikasi yang tampil | ✅ |
-| TC-ARSIP-12 | Stream PDF arsip di browser | Klik tombol "Baca Full / Stream" | PDF terbuka dalam viewer terproteksi (`/stream/{slug}.pdf`) | ⬜ |
-| TC-ARSIP-13 | Pencatatan Log Pembacaan saat tab ditutup | Buka dokumen lalu tutup tab browser | Event `closeReadLog` mencatat durasi & aktivitas pembacaan di server | ⬜ |
+| TC-ARSIP-12 | Stream PDF arsip di browser | Klik tombol "Baca Full / Stream" | PDF terbuka dalam viewer terproteksi (`/stream/{slug}.pdf`) | ✅ |
+| TC-ARSIP-13 | Pencatatan Log Pembacaan saat tab ditutup | Buka dokumen lalu tutup tab browser | Event `closeReadLog` mencatat durasi & aktivitas pembacaan di server | ✅ |
 
 ---
 
@@ -262,10 +260,10 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-REC-01 | Mahasiswa/dosen buat usulan buku | Judul, alasan valid | Usulan tersimpan | ⬜ |
-| TC-REC-02 | Usulan dengan field wajib kosong | Field judul kosong | Muncul validasi | ⬜ |
-| TC-REC-03 | Petugas verifikasi usulan | Klik "Verifikasi" | Status berubah "diverifikasi" | ⬜ |
-| TC-REC-04 | Petugas hapus usulan | Klik hapus | Usulan terhapus | ⬜ |
+| TC-REC-01 | Mahasiswa/dosen buat usulan buku | Judul, alasan valid | Usulan tersimpan | ✅ |
+| TC-REC-02 | Usulan dengan field wajib kosong | Field judul kosong | Muncul validasi | ✅ |
+| TC-REC-03 | Petugas verifikasi usulan | Klik "Verifikasi" | Status berubah "diverifikasi" | ✅ |
+| TC-REC-04 | Petugas hapus usulan | Klik hapus | Usulan terhapus | ✅ |
 
 ---
 
@@ -273,11 +271,11 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-VOTE-01 | Petugas buat sesi voting baru | Judul, tanggal mulai & akhir | Sesi voting tersimpan | ⬜ |
-| TC-VOTE-02 | Petugas tambah item buku ke voting | Pilih dari usulan / input manual | Buku berhasil ditambahkan ke sesi | ⬜ |
+| TC-VOTE-01 | Petugas buat sesi voting baru | Judul, tanggal mulai & akhir | Sesi voting tersimpan | ✅ |
+| TC-VOTE-02 | Petugas tambah item buku ke voting | Pilih dari usulan / input manual | Buku berhasil ditambahkan ke sesi | ✅ |
 | TC-VOTE-03 | Mahasiswa/dosen vote buku | Klik "Vote" pada salah satu buku | Vote tercatat, jumlah suara bertambah | ✅ |
 | TC-VOTE-04 | Anggota vote dua kali pada sesi yang sama | Klik "Vote" lagi setelah pernah vote | Ditolak / tidak double vote | ✅ |
-| TC-VOTE-05 | Petugas hapus item dari voting | Klik hapus item | Item dihapus dari sesi | ⬜ |
+| TC-VOTE-05 | Petugas hapus item dari voting | Klik hapus item | Item dihapus dari sesi | ✅ |
 
 ---
 
@@ -287,34 +285,34 @@
 
 | ID | Skenario Uji | Kondisi | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-NOTIF-01 | WA terkirim saat peminjaman baru dicatat | Fitur WA aktif, no. HP valid, Fonnte terhubung | Pesan konfirmasi pinjam terkirim via WA | ⬜ |
-| TC-NOTIF-02 | WA H-1 jatuh tempo terkirim via scheduler | Ada peminjaman jatuh tempo besok, scheduler jalan | Pesan pengingat H-1 terkirim via WA | ⬜ |
-| TC-NOTIF-03 | WA status terlambat terkirim via scheduler | Ada peminjaman berstatus "terlambat", scheduler jalan | Pesan keterlambatan terkirim via WA | ⬜ |
-| TC-NOTIF-04 | WA di-skip saat fitur dinonaktifkan | `wa_notification_enabled = false` | Tidak ada WA yang dikirim, log muncul "di-skip" | ⬜ |
+| TC-NOTIF-01 | WA terkirim saat peminjaman baru dicatat | Fitur WA aktif, no. HP valid, Fonnte terhubung | Pesan konfirmasi pinjam terkirim via WA | ✅ |
+| TC-NOTIF-02 | WA H-1 jatuh tempo terkirim via scheduler | Ada peminjaman jatuh tempo besok, scheduler jalan | Pesan pengingat H-1 terkirim via WA | ✅ |
+| TC-NOTIF-03 | WA status terlambat terkirim via scheduler | Ada peminjaman berstatus "terlambat", scheduler jalan | Pesan keterlambatan terkirim via WA | ❌ |
+| TC-NOTIF-04 | WA di-skip saat fitur dinonaktifkan | `wa_notification_enabled = false` | Tidak ada WA yang dikirim, log muncul "di-skip" | ✅ |
 
 ### 12.2 Notifikasi Bot Telegram
 
 | ID | Skenario Uji | Kondisi | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-NOTIF-05 | Telegram terkirim saat transaksi/pendaftaran | Fitur Telegram aktif, Chat ID terhubung | Pesan notifikasi terkirim via Bot Telegram | ⬜ |
-| TC-NOTIF-06 | Test kirim Telegram dari halaman pengaturan | Isi Chat ID & pesan, klik "Test Kirim" | Pesan uji coba berhasil masuk di aplikasi Telegram | ⬜ |
-| TC-NOTIF-07 | Telegram di-skip saat fitur dinonaktifkan | `telegram_notification_enabled = false` | Tidak ada pesan Telegram dikirim | ⬜ |
+| TC-NOTIF-05 | Telegram terkirim saat transaksi/pendaftaran | Fitur Telegram aktif, Chat ID terhubung | Pesan notifikasi terkirim via Bot Telegram | ✅ |
+| TC-NOTIF-06 | Test kirim Telegram dari halaman pengaturan | Isi Chat ID & pesan, klik "Test Kirim" | Pesan uji coba berhasil masuk di aplikasi Telegram | ✅ |
+| TC-NOTIF-07 | Telegram di-skip saat fitur dinonaktifkan | `telegram_notification_enabled = false` | Tidak ada pesan Telegram dikirim | ✅ |
 
 ### 12.3 Notifikasi Email SMTP
 
 | ID | Skenario Uji | Kondisi | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-NOTIF-08 | Email konfirmasi/pengingat terkirim | Mailer SMTP terkonfigurasi | Email otomatis masuk ke Inbox user | ⬜ |
-| TC-NOTIF-09 | Test kirim email dari halaman pengaturan | Isi email tujuan, subject, body, klik "Test Kirim" | Email uji coba berhasil diterima di inbox | ⬜ |
+| TC-NOTIF-08 | Email konfirmasi/pengingat terkirim | Mailer SMTP terkonfigurasi | Email otomatis masuk ke Inbox user | ✅ |
+| TC-NOTIF-09 | Test kirim email dari halaman pengaturan | Isi email tujuan, subject, body, klik "Test Kirim" | Email uji coba berhasil diterima di inbox | ✅ |
 
 ### 12.4 Notifikasi In-App Lonceng (Bell Feed)
 
 | ID | Skenario Uji | Kondisi | Output yang Diharapkan | Status |
 |---|---|---|---|---|
 | TC-NOTIF-10 | Real-time counter unread pada ikon lonceng | Ada notifikasi baru masuk | Counter merah di lonceng bertambah secara real-time (`/notifications/feed`) | ✅ |
-| TC-NOTIF-11 | Klik item notifikasi lonceng | Klik salah satu notifikasi di feed | Notifikasi ditandai dibaca (`is_read = true`) dan diarahkan ke halaman tujuan | ⬜ |
-| TC-NOTIF-12 | Tandai semua notifikasi dibaca | Klik "Tandai Semua Dibaca" | Counter unread menjadi 0 dan seluruh notifikasi bertanda dibaca | ⬜ |
-| TC-NOTIF-13 | Hapus notifikasi lonceng | Klik hapus pada salah satu notifikasi | Notifikasi terhapus dari daftar | ⬜ |
+| TC-NOTIF-11 | Klik item notifikasi lonceng | Klik salah satu notifikasi di feed | Notifikasi ditandai dibaca (`is_read = true`) dan diarahkan ke halaman tujuan | ✅ |
+| TC-NOTIF-12 | Tandai semua notifikasi dibaca | Klik "Tandai Semua Dibaca" | Counter unread menjadi 0 dan seluruh notifikasi bertanda dibaca | ✅ |
+| TC-NOTIF-13 | Hapus notifikasi lonceng | Klik hapus pada salah satu notifikasi | Notifikasi terhapus dari daftar | ✅ |
 
 ---
 
@@ -322,12 +320,9 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-RPT-01 | Cetak laporan sirkulasi peminjaman (PDF) | Filter tanggal valid | File PDF laporan sirkulasi terunduh/terbuka | ❌ |
-| TC-RPT-02 | Ekspor laporan sirkulasi (Excel) | Filter tanggal valid | File `.xlsx` laporan sirkulasi terunduh | ⬜ |
-| TC-RPT-03 | Cetak laporan koleksi buku (PDF) | - | File PDF koleksi buku terunduh | ❌ |
-| TC-RPT-04 | Ekspor laporan koleksi buku (Excel) | - | File `.xlsx` koleksi buku terunduh | ⬜ |
-| TC-RPT-05 | Cetak laporan arsip digital (PDF) | - | File PDF laporan arsip terunduh | ❌ |
-| TC-RPT-06 | Ekspor laporan arsip digital (Excel) | - | File `.xlsx` laporan arsip terunduh | ⬜ |
+| TC-RPT-01 | Cetak laporan sirkulasi peminjaman (PDF) | Filter tanggal valid | File PDF laporan sirkulasi terunduh/terbuka | ✅ |
+| TC-RPT-02 | Cetak laporan koleksi buku (PDF) | - | File PDF koleksi buku terunduh | ✅ |
+| TC-RPT-03 | Cetak laporan arsip digital (PDF) | - | File PDF laporan arsip terunduh | ✅ |
 
 ---
 
@@ -337,30 +332,30 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-SET-01 | Simpan token Fonnte valid | Token valid diinput | Pengaturan tersimpan, notifikasi sukses | ⬜ |
-| TC-SET-02 | Toggle aktif/nonaktif notifikasi WA | Ubah toggle | Pengaturan tersimpan | ⬜ |
+| TC-SET-01 | Simpan token Fonnte valid | Token valid diinput | Pengaturan tersimpan, notifikasi sukses | ✅ |
+| TC-SET-02 | Toggle aktif/nonaktif notifikasi WA | Ubah toggle | Pengaturan tersimpan | ✅ |
 
 ### 14.2 Pengaturan Bot Telegram
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-SET-03 | Simpan Token Bot & Username Telegram | Token valid & username bot diinput | Pengaturan tersimpan | ⬜ |
-| TC-SET-04 | Toggle aktif/nonaktif notifikasi Telegram | Ubah toggle | Pengaturan tersimpan | ⬜ |
+| TC-SET-03 | Simpan Token Bot & Username Telegram | Token valid & username bot diinput | Pengaturan tersimpan | ✅ |
+| TC-SET-04 | Toggle aktif/nonaktif notifikasi Telegram | Ubah toggle | Pengaturan tersimpan | ✅ |
 
 ### 14.3 Pengaturan Email SMTP
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-SET-05 | Simpan pengaturan SMTP valid | Host, port, kredensial valid | Pengaturan tersimpan | ⬜ |
-| TC-SET-06 | Simpan pengaturan SMTP dengan format email salah | `from_address` bukan format email | Muncul validasi format email | ⬜ |
+| TC-SET-05 | Simpan pengaturan SMTP valid | Host, port, kredensial valid | Pengaturan tersimpan | ✅ |
+| TC-SET-06 | Simpan pengaturan SMTP dengan format email salah | `from_address` bukan format email | Muncul validasi format email | ✅ |
 
 ### 14.4 Pengaturan Surat Tanda Terima & Kop Surat
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-SET-07 | Simpan pengaturan template surat | Ubah nama penerima, NIP, kop surat | Pengaturan tersimpan | ⬜ |
-| TC-SET-08 | Preview Surat Tanda Terima real-time | Klik "Preview" | PDF preview surat terbuka di browser dengan inputan saat ini | ⬜ |
-| TC-SET-09 | Upload logo kop surat | Upload file `.png` valid | Logo tersimpan & muncul di preview kop surat | ⬜ |
+| TC-SET-07 | Simpan pengaturan template surat | Ubah nama penerima, NIP, kop surat | Pengaturan tersimpan | ✅ |
+| TC-SET-08 | Preview Surat Tanda Terima real-time | Klik "Preview" | PDF preview surat terbuka di browser dengan inputan saat ini | ✅ |
+| TC-SET-09 | Upload logo kop surat | Upload file `.png` valid | Logo tersimpan & muncul di preview kop surat | ✅ |
 
 ---
 
@@ -368,8 +363,8 @@
 
 | ID | Skenario Uji | Data Masukan | Output yang Diharapkan | Status |
 |---|---|---|---|---|
-| TC-LOG-01 | Lihat log aktivitas setelah peminjaman dicatat | Catat peminjaman, buka halaman log | Aktivitas peminjaman tercatat di log | ⬜ |
-| TC-LOG-02 | Lihat log aktivitas setelah pengembalian diproses | Proses pengembalian, buka halaman log | Aktivitas pengembalian tercatat di log | ⬜ |
+| TC-LOG-01 | Lihat log aktivitas setelah peminjaman dicatat | Catat peminjaman, buka halaman log | Aktivitas peminjaman tercatat di log | ✅ |
+| TC-LOG-02 | Lihat log aktivitas setelah pengembalian diproses | Proses pengembalian, buka halaman log | Aktivitas pengembalian tercatat di log | ✅ |
 
 ---
 

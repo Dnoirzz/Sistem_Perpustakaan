@@ -160,17 +160,17 @@
         @endif
 
         <!-- Search & Filter Form -->
-        <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm mb-8">
+        <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm mb-8">
             <form action="{{ route('mahasiswa.books.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search query -->
                 <div class="relative col-span-1 md:col-span-2">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" placeholder="Cari judul buku, penulis, atau penerbit..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                    <input type="text" name="search" placeholder="Cari judul buku, penulis, atau penerbit..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                 </div>
 
                 <!-- Category filter and Submit -->
                 <div class="flex gap-2">
-                    <select name="category" class="flex-1 px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                    <select name="category" class="flex-1 px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->kategori_id }}" {{ request('category') == $cat->kategori_id ? 'selected' : '' }}>
@@ -184,7 +184,7 @@
                     </button>
                     
                     @if(request()->filled('search') || request()->filled('category'))
-                        <a href="{{ route('mahasiswa.books.index') }}" class="py-3 px-4 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs flex items-center justify-center transition-all">
+                        <a href="{{ route('mahasiswa.books.index') }}" class="py-3 px-4 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs flex items-center justify-center transition-all">
                             Reset
                         </a>
                     @endif
@@ -196,7 +196,7 @@
         <section class="mb-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                 @forelse($books as $book)
-                    <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group flex flex-col justify-between">
+                    <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant/100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group flex flex-col justify-between">
                         <div>
                             <!-- Cover area -->
                             <div class="h-56 bg-white relative flex items-center justify-center overflow-hidden border-b border-outline-variant/15">
@@ -267,7 +267,7 @@
 
         <!-- Pagination Section -->
         @if($books->hasPages())
-            <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm">
+            <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 {{ $books->links() }}
             </section>
         @endif

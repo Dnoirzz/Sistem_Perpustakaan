@@ -158,6 +158,12 @@
             </x-slot>
 
             @forelse($penalties as $penalty)
+                @php
+                    $needsReplacement = $penalty->type === 'kehilangan'
+                        && in_array($penalty->penalti_type, ['ganti_buku', 'kombinasi'], true);
+                    $replacementReceived = $penalty->replacement_received_at !== null;
+                    $paymentReceived = $penalty->payment_received_at !== null;
+                @endphp
                 <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
                     <td class="px-8 py-5 whitespace-nowrap">
                         <div class="flex items-center gap-3">
@@ -216,10 +222,27 @@
                     </td>
                     <td class="px-8 py-5 whitespace-nowrap">
                         @if($penalty->status === 'belum_dibayar')
-                            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
-                                <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
-                                Belum Dibayar
-                            </span>
+                            @if($needsReplacement && ! $replacementReceived && $paymentReceived)
+                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                    <span class="w-2 h-2 rounded-full bg-violet-600 animate-pulse"></span>
+                                    Menunggu Buku Pengganti
+                                </span>
+                            @elseif($needsReplacement && ! $replacementReceived)
+                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                    <span class="w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span>
+                                    Menunggu Penyelesaian
+                                </span>
+                            @elseif($needsReplacement && $replacementReceived && ! $paymentReceived)
+                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                    <span class="w-2 h-2 rounded-full bg-sky-600 animate-pulse"></span>
+                                    Menunggu Pembayaran
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
+                                    <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
+                                    Belum Dibayar
+                                </span>
+                            @endif
                         @else
                             <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
                                 <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
@@ -245,7 +268,21 @@
                                 <span class="material-symbols-outlined text-[20px]">info</span>
                             </button>
 
-                            @if($penalty->status === 'belum_dibayar')
+                            @if($needsReplacement && ! $replacementReceived)
+                                <form method="POST" action="{{ route('petugas.penalties.confirm-replacement', $penalty->penalti_id) }}" onsubmit="return confirm('Konfirmasi buku pengganti sudah diterima perpustakaan? Stok akan bertambah 1.')">
+                                    @csrf
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-violet-500 text-white hover:bg-violet-600 transition-all shadow-xs active:scale-95 shadow-violet-200"
+                                        title="Konfirmasi buku pengganti diterima"
+                                        aria-label="Konfirmasi buku pengganti diterima"
+                                    >
+                                        <span class="material-symbols-outlined text-[20px]">library_add_check</span>
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if($penalty->status === 'belum_dibayar' && ! ($penalty->type === 'kehilangan' && $penalty->penalti_type === 'ganti_buku' && ! $replacementReceived) && ! $paymentReceived)
                                 <form method="POST" action="{{ route('petugas.penalties.mark-paid', $penalty->penalti_id) }}" onsubmit="return confirm('Tandai denda ini sebagai lunas?')">
                                     @csrf
                                     <button
@@ -257,9 +294,13 @@
                                         <span class="material-symbols-outlined text-[20px]">check</span>
                                     </button>
                                 </form>
-                            @else
+                            @elseif($penalty->status === 'lunas')
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 text-slate-400 border border-slate-200" title="Sudah lunas">
                                     <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                                </span>
+                            @elseif($paymentReceived)
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-sky-50 text-sky-600 border border-sky-200" title="Pembayaran sudah dikonfirmasi">
+                                    <span class="material-symbols-outlined text-[20px]">payments</span>
                                 </span>
                             @endif
                         </div>

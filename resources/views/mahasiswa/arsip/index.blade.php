@@ -168,8 +168,8 @@
             </div>
         @endif
 
-        <div class="grid gap-8 xl:grid-cols-[1fr_1.1fr]">
-            <section class="rounded-3xl border border-outline-variant/10 bg-white p-8 shadow-sm">
+        <div class="grid gap-8 xl:grid-cols-[1fr_0.8fr]">
+            <section class="rounded-3xl border border-outline-variant/100 bg-white p-8 shadow-sm">
                 <h2 class="mb-6 text-xl font-bold text-on-surface flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[24px]">cloud_upload</span>
                     Form Upload Arsip
@@ -262,7 +262,7 @@
                 </script>
             </section>
 
-            <section class="rounded-3xl border border-outline-variant/10 bg-white p-8 shadow-sm">
+            <section class="rounded-3xl border border-outline-variant/100 bg-white p-8 shadow-sm">
                 <h2 class="mb-6 text-xl font-bold text-on-surface flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[24px]">history</span>
                     Riwayat Arsip Saya
@@ -270,7 +270,7 @@
                 
                 <div class="space-y-4 max-h-[720px] overflow-y-auto pr-2">
                     @forelse($archives as $item)
-                        <article class="rounded-2xl border border-outline-variant/10 p-5 hover:shadow-md transition duration-200 bg-white">
+                        <article class="rounded-2xl border border-outline-variant/100 p-5 hover:shadow-md transition duration-200 bg-white">
                             <div class="flex flex-wrap items-start justify-between gap-4">
                                 <div>
                                     <span class="mb-2 inline-block text-xs font-bold uppercase tracking-wide text-primary bg-primary/10 px-2.5 py-0.5 rounded-full whitespace-nowrap">{{ $item['type_label'] }}</span>

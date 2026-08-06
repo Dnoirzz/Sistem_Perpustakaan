@@ -69,7 +69,7 @@ class PenaltyBookLostTest extends TestCase
         $this->assertSame(0, $this->collection->fresh()->stock);
     }
 
-    public function test_book_replacement_processing_restock_one_copy(): void
+    public function test_book_replacement_processing_restock_only_after_replacement_confirmation(): void
     {
         $loan = $this->makeLoan();
 
@@ -79,10 +79,27 @@ class PenaltyBookLostTest extends TestCase
         ])->assertRedirect(route('petugas.penalties.index'));
 
         $this->assertLostLoanAndPenalty($loan, 'ganti_buku', 0);
+        $this->assertSame(0, $this->collection->fresh()->stock);
+
+        $penalty = $loan->fresh()->penalties()->where('type', 'kehilangan')->firstOrFail();
+        $this->assertNull($penalty->replacement_received_at);
+
+        $this->actingAs($this->petugas)
+            ->post(route('petugas.penalties.confirm-replacement', $penalty->penalti_id))
+            ->assertRedirect(route('petugas.penalties.index'));
+
+        $this->assertSame(1, $this->collection->fresh()->stock);
+        $this->assertSame('lunas', $penalty->fresh()->status);
+        $this->assertNotNull($penalty->fresh()->replacement_received_at);
+
+        $this->actingAs($this->petugas)
+            ->post(route('petugas.penalties.confirm-replacement', $penalty->penalti_id))
+            ->assertSessionHasErrors('penalty');
+
         $this->assertSame(1, $this->collection->fresh()->stock);
     }
 
-    public function test_combination_processing_restock_one_copy_and_store_amount(): void
+    public function test_combination_processing_restock_after_replacement_and_payment_are_confirmed(): void
     {
         $loan = $this->makeLoan();
 
@@ -93,7 +110,26 @@ class PenaltyBookLostTest extends TestCase
         ])->assertRedirect(route('petugas.penalties.index'));
 
         $this->assertLostLoanAndPenalty($loan, 'kombinasi', 10000);
+        $this->assertSame(0, $this->collection->fresh()->stock);
+
+        $penalty = $loan->fresh()->penalties()->where('type', 'kehilangan')->firstOrFail();
+
+        $this->actingAs($this->petugas)
+            ->post(route('petugas.penalties.confirm-replacement', $penalty->penalti_id))
+            ->assertRedirect(route('petugas.penalties.index'));
+
         $this->assertSame(1, $this->collection->fresh()->stock);
+        $this->assertSame('belum_dibayar', $penalty->fresh()->status);
+
+        $this->actingAs($this->petugas)
+            ->post(route('petugas.penalties.mark-paid', $penalty->penalti_id))
+            ->assertRedirect(route('petugas.penalties.index'));
+
+        $this->assertSame('lunas', $penalty->fresh()->status);
+
+        $this->actingAs($this->petugas)
+            ->post(route('petugas.penalties.mark-paid', $penalty->penalti_id))
+            ->assertSessionHas('error', 'Denda ini sudah lunas.');
     }
 
     public function test_overdue_lost_processing_also_records_late_penalty_once(): void
@@ -163,6 +199,47 @@ class PenaltyBookLostTest extends TestCase
             ->assertSee('Checklist Kondisi Fisik')
             ->assertDontSee('return-mode-lost')
             ->assertDontSee('name="is_lost"');
+    }
+
+    public function test_marking_paid_sends_notification_matching_penalty_type(): void
+    {
+        $loan = $this->makeLoan();
+        $penalties = [
+            'keterlambatan' => 'Denda Keterlambatan Lunas',
+            'kerusakan' => 'Sanksi Kerusakan Buku Lunas',
+            'kehilangan' => 'Sanksi Kehilangan Buku Lunas',
+        ];
+
+        foreach ($penalties as $type => $title) {
+            $penalty = Penalty::create([
+                'loan_id' => $loan->loan_id,
+                'user_id' => $this->member->user_id,
+                'type' => $type,
+                'penalti_type' => 'uang_tunai',
+                'amount' => 10000,
+                'description' => "Pengujian {$type}.",
+                'status' => 'belum_dibayar',
+            ]);
+
+            $this->actingAs($this->petugas)
+                ->post(route('petugas.penalties.mark-paid', $penalty->penalti_id))
+                ->assertRedirect(route('petugas.penalties.index'));
+
+            $expectedMessage = match ($type) {
+                'keterlambatan' => 'Denda keterlambatan sebesar Rp 10.000 untuk koleksi "Buku Uji Kehilangan" telah dikonfirmasi lunas.',
+                'kerusakan' => 'Sanksi kerusakan buku sebesar Rp 10.000 untuk koleksi "Buku Uji Kehilangan" telah dikonfirmasi lunas.',
+                'kehilangan' => 'Sanksi kehilangan buku sebesar Rp 10.000 untuk koleksi "Buku Uji Kehilangan" telah dikonfirmasi lunas.',
+            };
+
+            $this->assertSame('lunas', $penalty->fresh()->status);
+            $this->assertDatabaseHas('notifications_custom', [
+                'user_id' => $this->member->user_id,
+                'title' => $title,
+                'message' => $expectedMessage,
+                'url' => route('mahasiswa.loans.penalties'),
+                'type' => 'denda',
+            ]);
+        }
     }
 
     private function processLost(Loan $loan, array $data)

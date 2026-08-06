@@ -160,7 +160,7 @@
             </div>
         @endif
 
-        <section class="mb-8 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+        <section class="mb-8 rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
             <form action="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.index') : route('katalog-arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-5">
                 <div>
                     <select name="search_by" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
@@ -204,7 +204,7 @@
 
         <section class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             @forelse($archives as $item)
-                <article class="flex flex-col justify-between rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm hover:shadow-md transition duration-200">
+                <article class="flex flex-col justify-between rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm hover:shadow-md transition duration-200">
                     <div>
                         <div class="mb-4 flex items-center justify-between gap-4">
                             <span class="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-primary whitespace-nowrap">{{ $item['type_label'] }}</span>
@@ -264,7 +264,7 @@
         </section>
 
         @if($archives->hasPages())
-            <section class="mt-8 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+            <section class="mt-8 rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
                 {{ $archives->links() }}
             </section>
         @endif

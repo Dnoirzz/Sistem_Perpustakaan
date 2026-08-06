@@ -167,7 +167,7 @@
                         return $item->votes->count();
                     });
                 @endphp
-                <div class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden p-8">
+                <div class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden p-8">
                     <!-- Session Header Info -->
                     <div class="border-b border-outline-variant/10 pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>

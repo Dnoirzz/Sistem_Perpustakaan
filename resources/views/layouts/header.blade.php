@@ -50,6 +50,7 @@
 
     <!-- Header Right Section: Notification Bell & Profile Dropdown -->
     <div class="flex items-center gap-3">
+        @if($roleName !== 'admin')
         <!-- Lonceng Notifikasi Bell -->
         <div class="relative" 
              x-data="{ 
@@ -189,6 +190,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Profile & Dropdown Menu Container -->
         <div class="relative" x-data="{ userMenuOpen: false }" @click.outside="userMenuOpen = false">
