@@ -167,13 +167,13 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div class="flex gap-4">
                 <a href="{{ route('petugas.members.index', ['tab' => 'verified']) }}" 
-                   class="px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 {{ $tab !== 'pending' ? 'bg-primary text-white shadow-sm' : 'bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-slate-50 hover:text-primary' }}">
+                   class="px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 {{ $tab !== 'pending' ? 'bg-primary text-white shadow-sm' : 'bg-white border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 hover:text-primary' }}">
                     <span class="material-symbols-outlined text-[18px]">verified_user</span>
                     Anggota Terverifikasi
                 </a>
 
                 <a href="{{ route('petugas.members.index', ['tab' => 'pending']) }}" 
-                   class="px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 {{ $tab === 'pending' ? 'bg-primary text-white shadow-sm' : 'bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-slate-50 hover:text-primary' }}">
+                   class="px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 {{ $tab === 'pending' ? 'bg-primary text-white shadow-sm' : 'bg-white border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 hover:text-primary' }}">
                     <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
                     Verifikasi Pendaftaran
                     @if($pendingCount > 0)
@@ -192,19 +192,19 @@
         </div>
 
         <!-- Filter & Search Section -->
-        <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm mb-8">
+        <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm mb-8">
             <form action="{{ route('petugas.members.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <input type="hidden" name="tab" value="{{ $tab }}">
                 
                 <!-- Search query -->
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau email..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                    <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau email..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                 </div>
 
                 <!-- Role Filter -->
                 <div>
-                    <select name="role_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                    <select name="role_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                         <option value="">Semua Anggota</option>
                         @foreach($roles as $r)
                             <option value="{{ $r->role_id }}" {{ request('role_id') == $r->role_id ? 'selected' : '' }}>
@@ -216,7 +216,7 @@
 
                 <!-- Prodi Filter -->
                 <div>
-                    <select name="prodi_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                    <select name="prodi_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                         <option value="">Semua Program Studi</option>
                         @foreach($prodis as $p)
                             <option value="{{ $p->prodi_id }}" {{ request('prodi_id') == $p->prodi_id ? 'selected' : '' }}>
@@ -232,7 +232,7 @@
                         Terapkan
                     </button>
                     @if(request()->filled('search') || request()->filled('role_id') || request()->filled('prodi_id'))
-                        <a href="{{ route('petugas.members.index', ['tab' => $tab]) }}" class="py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
+                        <a href="{{ route('petugas.members.index', ['tab' => $tab]) }}" class="py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
                             Reset
                         </a>
                     @endif
@@ -356,7 +356,7 @@
                     <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
                         <td class="px-8 py-5 whitespace-nowrap">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/10 shadow-xs">
+                                <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/100 shadow-xs">
                                     {{ substr($m->name, 0, 2) }}
                                 </div>
                                 <div class="flex flex-col">

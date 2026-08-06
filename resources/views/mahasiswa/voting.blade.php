@@ -169,7 +169,7 @@
                 @endphp
                 <div class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden p-8">
                     <!-- Session Header Info -->
-                    <div class="border-b border-outline-variant/10 pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="border-b border-outline-variant/100 pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">Sesi Aktif</span>
@@ -179,7 +179,7 @@
                             <p class="text-sm text-outline">{{ $voting->deskripsi }}</p>
                         </div>
                         <div class="text-right flex-shrink-0">
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 bg-[#f8faff] text-outline border border-outline-variant/20 rounded-2xl">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 bg-[#f8faff] text-outline border border-outline-variant/100 rounded-2xl">
                                 <span class="material-symbols-outlined text-[16px] text-primary">calendar_today</span>
                                 Periode: {{ $voting->tgl_mulai->translatedFormat('d M') }} - {{ $voting->tgl_selesai->translatedFormat('d M Y') }}
                             </span>
@@ -194,7 +194,7 @@
                                 $itemVotesCount = $item->votes->count();
                                 $percentage = $totalSessionVotes > 0 ? round(($itemVotesCount / $totalSessionVotes) * 100) : 0;
                             @endphp
-                            <div class="bg-[#f8faff] rounded-3xl border border-outline-variant/10 overflow-hidden flex flex-col hover:shadow-md transition duration-300 group {{ $hasVoted ? 'border-primary/30 ring-2 ring-primary/10' : '' }}">
+                            <div class="bg-[#f8faff] rounded-3xl border border-outline-variant/100 overflow-hidden flex flex-col hover:shadow-md transition duration-300 group {{ $hasVoted ? 'border-primary/30 ring-2 ring-primary/10' : '' }}">
                                 <!-- Visual Cover Header -->
                                 <div class="h-32 bg-gradient-to-br from-primary to-primary-container relative flex items-center justify-center text-white/20">
                                     <span class="material-symbols-outlined text-[60px]">image</span>
@@ -223,7 +223,7 @@
                                             {{ $item->recommendation->title }}
                                         </h3>
                                         <p class="text-xs text-outline mb-2">Penulis: {{ $item->recommendation->author ?? 'Tidak diketahui' }}</p>
-                                        <p class="text-xs text-on-surface-variant bg-white p-3 border border-outline-variant/10 rounded-2xl min-h-[64px] line-clamp-3">
+                                        <p class="text-xs text-on-surface-variant bg-white p-3 border border-outline-variant/100 rounded-2xl min-h-[64px] line-clamp-3">
                                             <strong class="text-outline">Alasan:</strong> "{{ $item->recommendation->reason ?? 'Mendukung bahan ajar dan referensi materi kuliah.' }}"
                                         </p>
                                     </div>
@@ -240,7 +240,7 @@
                                     </div>
 
                                     <!-- Recommended by Badge -->
-                                    <div class="flex items-center justify-between border-t border-outline-variant/10 pt-4">
+                                    <div class="flex items-center justify-between border-t border-outline-variant/100 pt-4">
                                         <div class="flex flex-col">
                                             <span class="text-[9px] text-outline uppercase tracking-wider font-bold">Diusulkan Oleh</span>
                                             <span class="text-[11px] font-semibold text-on-surface truncate max-w-[120px]">{{ $item->recommendation->user->name ?? 'User' }}</span>
@@ -266,7 +266,7 @@
                     </div>
                 </div>
             @empty
-                <div class="bg-white rounded-3xl border border-outline-variant/10 p-12 text-center max-w-xl mx-auto shadow-sm">
+                <div class="bg-white rounded-3xl border border-outline-variant/100 p-12 text-center max-w-xl mx-auto shadow-sm">
                     <div class="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
                         <span class="material-symbols-outlined text-[40px]">ballot</span>
                     </div>

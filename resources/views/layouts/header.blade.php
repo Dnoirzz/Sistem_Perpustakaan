@@ -31,10 +31,10 @@
     [x-cloak] { display: none !important; }
 </style>
 
-<header class="sticky top-0 flex justify-between items-center mb-8 -mx-4 sm:-mx-10 -mt-6 sm:-mt-10 px-4 sm:px-10 h-[88px] bg-white border-b border-outline-variant/20 shadow-sm z-40">
+<header class="sticky top-0 flex justify-between items-center mb-8 -mx-4 sm:-mx-10 -mt-6 sm:-mt-10 px-4 sm:px-10 h-[88px] bg-white border-b border-outline-variant/10 shadow-sm z-40">
     <div class="flex items-center gap-3.5 min-w-0 flex-1 mr-4">
         @if(isset($targetBackUrl) && $targetBackUrl)
-            <a href="{{ $targetBackUrl }}" class="w-10 h-10 rounded-2xl bg-white hover:bg-slate-100/90 text-on-surface flex items-center justify-center border border-outline-variant/20 transition-all shadow-sm group shrink-0" title="Kembali">
+            <a href="{{ $targetBackUrl }}" class="w-10 h-10 rounded-2xl bg-white hover:bg-slate-100/90 text-on-surface flex items-center justify-center border border-outline-variant/10 transition-all shadow-sm group shrink-0" title="Kembali">
                 <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-primary transition-colors">arrow_back</span>
             </a>
         @else
@@ -90,7 +90,7 @@
             <button 
                 @click="notifOpen = !notifOpen; if(notifOpen) fetchFeed();" 
                 type="button" 
-                class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-100/90 hover:bg-slate-200/80 border border-outline-variant/20 flex items-center justify-center text-on-surface transition-all focus:outline-none cursor-pointer group active:scale-95 shadow-xs"
+                class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-100/90 hover:bg-slate-200/80 border border-outline-variant/10 flex items-center justify-center text-on-surface transition-all focus:outline-none cursor-pointer group active:scale-95 shadow-xs"
                 aria-label="Notifikasi"
             >
                 <span class="material-symbols-outlined text-[22px] text-slate-700 group-hover:text-teal-700 transition-colors">notifications</span>
@@ -115,7 +115,7 @@
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                 x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
-                class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-outline-variant/20 py-3 z-50 overflow-hidden"
+                class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-outline-variant/10 py-3 z-50 overflow-hidden"
             >
                 <!-- Popover Header -->
                 <div class="px-5 py-2.5 flex items-center justify-between border-b border-slate-100">
@@ -197,7 +197,7 @@
             <button 
                 @click="userMenuOpen = !userMenuOpen" 
                 type="button" 
-                class="flex items-center gap-3 p-1.5 pl-3 rounded-2xl hover:bg-slate-100/80 border border-transparent hover:border-outline-variant/20 transition-all focus:outline-none cursor-pointer group"
+                class="flex items-center gap-3 p-1.5 pl-3 rounded-2xl hover:bg-slate-100/80 border border-transparent hover:border-outline-variant/10 transition-all focus:outline-none cursor-pointer group"
                 aria-expanded="false"
                 :aria-expanded="userMenuOpen"
             >
@@ -222,7 +222,7 @@
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                 x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
-                class="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-xl border border-outline-variant/20 py-2 z-50 overflow-hidden"
+                class="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-xl border border-outline-variant/10 py-2 z-50 overflow-hidden"
             >
                 <!-- User Info Header -->
                 <div class="px-4 py-3 border-b border-outline-variant/10 bg-slate-50/60">

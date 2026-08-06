@@ -169,7 +169,7 @@
 
         {{-- Statistik --}}
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">swap_horiz</span>
@@ -182,7 +182,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">warning</span>
@@ -195,7 +195,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-200">
                         <span class="material-symbols-outlined">assignment_turned_in</span>
@@ -211,14 +211,14 @@
 
         {{-- Filter & Search --}}
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex-1">
+            <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex-1">
                 <form action="{{ route('petugas.returns.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                     </div>
                     <div>
-                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                             <option value="">Semua Aktif</option>
                             <option value="dipinjam" {{ request('status') === 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
                             <option value="terlambat" {{ request('status') === 'terlambat' ? 'selected' : '' }}>Terlambat</option>
@@ -231,7 +231,7 @@
                             Terapkan Filter
                         </button>
                         @if(request()->filled('search') || request()->filled('status'))
-                            <a href="{{ route('petugas.returns.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
+                            <a href="{{ route('petugas.returns.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
                                 Reset
                             </a>
                         @endif
@@ -255,7 +255,7 @@
                 <tr class="even:bg-slate-50/40 hover:bg-sky-50/40 transition-colors duration-150 group">
                     <td class="px-4 sm:px-5 py-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-xs flex-shrink-0">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/100 shadow-xs flex-shrink-0">
                                 {{ substr($loan->user->name, 0, 2) }}
                             </div>
                             <div class="flex flex-col">
@@ -400,9 +400,9 @@
                         @if($checklistItems->isNotEmpty())
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 @foreach($checklistItems as $item)
-                                    <label class="flex items-start gap-3 p-4 rounded-2xl border border-outline-variant/20 bg-surface-container-low {{ $loop->last && $checklistItems->count() % 2 === 1 ? 'md:col-span-2' : '' }}">
+                                    <label class="flex items-start gap-3 p-4 rounded-2xl border border-outline-variant/100 bg-surface-container-low {{ $loop->last && $checklistItems->count() % 2 === 1 ? 'md:col-span-2' : '' }}">
                                         <input type="hidden" name="condition_checks[{{ $item->return_checklist_id }}]" value="0">
-                                        <input type="checkbox" name="condition_checks[{{ $item->return_checklist_id }}]" value="1" data-condition-checkbox class="mt-1 rounded border-outline-variant/50 text-primary focus:ring-primary" {{ old("condition_checks.{$item->return_checklist_id}", '1') ? 'checked' : '' }}>
+                                        <input type="checkbox" name="condition_checks[{{ $item->return_checklist_id }}]" value="1" data-condition-checkbox class="mt-1 rounded border-outline-variant/100 text-primary focus:ring-primary" {{ old("condition_checks.{$item->return_checklist_id}", '1') ? 'checked' : '' }}>
                                         <span>
                                             <span class="block text-sm font-bold text-on-surface">{{ $item->item_name }}</span>
                                             <span class="block text-xs text-outline">{{ $item->description ?: 'Tidak ada deskripsi tambahan.' }}</span>
@@ -430,10 +430,10 @@
 
                     <div>
                         <label for="return_condition_notes" class="block text-sm font-bold text-on-surface mb-2">Catatan hasil inspeksi</label>
-                        <textarea id="return_condition_notes" name="return_condition_notes" rows="3" placeholder="Catat kondisi fisik buku yang bermasalah..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('return_condition_notes') }}</textarea>
+                        <textarea id="return_condition_notes" name="return_condition_notes" rows="3" placeholder="Catat kondisi fisik buku yang bermasalah..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('return_condition_notes') }}</textarea>
                     </div>
 
-                    <div id="penalty-fields" class="hidden space-y-4 border border-outline-variant/20 rounded-3xl p-5 bg-slate-50/80">
+                    <div id="penalty-fields" class="hidden space-y-4 border border-outline-variant/100 rounded-3xl p-5 bg-slate-50/80">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h4 class="text-sm font-bold text-on-surface">Sanksi Tambahan</h4>
@@ -447,7 +447,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="penalty_type" class="block text-xs font-bold text-on-surface-variant mb-2">Jenis sanksi</label>
-                                <select id="penalty_type" name="penalty_type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
+                                <select id="penalty_type" name="penalty_type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
                                     <option value="">Pilih jenis sanksi...</option>
                                     @foreach($penaltyRules->where('code', 'kerusakan') as $code => $rule)
                                         <option value="{{ $code }}" {{ old('penalty_type') === $code ? 'selected' : '' }}>{{ $rule->rule_name }}</option>
@@ -461,7 +461,7 @@
 
                             <div>
                                 <label for="settlement_method" class="block text-xs font-bold text-on-surface-variant mb-2">Metode penyelesaian</label>
-                                <select id="settlement_method" name="settlement_method" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
+                                <select id="settlement_method" name="settlement_method" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
                                     <option value="">Pilih metode...</option>
                                     <option value="uang_tunai" {{ old('settlement_method') === 'uang_tunai' ? 'selected' : '' }}>Denda uang tunai</option>
                                     <option value="ganti_buku" {{ old('settlement_method') === 'ganti_buku' ? 'selected' : '' }}>Penggantian buku</option>
@@ -472,18 +472,18 @@
 
                         <div id="penalty-amount-wrapper">
                             <label for="penalty_amount" id="penalty-amount-label" class="block text-xs font-bold text-on-surface-variant mb-2">Nominal denda (Rp)</label>
-                            <input type="number" id="penalty_amount" name="penalty_amount" min="0" step="500" value="{{ old('penalty_amount') }}" placeholder="Contoh: 50000" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
+                            <input type="number" id="penalty_amount" name="penalty_amount" min="0" step="500" value="{{ old('penalty_amount') }}" placeholder="Contoh: 50000" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
                             <p id="penalty-amount-hint" class="text-[11px] text-outline mt-2">Isi nominal jika sanksi melibatkan pembayaran uang tunai.</p>
                         </div>
 
                         <div>
                             <label for="penalty_description" class="block text-xs font-bold text-on-surface-variant mb-2">Keterangan sanksi</label>
-                            <textarea id="penalty_description" name="penalty_description" rows="3" placeholder="Contoh: wajib mengganti buku edisi yang sama paling lambat 7 hari atau membayar sesuai harga buku." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('penalty_description') }}</textarea>
+                            <textarea id="penalty_description" name="penalty_description" rows="3" placeholder="Contoh: wajib mengganti buku edisi yang sama paling lambat 7 hari atau membayar sesuai harga buku." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('penalty_description') }}</textarea>
                         </div>
                     </div>
 
                     <div class="flex gap-3">
-                        <button type="button" onclick="closeReturnModal()" class="flex-1 py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-sm transition-all">
+                        <button type="button" onclick="closeReturnModal()" class="flex-1 py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-sm transition-all">
                             Batal
                         </button>
                         <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200">

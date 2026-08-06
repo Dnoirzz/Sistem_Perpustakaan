@@ -204,7 +204,7 @@
                 @php
                     $unpaidFines = $loan->penalties->where('status', 'belum_dibayar')->sum('amount');
                 @endphp
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col gap-4">
                     <!-- Judul Buku & Penulis -->
                     <div>
                         <h4 class="font-bold text-on-surface text-sm">{{ $loan->collection?->display_title ?? 'Koleksi tidak ditemukan' }}</h4>
@@ -212,7 +212,7 @@
                     </div>
 
                     <!-- Info Tanggal -->
-                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant/10">
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant/100">
                         <div>
                             <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Tanggal Pinjam</span>
                             <span class="text-xs font-semibold text-on-surface">
@@ -228,7 +228,7 @@
                     </div>
 
                     <!-- Status & Denda -->
-                    <div class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+                    <div class="flex justify-between items-center pt-4 border-t border-outline-variant/100">
                         <div>
                             @if($loan->status === 'terlambat' || $loan->isOverdue())
                                 <span class="inline-flex items-center px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wide">
@@ -253,7 +253,7 @@
                     </div>
                 </div>
             @empty
-                <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 text-center text-outline text-sm font-medium shadow-sm">
+                <div class="bg-white p-8 rounded-3xl border border-outline-variant/100 text-center text-outline text-sm font-medium shadow-sm">
                     Anda tidak sedang meminjam buku fisik saat ini.
                 </div>
             @endforelse

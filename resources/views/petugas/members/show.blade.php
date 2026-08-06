@@ -147,7 +147,7 @@
         ])
 
         <!-- Member Profile Overview Card -->
-        <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8 flex flex-col md:flex-row items-center md:items-start gap-8">
+        <section class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm p-8 flex flex-col md:flex-row items-center md:items-start gap-8">
             <div class="w-24 h-24 rounded-3xl bg-slate-100 flex-shrink-0 flex items-center justify-center border-2 border-primary/20 shadow-md">
                 <span class="text-3xl font-black text-primary uppercase">{{ substr($member->name, 0, 2) }}</span>
             </div>
@@ -163,7 +163,7 @@
                     <p class="text-sm text-outline font-semibold mt-1">ID Pengguna: #{{ $member->user_id }}</p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pt-4 border-t border-outline-variant/10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pt-4 border-t border-outline-variant/100">
                     <div>
                         <span class="block text-[10px] font-bold text-outline uppercase tracking-wider">
                             @if($member->role->role_name === 'mahasiswa') Nomor Induk Mahasiswa (NIM) @else Nomor Induk Pegawai (NIP) @endif
@@ -211,8 +211,8 @@
         <div class="grid grid-cols-1 gap-8">
             
             <!-- Section 1: Active Borrowings -->
-            <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden">
-                <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+            <section class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden">
+                <div class="p-8 border-b border-outline-variant/100 flex justify-between items-center">
                     <div>
                         <h3 class="font-headline-md text-on-surface text-lg">Peminjaman Buku Aktif</h3>
                         <p class="text-xs text-outline mt-1">Daftar buku fisik yang saat ini sedang dipinjam</p>
@@ -223,7 +223,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
+                            <tr class="bg-surface-container-low/50 border-b border-outline-variant/100 text-outline-variant text-xs font-bold uppercase tracking-wider">
                                 <th class="py-4 px-8">Judul Buku</th>
                                 <th class="py-4 px-6">Tanggal Pinjam</th>
                                 <th class="py-4 px-6">Batas Pengembalian</th>
@@ -263,8 +263,8 @@
             </section>
 
             <!-- Section 2: Combined History -->
-            <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden">
-                <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+            <section class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden">
+                <div class="p-8 border-b border-outline-variant/100 flex justify-between items-center">
                     <div>
                         <h3 class="font-headline-md text-on-surface text-lg">Riwayat Pengguna</h3>
                         <p class="text-xs text-outline mt-1">Histori peminjaman buku fisik dan log pembacaan arsip digital.</p>
@@ -275,7 +275,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
+                            <tr class="bg-surface-container-low/50 border-b border-outline-variant/100 text-outline-variant text-xs font-bold uppercase tracking-wider">
                                 <th class="py-4 px-8">Jenis Riwayat</th>
                                 <th class="py-4 px-8">Judul Koleksi / Arsip</th>
                                 <th class="py-4 px-6">Mulai Pinjam / Baca</th>

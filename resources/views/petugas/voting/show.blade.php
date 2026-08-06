@@ -145,7 +145,7 @@
             <!-- Left Column: Sesi Info & Perolehan Grafis (Bar) -->
             <div class="lg:col-span-2 space-y-8">
                 <!-- Info Sesi Card -->
-                <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8">
+                <section class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm p-8">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                         <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
                             Sesi Voting Pengadaan
@@ -174,7 +174,7 @@
                     <h2 class="font-headline-md text-on-surface text-2xl mb-2">{{ $voting->title }}</h2>
                     <p class="text-sm text-outline mb-6">{{ $voting->deskripsi ?: 'Tidak ada deskripsi.' }}</p>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-outline-variant/10">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-outline-variant/100">
                         <div>
                             <span class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-1">Tanggal Mulai</span>
                             <span class="font-semibold text-on-surface text-sm">{{ $voting->tgl_mulai->translatedFormat('d F Y') }}</span>
@@ -191,7 +191,7 @@
                 </section>
 
                 <!-- Kelola Kandidat Card -->
-                <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8">
+                <section class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm p-8">
                     <h3 class="font-headline-md text-on-surface text-lg mb-2">Kelola Kandidat Buku</h3>
                     <p class="text-xs text-outline mb-6">Tambahkan opsi buku baru untuk sesi voting ini.</p>
                     
@@ -209,13 +209,13 @@
                         </div>
 
                         <!-- Tambah Manual (Instansi) -->
-                        <div class="space-y-4 border-t md:border-t-0 md:border-l border-outline-variant/10 pt-6 md:pt-0 md:pl-8">
+                        <div class="space-y-4 border-t md:border-t-0 md:border-l border-outline-variant/100 pt-6 md:pt-0 md:pl-8">
                             <h4 class="text-xs font-bold text-outline uppercase tracking-wider">Tambah Buku Manual</h4>
                             <form action="{{ route('petugas.voting.add-manual', $voting->voting_id) }}" method="POST" class="space-y-3">
                                 @csrf
                                 <div class="grid grid-cols-1 gap-3">
-                                    <input type="text" name="title" required placeholder="Judul Buku baru..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
-                                    <input type="text" name="author" placeholder="Penulis/Karya..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
+                                    <input type="text" name="title" required placeholder="Judul Buku baru..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
+                                    <input type="text" name="author" placeholder="Penulis/Karya..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
                                 </div>
                                 <button type="submit" class="w-full py-3 px-4 rounded-2xl bg-tertiary hover:bg-tertiary/90 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2">
                                     <span class="material-symbols-outlined text-[16px]">draw</span>
@@ -227,7 +227,7 @@
                 </section>
 
                 <!-- Peringkat Kandidat (Bar Chart) -->
-                <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8">
+                <section class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm p-8">
                     <h3 class="font-headline-md text-on-surface text-lg mb-6">Hasil Perolehan Suara Kandidat</h3>
                     
                     <div class="space-y-8">
@@ -282,7 +282,7 @@
 
             <!-- Right Column: Voters Logs -->
             <div>
-                <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8 max-h-[600px] overflow-y-auto">
+                <section class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm p-8 max-h-[600px] overflow-y-auto">
                     <h3 class="font-headline-md text-on-surface text-lg mb-4">Pemilih Terakhir</h3>
                     <p class="text-xs text-outline mb-6">Daftar pengguna yang menyalurkan hak suaranya pada sesi ini.</p>
                     
@@ -291,7 +291,7 @@
                         @foreach($voting->votingItems as $item)
                             @foreach($item->votes as $vote)
                                 @php $hasVotes = true; @endphp
-                                <div class="flex items-center gap-3 p-3 rounded-2xl bg-surface-container-low border border-outline-variant/10">
+                                <div class="flex items-center gap-3 p-3 rounded-2xl bg-surface-container-low border border-outline-variant/100">
                                     <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase flex-shrink-0">
                                         {{ substr($vote->user?->name, 0, 2) }}
                                     </div>

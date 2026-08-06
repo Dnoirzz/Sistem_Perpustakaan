@@ -149,8 +149,8 @@
         ])
 
         <div class="max-w-3xl" x-data="{ roleName: '{{ old('role_id') ? ($roles->firstWhere('role_id', old('role_id'))->role_name ?? "") : "" }}' }">
-            <div class="bg-white rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-outline-variant/10 bg-slate-50/50">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-outline-variant/100 bg-slate-50/50">
                     <h3 class="font-bold text-slate-800 text-lg">Form Registrasi User</h3>
                     <p class="text-xs text-outline mt-0.5">Isi data di bawah ini dengan lengkap untuk mendaftarkan akun baru.</p>
                 </div>
@@ -330,7 +330,7 @@
                     </div>
 
                     <!-- Password Fields -->
-                    <div x-show="roleName !== ''" x-transition class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-outline-variant/10">
+                    <div x-show="roleName !== ''" x-transition class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-outline-variant/100">
                         <div>
                             <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
                             <input id="password" 
@@ -354,7 +354,7 @@
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/10">
+                    <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/100">
                         <a href="{{ route('admin.users.index') }}" 
                            class="py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl text-sm transition duration-200">
                             Batal

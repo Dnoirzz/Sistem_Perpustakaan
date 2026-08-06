@@ -319,7 +319,7 @@
                             <h2 class="font-headline-md text-on-surface text-lg font-bold">Status Arsip Digital</h2>
                             <span class="material-symbols-outlined text-primary">cloud_upload</span>
                         </div>
-                        <div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/10 flex gap-4">
+                        <div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/100 flex gap-4">
                             <div class="w-10 h-10 rounded-xl bg-primary/10 flex-shrink-0 flex items-center justify-center text-primary">
                                 <span class="material-symbols-outlined text-[20px]">assignment</span>
                             </div>

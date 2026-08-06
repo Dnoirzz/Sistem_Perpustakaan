@@ -128,14 +128,14 @@
 
         <!-- Search and Filter Form -->
         <section class="mb-8">
-            <div class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-6">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm p-6">
                 <form action="{{ route('petugas.voting.select-recommendations', $voting->voting_id) }}" method="GET" class="flex flex-col md:flex-row gap-4 items-center">
                     <div class="flex-1 w-full relative">
                         <span class="material-symbols-outlined text-outline absolute left-4 top-1/2 -translate-y-1/2 text-[20px]">search</span>
-                        <input type="text" name="search" value="{{ $search }}" placeholder="Cari judul buku atau nama penulis..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Cari judul buku atau nama penulis..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
                     </div>
                     <div class="w-full md:w-48">
-                        <select name="sort_by" onchange="this.form.submit()" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
+                        <select name="sort_by" onchange="this.form.submit()" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
                             <option value="latest" {{ $sortBy === 'latest' ? 'selected' : '' }}>Terbaru</option>
                             <option value="oldest" {{ $sortBy === 'oldest' ? 'selected' : '' }}>Terlama</option>
                             <option value="title_asc" {{ $sortBy === 'title_asc' ? 'selected' : '' }}>Judul: A - Z</option>
@@ -147,7 +147,7 @@
                             Cari
                         </button>
                         @if($search)
-                            <a href="{{ route('petugas.voting.select-recommendations', $voting->voting_id) }}" class="px-6 py-3 rounded-2xl border border-outline-variant/30 text-xs font-bold text-outline hover:bg-slate-50 transition-all flex items-center justify-center">
+                            <a href="{{ route('petugas.voting.select-recommendations', $voting->voting_id) }}" class="px-6 py-3 rounded-2xl border border-outline-variant/100 text-xs font-bold text-outline hover:bg-slate-50 transition-all flex items-center justify-center">
                                 Reset
                             </a>
                         @endif
@@ -157,12 +157,12 @@
         </section>
 
         <!-- Main Form Checklist -->
-        <section class="bg-white rounded-3xl border border-outline-variant/10 shadow-sm overflow-hidden p-8">
+        <section class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden p-8">
             <form action="{{ route('petugas.voting.add-recommendations-batch', $voting->voting_id) }}" method="POST" id="batch-form" class="space-y-6">
                 @csrf
 
                 <!-- Action Bar (Floating indicator style) -->
-                <div class="flex justify-between items-center pb-4 border-b border-outline-variant/10">
+                <div class="flex justify-between items-center pb-4 border-b border-outline-variant/100">
                     <span class="text-xs text-slate-600 font-semibold">Terpilih: <strong id="selected-count" class="text-primary text-sm font-extrabold">0</strong> usulan</span>
                     <button type="submit" id="submit-btn" disabled class="px-8 py-3 rounded-2xl bg-primary hover:bg-primary/90 disabled:bg-slate-100 disabled:text-slate-400 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">add_circle</span>

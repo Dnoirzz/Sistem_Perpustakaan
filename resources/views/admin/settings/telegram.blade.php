@@ -157,8 +157,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left & Middle Column: Configuration Form -->
             <div class="lg:col-span-2 space-y-8">
-                <section class="bg-white rounded-3xl border border-outline-variant/20 p-8 shadow-sm">
-                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant/10">
+                <section class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant/100">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-sky-600 text-3xl">smart_toy</span>
                             <div>
@@ -185,7 +185,7 @@
                         @csrf
                         
                         <!-- Toggle ON/OFF -->
-                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-outline-variant/15">
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-outline-variant/100">
                             <div class="flex flex-col gap-0.5">
                                 <label class="font-label-md text-sm text-on-surface">Aktifkan Notifikasi Telegram</label>
                                 <p class="text-xs text-outline">Kirim pesan Telegram otomatis saat pinjaman dibuat, jatuh tempo, antrian, dsb.</p>
@@ -246,8 +246,8 @@
             <!-- Right Column: Test Connection Tool & Guide -->
             <div class="space-y-8">
                 <!-- Status Sistem Widget -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/15 p-8">
-                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/10">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/100">
                         <span class="material-symbols-outlined text-sky-600 text-3xl">send</span>
                         <div>
                             <h2 class="font-headline-md text-lg text-on-surface">Uji Koneksi Bot</h2>

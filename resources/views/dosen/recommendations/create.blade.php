@@ -137,27 +137,27 @@
             </div>
         @endif
 
-        <div class="max-w-2xl bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8">
+        <div class="max-w-2xl bg-white rounded-3xl border border-outline-variant/100 shadow-sm p-8">
             <form action="{{ route($rolePrefix . '.recommendations.store') }}" method="POST" class="space-y-6">
                 @csrf
                 
                 <div>
                     <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Buku <span class="text-rose-500">*</span></label>
-                    <input type="text" name="title" value="{{ old('title') }}" placeholder="Masukkan judul buku yang diusulkan" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
+                    <input type="text" name="title" value="{{ old('title') }}" placeholder="Masukkan judul buku yang diusulkan" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penulis / Author</label>
-                    <input type="text" name="author" value="{{ old('author') }}" placeholder="Nama penulis buku (opsional)" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                    <input type="text" name="author" value="{{ old('author') }}" placeholder="Nama penulis buku (opsional)" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Alasan Rekomendasi</label>
-                    <textarea name="reason" rows="4" placeholder="Tulis alasan mengapa buku ini perlu diadakan di perpustakaan..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">{{ old('reason') }}</textarea>
+                    <textarea name="reason" rows="4" placeholder="Tulis alasan mengapa buku ini perlu diadakan di perpustakaan..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">{{ old('reason') }}</textarea>
                 </div>
 
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant/10">
-                    <a href="{{ route($rolePrefix . '.recommendations.index') }}" class="px-6 py-3 rounded-2xl border border-outline-variant/30 text-xs font-bold text-outline hover:bg-slate-50 transition-all text-center">
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant/100">
+                    <a href="{{ route($rolePrefix . '.recommendations.index') }}" class="px-6 py-3 rounded-2xl border border-outline-variant/100 text-xs font-bold text-outline hover:bg-slate-50 transition-all text-center">
                         Batal
                     </a>
                     <button type="submit" class="px-6 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-md">

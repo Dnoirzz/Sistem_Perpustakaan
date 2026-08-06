@@ -167,14 +167,14 @@
         </div>
 
         <!-- Filter Section -->
-        <section class="mb-6 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+        <section class="mb-6 rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
             <form action="{{ route('petugas.arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-4">
                 <div class="relative flex items-center">
                     <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama, NIM atau judul" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama, NIM atau judul" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
                 </div>
                 <div>
-                    <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                    <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
                         <option value="">Semua Jenis</option>
                         @foreach($typeOptions as $option)
                             <option value="{{ $option['value'] }}" @selected($selectedType === $option['value'])>{{ $option['label'] }}</option>
@@ -182,7 +182,7 @@
                     </select>
                 </div>
                 <div>
-                    <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                    <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
                         <option value="">Semua Status</option>
                         @foreach($statusOptions as $value => $label)
                             <option value="{{ $value }}" @selected($selectedStatus === $value)>{{ $label }}</option>
@@ -194,7 +194,7 @@
                         Terapkan Filter
                     </button>
                     @if($search !== '' || $selectedType !== '' || $selectedStatus !== '')
-                        <a href="{{ route('petugas.arsip.index') }}" class="rounded-2xl border border-outline-variant/30 px-6 py-3 text-center text-xs font-bold text-on-surface-variant transition-all hover:bg-slate-50 flex items-center justify-center">
+                        <a href="{{ route('petugas.arsip.index') }}" class="rounded-2xl border border-outline-variant/100 px-6 py-3 text-center text-xs font-bold text-on-surface-variant transition-all hover:bg-slate-50 flex items-center justify-center">
                             Reset
                         </a>
                     @endif
@@ -228,7 +228,7 @@
                     </td>
                     <td class="px-8 py-5 whitespace-nowrap">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/10 shadow-xs shrink-0">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/100 shadow-xs shrink-0">
                                 {{ substr($item['mahasiswa_name'] ?? 'M', 0, 2) }}
                             </div>
                             <div class="flex flex-col">

@@ -179,7 +179,7 @@
         <!-- Stats Section -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             <!-- Pinjaman Aktif -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
                         <span class="material-symbols-outlined">auto_stories</span>
@@ -192,7 +192,7 @@
             </div>
             
             <!-- Booking Saya -->
-            <a href="{{ route('dosen.bookings.my') }}" class="block bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <a href="{{ route('dosen.bookings.my') }}" class="block bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">event_available</span>
@@ -203,7 +203,7 @@
             </a>
 
             <!-- Buku Terlambat -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white shadow-lg shadow-red-200">
                         <span class="material-symbols-outlined">warning</span>
@@ -217,7 +217,7 @@
             </div>
 
             <!-- Denda Tertunggak -->
-            <a href="{{ route('dosen.loans.penalties') }}" class="block bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <a href="{{ route('dosen.loans.penalties') }}" class="block bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-200">
                         <span class="material-symbols-outlined">payments</span>
@@ -233,7 +233,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             <!-- Left Column: Active Loans Table -->
             <div class="lg:col-span-2">
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-6 sm:p-8 h-full flex flex-col justify-between">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-6 sm:p-8 h-full flex flex-col justify-between">
                     <div>
                         <div class="mb-6 flex items-center justify-between">
                             <div>
@@ -313,13 +313,13 @@
 
             <!-- Right Column: Status Usulan Buku -->
             <div class="lg:col-span-1">
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8 h-full flex flex-col justify-between">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8 h-full flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-6">
                             <h2 class="font-headline-md text-on-surface text-lg font-bold">Usulan Buku Baru</h2>
                             <span class="material-symbols-outlined text-primary">rate_review</span>
                         </div>
-                        <div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/10 flex gap-4">
+                        <div class="p-4 bg-surface-container-low rounded-2xl border border-outline-variant/100 flex gap-4">
                             <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex-shrink-0 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
                             </div>
@@ -339,7 +339,7 @@
         </div>
 
         <!-- Full Width Dynamic Book Recommendations Section (5 Koleksi Penuh) -->
-        <section class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-outline-variant/10">
+        <section class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-outline-variant/100">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-2.5">
                     <span class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">

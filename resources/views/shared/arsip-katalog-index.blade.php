@@ -163,7 +163,7 @@
         <section class="mb-8 rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
             <form action="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.index') : route('katalog-arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-5">
                 <div>
-                    <select name="search_by" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                    <select name="search_by" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
                         <option value="all" @selected(request('search_by') === 'all' || !request('search_by'))>Cari Berdasarkan</option>
                         <option value="judul" @selected(request('search_by') === 'judul')>Judul Karya Ilmiah</option>
                         <option value="penulis" @selected(request('search_by') === 'penulis')>Nama Mahasiswa / NIM</option>
@@ -174,10 +174,10 @@
                 </div>
                 <div class="relative flex items-center">
                     <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Kata kunci pencarian" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Kata kunci pencarian" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
                 </div>
                 <div>
-                    <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                    <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
                         <option value="">Semua Jenis</option>
                         @foreach($typeOptions as $typeOption)
                             <option value="{{ $typeOption['value'] }}" @selected(request('type') === $typeOption['value'])>{{ $typeOption['label'] }}</option>
@@ -185,7 +185,7 @@
                     </select>
                 </div>
                 <div>
-                    <select name="prodi_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                    <select name="prodi_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
                         <option value="">Semua Prodi</option>
                         @foreach($prodis as $prodi)
                             <option value="{{ $prodi->prodi_id }}" @selected((string) request('prodi_id') === (string) $prodi->prodi_id)>{{ $prodi->nama_prodi }}</option>
@@ -193,7 +193,7 @@
                     </select>
                 </div>
                 <div class="flex gap-3">
-                    <input type="number" name="year" value="{{ request('year') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
+                    <input type="number" name="year" value="{{ request('year') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
                     <button class="flex items-center justify-center gap-1.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-6 py-3 text-xs shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
                         <span class="material-symbols-outlined text-[18px]">search</span>
                         Cari
@@ -215,7 +215,7 @@
                         </div>
                         <h2 class="line-clamp-2 text-[17px] font-bold text-on-surface mb-4 leading-snug" style="font-family: Outfit, sans-serif;">{{ $item['title'] }}</h2>
                         
-                        <div class="space-y-2 border-t border-outline-variant/10 pt-4 text-xs text-outline font-semibold">
+                        <div class="space-y-2 border-t border-outline-variant/100 pt-4 text-xs text-outline font-semibold">
                             <p class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-[16px] text-primary">school</span> 
                                 Mahasiswa: <strong class="text-on-surface">{{ $item['mahasiswa_name'] ?? '-' }}</strong>
@@ -246,7 +246,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="mt-6 border-t border-outline-variant/10 pt-4">
+                    <div class="mt-6 border-t border-outline-variant/100 pt-4">
                         <a href="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.show', [$item['type'], $item['id']]) : route('katalog-arsip.show', [$item['type'], $item['id']]) }}" class="w-full inline-flex items-center justify-center gap-1.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-5 py-3.5 text-sm shadow-lg shadow-primary/15 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                             Lihat Detail
@@ -254,7 +254,7 @@
                     </div>
                 </article>
             @empty
-                <div class="col-span-full rounded-3xl border border-outline-variant/10 bg-white p-12 text-center text-outline shadow-sm font-semibold">
+                <div class="col-span-full rounded-3xl border border-outline-variant/100 bg-white p-12 text-center text-outline shadow-sm font-semibold">
                     <div class="flex flex-col items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-4xl text-outline-variant">folder_open</span>
                         <span>Arsip tidak ditemukan untuk filter yang dipilih.</span>

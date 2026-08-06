@@ -110,7 +110,7 @@
 
         {{-- Widget Statistik Ringkasan Denda --}}
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">gavel</span>
@@ -122,7 +122,7 @@
                     <span class="text-xs text-outline font-semibold">denda</span>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">payments</span>
@@ -133,7 +133,7 @@
                     <span class="text-3xl font-bold text-on-surface">Rp {{ number_format($stats['unpaid_total'], 0, ',', '.') }}</span>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">check_circle</span>
@@ -273,7 +273,7 @@
         {{-- Tampilan Mobile Card List --}}
         <div class="lg:hidden space-y-4">
             @forelse($penalties as $penalty)
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col gap-4">
                     <div class="flex justify-between items-start">
                         <div>
                             <h4 class="font-bold text-on-surface text-sm">
@@ -302,7 +302,7 @@
                         @endif
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 pt-3 border-t border-outline-variant/10 text-xs">
+                    <div class="grid grid-cols-2 gap-4 pt-3 border-t border-outline-variant/100 text-xs">
                         <div>
                             <span class="text-[10px] text-outline uppercase block mb-0.5">Jenis Sanksi</span>
                             <span class="font-semibold text-on-surface">{{ ucfirst($penalty->type) }}</span>
@@ -317,11 +317,11 @@
                         </div>
                     </div>
 
-                    <div class="pt-3 border-t border-outline-variant/10 flex justify-between items-center">
+                    <div class="pt-3 border-t border-outline-variant/100 flex justify-between items-center">
                         <span class="text-xs text-outline font-medium">Rincian Info:</span>
                         <button
                             type="button"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-outline-variant/20 bg-slate-50 text-primary font-bold text-xs hover:bg-primary hover:text-white transition-all"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-outline-variant/100 bg-slate-50 text-primary font-bold text-xs hover:bg-primary hover:text-white transition-all"
                             data-penalty-info
                             data-member="{{ Auth::user()->name }}"
                             data-book="{{ $penalty->loan?->collection?->display_title ?? 'Koleksi' }}"
@@ -336,7 +336,7 @@
                     </div>
                 </div>
             @empty
-                <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 text-center text-outline text-sm font-medium shadow-sm">
+                <div class="bg-white p-8 rounded-3xl border border-outline-variant/100 text-center text-outline text-sm font-medium shadow-sm">
                     <span class="material-symbols-outlined text-[36px] text-emerald-500 block mb-2">verified_user</span>
                     Selamat! Anda tidak memiliki catatan denda atau sanksi saat ini.
                 </div>
@@ -354,8 +354,8 @@
     <div id="penalty-info-modal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-slate-950/45" data-close-penalty-info></div>
         <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="w-full max-w-xl rounded-3xl bg-white border border-outline-variant/10 shadow-2xl overflow-hidden">
-                <div class="flex items-start justify-between gap-4 px-6 py-5 border-b border-outline-variant/10">
+            <div class="w-full max-w-xl rounded-3xl bg-white border border-outline-variant/100 shadow-2xl overflow-hidden">
+                <div class="flex items-start justify-between gap-4 px-6 py-5 border-b border-outline-variant/100">
                     <div>
                         <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">Informasi Denda Saya</p>
                         <h2 class="mt-1 font-headline-md text-on-surface">Rincian & Catatan Sanksi</h2>
@@ -394,7 +394,7 @@
                         </div>
                     </div>
 
-                    <div class="rounded-3xl border border-outline-variant/10 bg-slate-50 px-5 py-4">
+                    <div class="rounded-3xl border border-outline-variant/100 bg-slate-50 px-5 py-4">
                         <p class="text-[11px] font-bold uppercase tracking-widest text-outline">Keterangan Tambahan</p>
 
                         <div class="mt-3 space-y-3">
@@ -578,7 +578,7 @@
             if (parsed.extras.length) {
                 parsed.extras.forEach((item) => {
                     const row = document.createElement('div');
-                    row.className = 'rounded-2xl bg-white/70 px-4 py-3 border border-outline-variant/10';
+                    row.className = 'rounded-2xl bg-white/70 px-4 py-3 border border-outline-variant/100';
 
                     const title = document.createElement('p');
                     title.className = 'text-[11px] font-bold uppercase tracking-widest text-outline';

@@ -339,7 +339,7 @@
         </section>
 
         <!-- Section 2: Repositori Karya Ilmiah Digital (5 Laporan TA / Proposal / PKL Terbaru) -->
-        <section id="repositori" class="py-10 sm:py-14 bg-slate-50/70 border-t border-b border-outline-variant/15">
+        <section id="repositori" class="py-10 sm:py-14 bg-slate-50/70 border-t border-b border-outline-variant/100">
             <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
                 <div class="flex justify-between items-end mb-6 sm:mb-8">
                     <div>

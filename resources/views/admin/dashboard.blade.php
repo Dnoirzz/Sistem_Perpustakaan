@@ -179,7 +179,7 @@
         <!-- Stats Section -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             <!-- Total Pengguna -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
                         <span class="material-symbols-outlined">group</span>
@@ -193,7 +193,7 @@
             </div>
             
             <!-- Mahasiswa -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">school</span>
@@ -207,7 +207,7 @@
             </div>
 
             <!-- Dosen -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">co_present</span>
@@ -221,7 +221,7 @@
             </div>
 
             <!-- Petugas -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">badge</span>
@@ -238,7 +238,7 @@
         <!-- Charts Section -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
             <!-- Line Chart: Tren Peminjaman -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm">
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <h3 class="text-sm font-bold text-on-surface mb-4">Tren Peminjaman Bulanan ({{ date('Y') }})</h3>
                 <div class="h-64 relative">
                     <canvas id="chartTrenPeminjaman"></canvas>
@@ -246,7 +246,7 @@
             </div>
 
             <!-- Pie Chart: Distribusi Kategori -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col justify-between">
                 <h3 class="text-sm font-bold text-on-surface mb-4">Distribusi Kategori Populer</h3>
                 <div class="h-64 relative flex items-center justify-center">
                     @if(count($categoryLabels) > 0)
@@ -263,8 +263,8 @@
             <!-- Left Column: Recent Users Table -->
             <div class="lg:col-span-2 space-y-8">
                 <!-- Recent Users Section -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-                    <div class="p-8 border-b border-outline-variant/10 flex items-center justify-between">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 overflow-hidden">
+                    <div class="p-8 border-b border-outline-variant/100 flex items-center justify-between">
                         <div>
                             <h2 class="font-headline-md text-on-surface">Pendaftar Terbaru</h2>
                             <p class="text-sm text-outline">Pengguna terdaftar baru-baru ini dalam sistem.</p>
@@ -338,20 +338,20 @@
             <!-- Right Column: Sidebar Widgets -->
             <div class="space-y-8">
                 <!-- Status Sistem Widget -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="font-headline-md text-on-surface text-lg">Status Sistem</h2>
                         <span class="material-symbols-outlined text-primary">dns</span>
                     </div>
                     <div class="space-y-4">
-                        <div class="flex justify-between items-center py-2 border-b border-outline-variant/10 text-xs">
+                        <div class="flex justify-between items-center py-2 border-b border-outline-variant/100 text-xs">
                             <span class="text-outline font-medium">Database</span>
                             <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold uppercase">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                 Connected
                             </span>
                         </div>
-                        <div class="flex justify-between items-center py-2 border-b border-outline-variant/10 text-xs">
+                        <div class="flex justify-between items-center py-2 border-b border-outline-variant/100 text-xs">
                             <span class="text-outline font-medium">Waktu Server</span>
                             <span class="font-semibold text-on-surface-variant">{{ now()->translatedFormat('H:i') }} WIB</span>
                         </div>

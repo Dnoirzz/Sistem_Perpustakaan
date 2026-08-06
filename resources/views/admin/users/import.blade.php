@@ -152,8 +152,8 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <!-- Left: Upload Form Card -->
-            <div class="lg:col-span-7 bg-white rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-outline-variant/10 bg-slate-50/50">
+            <div class="lg:col-span-7 bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-outline-variant/100 bg-slate-50/50">
                     <h3 class="font-bold text-slate-800 text-lg">Unggah Berkas Template</h3>
                     <p class="text-xs text-outline mt-0.5">Berkas yang didukung adalah .xlsx, .xls, atau .csv (Maksimal 10MB)</p>
                 </div>
@@ -186,7 +186,7 @@
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/10">
+                    <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/100">
                         <a href="{{ route('admin.users.index') }}" 
                            class="py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl text-sm transition duration-200">
                             Batal
@@ -203,7 +203,7 @@
             <!-- Right: Guideline Card -->
             <div class="lg:col-span-5 space-y-6">
                 <!-- Template Download Card -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/15 shadow-sm space-y-4">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm space-y-4">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shadow-sm border border-emerald-100">
                             <span class="material-symbols-outlined text-[24px]">download_for_offline</span>
@@ -220,7 +220,7 @@
                 </div>
 
                 <!-- Guidelines Card -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/15 shadow-sm space-y-4">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm space-y-4">
                     <h4 class="font-bold text-slate-800 text-base border-b border-slate-100 pb-2 flex items-center gap-2">
                         <span class="material-symbols-outlined text-amber-500 text-[20px]">info</span>
                         Panduan Pengisian Data

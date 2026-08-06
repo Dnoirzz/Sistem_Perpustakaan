@@ -172,12 +172,12 @@
         ])
 
         <!-- Form Card Container -->
-        <section class="max-w-6xl bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+        <section class="max-w-6xl bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
             <form action="{{ route('petugas.members.store') }}" method="POST" class="space-y-6">
                 @csrf
 
                 <!-- Basic User Info Section -->
-                <div class="border-b border-outline-variant/10 pb-6">
+                <div class="border-b border-outline-variant/100 pb-6">
                     <h3
                         class="text-sm font-bold text-on-surface-variant mb-4 uppercase tracking-widest flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[18px]">account_box</span>
@@ -190,7 +190,7 @@
                             <label for="name" class="block text-xs font-bold text-outline uppercase tracking-wider">Nama
                                 Lengkap</label>
                             <input type="text" name="name" id="name" placeholder="Nama Lengkap"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 value="{{ old('name') }}" required />
                             @error('name')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
@@ -203,7 +203,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Alamat
                                 Email</label>
                             <input type="email" name="email" id="email" placeholder="example@gmail.com"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 value="{{ old('email') }}" required />
                             @error('email')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
@@ -216,7 +216,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Nomor Handphone
                                 (WhatsApp)</label>
                             <input type="text" name="no_hp" id="no_hp" placeholder="0812345xxxx"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 value="{{ old('no_hp') }}" required />
                             @error('no_hp')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
@@ -229,7 +229,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Jenis
                                 Keanggotaan</label>
                             <select name="role_id" id="role_id" x-model="roleId"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all"
                                 required>
                                 @foreach($roles as $r)
                                     <option value="{{ $r->role_id }}">{{ ucfirst($r->role_name) }}</option>
@@ -243,7 +243,7 @@
                 </div>
 
                 <!-- Academic Info Section (Dynamic based on selected role) -->
-                <div class="border-b border-outline-variant/10 pb-6">
+                <div class="border-b border-outline-variant/100 pb-6">
                     <h3
                         class="text-sm font-bold text-on-surface-variant mb-4 uppercase tracking-widest flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[18px]">school</span>
@@ -257,7 +257,7 @@
                             <label for="nim" class="block text-xs font-bold text-outline uppercase tracking-wider">Nomor
                                 Induk Mahasiswa (NIM)</label>
                             <input type="text" name="nim" id="nim" placeholder="Masukkan NIM"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 value="{{ old('nim') }}" :required="roleName === 'mahasiswa'" />
                             @error('nim')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
@@ -270,7 +270,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Program
                                 Studi</label>
                             <select name="prodi_id" id="prodi_id_mhs"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all"
                                 :required="roleName === 'mahasiswa'">
                                 <option value="" disabled selected>Pilih Program Studi</option>
                                 @foreach($prodis as $p)
@@ -288,7 +288,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Semester</label>
                             <input type="number" name="semester" id="semester" placeholder="Semester (1-14)" min="1"
                                 max="14"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 value="{{ old('semester', 1) }}" :required="roleName === 'mahasiswa'" />
                             @error('semester')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
@@ -303,7 +303,7 @@
                             <label for="nip" class="block text-xs font-bold text-outline uppercase tracking-wider">Nomor
                                 Induk Pegawai (NIP)</label>
                             <input type="text" name="nip" id="nip" placeholder="Masukkan NIP Dosen"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 value="{{ old('nip') }}" :required="roleName === 'dosen'" />
                             @error('nip')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
@@ -316,7 +316,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Program
                                 Studi</label>
                             <select name="prodi_id" id="prodi_id_dsn"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all"
                                 :required="roleName === 'dosen'">
                                 <option value="" disabled selected>Pilih Program Studi</option>
                                 @foreach($prodis as $p)
@@ -345,7 +345,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Password
                                 Akun</label>
                             <input type="password" name="password" id="password" placeholder="Minimal 8 karakter"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 required />
                             @error('password')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
@@ -359,16 +359,16 @@
                                 Password</label>
                             <input type="password" name="password_confirmation" id="password_confirmation"
                                 placeholder="Ulangi password"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 required />
                         </div>
                     </div>
                 </div>
 
                 <!-- Action buttons -->
-                <div class="flex justify-end gap-4 border-t border-outline-variant/10 pt-6">
+                <div class="flex justify-end gap-4 border-t border-outline-variant/100 pt-6">
                     <a href="{{ route('petugas.members.index') }}"
-                        class="px-8 py-4 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
+                        class="px-8 py-4 rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
                         Batal
                     </a>
                     <button type="submit"

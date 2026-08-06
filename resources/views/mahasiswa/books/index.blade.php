@@ -199,7 +199,7 @@
                     <div class="bg-white rounded-3xl overflow-hidden border border-outline-variant/100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group flex flex-col justify-between">
                         <div>
                             <!-- Cover area -->
-                            <div class="h-56 bg-white relative flex items-center justify-center overflow-hidden border-b border-outline-variant/15">
+                            <div class="h-56 bg-white relative flex items-center justify-center overflow-hidden border-b border-outline-variant/100">
                                 <img src="{{ $book->cover_url }}" alt="{{ $book->judul }}" class="w-full h-full {{ $book->cover_image ? 'object-cover' : 'object-contain p-6' }} group-hover:scale-105 transition-transform duration-300"/>
                                 
                                 <div class="absolute bottom-3 left-3 bg-white/80 backdrop-blur-md rounded-xl px-2.5 py-1 flex items-center">
@@ -221,7 +221,7 @@
 
                         <!-- Card footer / actions -->
                         <div class="p-6 pt-0">
-                            <div class="flex items-center justify-between gap-2 border-t border-outline-variant/10 pt-4 mt-2">
+                            <div class="flex items-center justify-between gap-2 border-t border-outline-variant/100 pt-4 mt-2">
                                 <!-- Status badge -->
                                 @if($book->stock > 0)
                                     <div class="flex flex-col">
@@ -256,7 +256,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="col-span-full bg-white p-12 text-center rounded-3xl border border-outline-variant/10 shadow-sm text-outline">
+                    <div class="col-span-full bg-white p-12 text-center rounded-3xl border border-outline-variant/100 shadow-sm text-outline">
                         <span class="material-symbols-outlined text-[64px] text-outline opacity-40 mb-3">sentiment_dissatisfied</span>
                         <p class="font-bold text-lg">Buku tidak ditemukan</p>
                         <p class="text-xs text-outline-variant mt-1">Gunakan kata kunci pencarian lain atau pilih kategori yang berbeda.</p>

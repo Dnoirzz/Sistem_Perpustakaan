@@ -4,7 +4,7 @@
     <div id="sipus-modal-backdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-[4px] transition-opacity duration-300 opacity-0 cursor-pointer"></div>
     
     <!-- Modal Card with slide-up & scale transition -->
-    <div id="sipus-modal-card" class="bg-white rounded-3xl border border-outline-variant/15 shadow-2xl max-w-sm w-full p-6 relative z-10 transform scale-95 opacity-0 transition-all duration-300 flex flex-col items-center text-center gap-5">
+    <div id="sipus-modal-card" class="bg-white rounded-3xl border border-outline-variant/100 shadow-2xl max-w-sm w-full p-6 relative z-10 transform scale-95 opacity-0 transition-all duration-300 flex flex-col items-center text-center gap-5">
         <!-- Icon Wrapper -->
         <div id="sipus-modal-icon-container" class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm transition-all duration-300">
             <span id="sipus-modal-icon" class="material-symbols-outlined text-[32px]">warning</span>

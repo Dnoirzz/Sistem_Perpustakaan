@@ -44,29 +44,29 @@
         ])
 
         <div class="max-w-3xl">
-            <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+            <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                 <form action="{{ route('petugas.return-settings.checklists.update', $checklist->return_checklist_id) }}" method="POST" class="space-y-6">
                     @csrf
                     @method('PUT')
                     <div>
                         <label for="item_name" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Nama Item</label>
-                        <input type="text" id="item_name" name="item_name" value="{{ old('item_name', $checklist->item_name) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold">
+                        <input type="text" id="item_name" name="item_name" value="{{ old('item_name', $checklist->item_name) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold">
                     </div>
                     <div>
                         <label for="description" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Deskripsi</label>
-                        <textarea id="description" name="description" rows="4" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('description', $checklist->description) }}</textarea>
+                        <textarea id="description" name="description" rows="4" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('description', $checklist->description) }}</textarea>
                     </div>
                     <div>
                         <label for="sort_order" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Urutan Tampil</label>
-                        <input type="number" id="sort_order" name="sort_order" min="1" value="{{ old('sort_order', $checklist->sort_order) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold">
+                        <input type="number" id="sort_order" name="sort_order" min="1" value="{{ old('sort_order', $checklist->sort_order) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold">
                     </div>
-                    <label class="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border border-outline-variant/20">
+                    <label class="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border border-outline-variant/100">
                         <input type="hidden" name="is_active" value="0">
-                        <input type="checkbox" name="is_active" value="1" class="rounded border-outline-variant/50 text-primary focus:ring-primary" {{ old('is_active', $checklist->is_active) ? 'checked' : '' }}>
+                        <input type="checkbox" name="is_active" value="1" class="rounded border-outline-variant/100 text-primary focus:ring-primary" {{ old('is_active', $checklist->is_active) ? 'checked' : '' }}>
                         <span class="text-sm font-semibold text-on-surface">Checklist aktif</span>
                     </label>
                     <div class="flex gap-4">
-                        <a href="{{ route('petugas.return-settings.index') }}" class="flex-1 py-4 text-center rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all">
+                        <a href="{{ route('petugas.return-settings.index') }}" class="flex-1 py-4 text-center rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all">
                             Kembali
                         </a>
                         <button type="submit" class="flex-1 py-4 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-opacity-95 transition-all shadow-lg shadow-primary/20">

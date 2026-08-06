@@ -148,7 +148,7 @@
 
         <!-- Form Card Container -->
         <div class="max-w-xl">
-            <div class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+            <div class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="font-headline-md text-on-surface text-lg">Form Edit Kategori</h3>
                     <span class="material-symbols-outlined text-primary">edit_note</span>
@@ -159,14 +159,14 @@
                     @method('PUT')
                     <div class="space-y-2">
                         <label for="kategori_name" class="block text-xs font-bold text-outline uppercase tracking-wider">Nama Kategori</label>
-                        <input type="text" name="kategori_name" id="kategori_name" placeholder="Nama Kategori" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('kategori_name', $category->kategori_name) }}" required/>
+                        <input type="text" name="kategori_name" id="kategori_name" placeholder="Nama Kategori" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('kategori_name', $category->kategori_name) }}" required/>
                         @error('kategori_name')
                             <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div class="flex gap-4">
-                        <a href="{{ route('petugas.categories.index') }}" class="flex-1 py-4 text-center rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all">
+                        <a href="{{ route('petugas.categories.index') }}" class="flex-1 py-4 text-center rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all">
                             Batal
                         </a>
                         <button type="submit" class="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">

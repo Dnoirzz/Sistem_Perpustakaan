@@ -155,7 +155,7 @@
 
         {{-- Statistik --}}
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">hourglass_empty</span>
@@ -169,7 +169,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">check_circle</span>
@@ -183,7 +183,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-200">
                         <span class="material-symbols-outlined">done_all</span>
@@ -200,14 +200,14 @@
 
         {{-- Filter & Search --}}
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex-1">
+            <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex-1">
                 <form action="{{ route('petugas.antrian.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                     </div>
                     <div>
-                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                             <option value="">Semua Status</option>
                             <option value="menunggu" {{ request('status') === 'menunggu' ? 'selected' : '' }}>Menunggu</option>
                             <option value="tersedia" {{ request('status') === 'tersedia' ? 'selected' : '' }}>Buku Tersedia</option>
@@ -219,7 +219,7 @@
                             Terapkan Filter
                         </button>
                         @if(request()->filled('search') || request()->filled('status'))
-                            <a href="{{ route('petugas.antrian.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
+                            <a href="{{ route('petugas.antrian.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
                                 Reset
                             </a>
                         @endif
@@ -245,7 +245,7 @@
                     </td>
                     <td class="px-8 py-5 whitespace-nowrap">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/10 shadow-xs">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/100 shadow-xs">
                                 {{ substr($antrian->user->name, 0, 2) }}
                             </div>
                             <div class="flex flex-col">

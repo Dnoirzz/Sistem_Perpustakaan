@@ -140,17 +140,17 @@
         ])
 
         <!-- Search Bar -->
-        <section class="mb-8 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+        <section class="mb-8 rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
             <form action="{{ route('admin.activity-logs.index') }}" method="GET" class="flex items-center gap-4">
                 <div class="relative flex-1">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama pengguna atau rincian aktivitas..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama pengguna atau rincian aktivitas..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
                 </div>
                 <button type="submit" class="px-6 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-md">
                     Cari Log
                 </button>
                 @if($search !== null && $search !== '')
-                    <a href="{{ route('admin.activity-logs.index') }}" class="rounded-2xl border border-outline-variant/30 px-6 py-3 text-center text-xs font-bold text-outline transition-all hover:bg-slate-50 flex items-center justify-center">
+                    <a href="{{ route('admin.activity-logs.index') }}" class="rounded-2xl border border-outline-variant/100 px-6 py-3 text-center text-xs font-bold text-outline transition-all hover:bg-slate-50 flex items-center justify-center">
                         Clear
                     </a>
                 @endif
@@ -158,7 +158,7 @@
         </section>
 
         <!-- Table Card -->
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
+        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
@@ -174,7 +174,7 @@
                             <tr class="hover:bg-surface-container-low/30 transition-colors">
                                 <td class="px-8 py-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-xs font-bold text-primary border border-outline-variant/10">
+                                        <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-xs font-bold text-primary border border-outline-variant/100">
                                             {{ strtoupper(substr($log->user?->name ?? 'U', 0, 2)) }}
                                         </div>
                                         <span class="font-bold text-on-surface text-sm">{{ $log->user?->name ?: 'Akun Dihapus' }}</span>
@@ -206,7 +206,7 @@
                 </table>
             </div>
             @if($logs->hasPages())
-                <div class="p-6 border-t border-outline-variant/10">
+                <div class="p-6 border-t border-outline-variant/100">
                     {{ $logs->links() }}
                 </div>
             @endif

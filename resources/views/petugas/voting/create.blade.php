@@ -127,14 +127,14 @@
         ])
 
         <!-- Form Card -->
-        <section class="max-w-3xl bg-white rounded-3xl border border-outline-variant/10 shadow-sm p-8">
+        <section class="max-w-3xl bg-white rounded-3xl border border-outline-variant/100 shadow-sm p-8">
             <form action="{{ route('petugas.voting.store') }}" method="POST" class="space-y-6">
                 @csrf
 
                 <!-- Judul Voting -->
                 <div>
                     <label for="title" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Sesi Voting <span class="text-rose-500">*</span></label>
-                    <input type="text" name="title" id="title" required value="{{ old('title') }}" placeholder="Contoh: Voting Pengadaan Buku Semester Ganjil 2026" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('title') border-rose-500 @enderror">
+                    <input type="text" name="title" id="title" required value="{{ old('title') }}" placeholder="Contoh: Voting Pengadaan Buku Semester Ganjil 2026" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('title') border-rose-500 @enderror">
                     @error('title')
                         <p class="mt-1.5 text-xs font-semibold text-rose-500">{{ $message }}</p>
                     @enderror
@@ -143,7 +143,7 @@
                 <!-- Deskripsi -->
                 <div>
                     <label for="deskripsi" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Deskripsi / Informasi Pendukung</label>
-                    <textarea name="deskripsi" id="deskripsi" rows="4" placeholder="Jelaskan detail mengenai sesi voting ini..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('deskripsi') border-rose-500 @enderror">{{ old('deskripsi') }}</textarea>
+                    <textarea name="deskripsi" id="deskripsi" rows="4" placeholder="Jelaskan detail mengenai sesi voting ini..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('deskripsi') border-rose-500 @enderror">{{ old('deskripsi') }}</textarea>
                     @error('deskripsi')
                         <p class="mt-1.5 text-xs font-semibold text-rose-500">{{ $message }}</p>
                     @enderror
@@ -154,7 +154,7 @@
                     <!-- Tanggal Mulai -->
                     <div>
                         <label for="tgl_mulai" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tanggal Mulai <span class="text-rose-500">*</span></label>
-                        <input type="date" name="tgl_mulai" id="tgl_mulai" required value="{{ old('tgl_mulai', date('Y-m-d')) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('tgl_mulai') border-rose-500 @enderror">
+                        <input type="date" name="tgl_mulai" id="tgl_mulai" required value="{{ old('tgl_mulai', date('Y-m-d')) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('tgl_mulai') border-rose-500 @enderror">
                         @error('tgl_mulai')
                             <p class="mt-1.5 text-xs font-semibold text-rose-500">{{ $message }}</p>
                         @enderror
@@ -163,7 +163,7 @@
                     <!-- Tanggal Selesai -->
                     <div>
                         <label for="tgl_selesai" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tanggal Selesai <span class="text-rose-500">*</span></label>
-                        <input type="date" name="tgl_selesai" id="tgl_selesai" required value="{{ old('tgl_selesai') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('tgl_selesai') border-rose-500 @enderror">
+                        <input type="date" name="tgl_selesai" id="tgl_selesai" required value="{{ old('tgl_selesai') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('tgl_selesai') border-rose-500 @enderror">
                         @error('tgl_selesai')
                             <p class="mt-1.5 text-xs font-semibold text-rose-500">{{ $message }}</p>
                         @enderror
@@ -171,8 +171,8 @@
                 </div>
 
                 <!-- Submit Button -->
-                <div class="pt-4 border-t border-outline-variant/10 flex justify-end gap-3">
-                    <a href="{{ route('petugas.voting.index') }}" class="px-6 py-3.5 rounded-2xl border border-outline-variant/30 text-xs font-bold text-outline hover:bg-slate-50 transition-all">
+                <div class="pt-4 border-t border-outline-variant/100 flex justify-end gap-3">
+                    <a href="{{ route('petugas.voting.index') }}" class="px-6 py-3.5 rounded-2xl border border-outline-variant/100 text-xs font-bold text-outline hover:bg-slate-50 transition-all">
                         Batal
                     </a>
                     <button type="submit" class="px-8 py-3.5 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-md">

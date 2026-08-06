@@ -238,7 +238,7 @@
         {{-- Tampilan Mobile Card List --}}
         <div class="lg:hidden space-y-4">
             @forelse($antrianList as $antrian)
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col gap-4">
                     <!-- Judul Buku & Penulis -->
                     <div class="flex justify-between items-start gap-3">
                         <div class="flex-1">
@@ -251,7 +251,7 @@
                     </div>
 
                     <!-- Keterangan -->
-                    <div class="pt-4 border-t border-outline-variant/10 flex flex-col gap-1">
+                    <div class="pt-4 border-t border-outline-variant/100 flex flex-col gap-1">
                         <span class="text-[10px] text-outline uppercase tracking-wider block">Keterangan</span>
                         <span class="text-xs font-medium text-on-surface-variant">
                             @if($antrian->status === 'menunggu')
@@ -271,7 +271,7 @@
                     </div>
 
                     <!-- Status & Aksi -->
-                    <div class="pt-4 border-t border-outline-variant/10 flex items-center justify-between gap-3">
+                    <div class="pt-4 border-t border-outline-variant/100 flex items-center justify-between gap-3">
                         <div>
                             @if($antrian->status === 'menunggu')
                                 <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wide">
@@ -311,7 +311,7 @@
                     </div>
                 </div>
             @empty
-                <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 text-center text-outline text-sm font-medium shadow-sm">
+                <div class="bg-white p-8 rounded-3xl border border-outline-variant/100 text-center text-outline text-sm font-medium shadow-sm">
                     Anda tidak memiliki riwayat antrian buku.
                 </div>
             @endforelse

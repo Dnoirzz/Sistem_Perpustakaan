@@ -69,7 +69,7 @@
             </div>
         @endif
 
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden max-w-4xl">
+        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 overflow-hidden max-w-4xl">
             <form action="{{ route('petugas.penalties.store') }}" method="POST" class="p-8 space-y-6">
                 @csrf
 
@@ -87,7 +87,7 @@
 
                 <div>
                     <label for="description" class="block font-label-md text-on-surface-variant mb-2">Keterangan Kehilangan <span class="text-error">*</span></label>
-                    <textarea id="description" name="description" rows="3" required maxlength="500" placeholder="Contoh: Buku dilaporkan hilang oleh anggota pada tanggal ..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold resize-none">{{ old('description') }}</textarea>
+                    <textarea id="description" name="description" rows="3" required maxlength="500" placeholder="Contoh: Buku dilaporkan hilang oleh anggota pada tanggal ..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold resize-none">{{ old('description') }}</textarea>
                     <p class="mt-2 text-[11px] text-outline font-medium">
                         Jelaskan laporan kehilangan secara singkat, maksimal 500 karakter.
                     </p>
@@ -95,7 +95,7 @@
 
                 <div>
                     <label for="settlement_method" class="block font-label-md text-on-surface-variant mb-2">Metode Penyelesaian <span class="text-error">*</span></label>
-                    <select id="settlement_method" name="settlement_method" required class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold">
+                    <select id="settlement_method" name="settlement_method" required class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold">
                         <option value="">Pilih metode penyelesaian...</option>
                         <option value="uang_tunai" {{ old('settlement_method') === 'uang_tunai' ? 'selected' : '' }}>Denda uang tunai</option>
                         <option value="ganti_buku" {{ old('settlement_method') === 'ganti_buku' ? 'selected' : '' }}>Penggantian buku</option>
@@ -105,12 +105,12 @@
 
                 <div id="amount-wrapper">
                     <label for="amount" class="block font-label-md text-on-surface-variant mb-2">Nominal Uang (Rp) <span id="amount-required-indicator" class="text-error hidden">*</span></label>
-                    <input type="text" id="amount" name="amount" min="0" step="500" value="{{ old('amount') }}" placeholder="Contoh: 50000" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold"/>
+                    <input type="text" id="amount" name="amount" min="0" step="500" value="{{ old('amount') }}" placeholder="Contoh: 50000" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold"/>
                     <p id="amount-hint" class="mt-2 text-[11px] text-outline font-medium">Isi nominal jika penyelesaian melibatkan pembayaran uang tunai.</p>
                 </div>
 
                 <div class="flex gap-3 pt-4">
-                    <a href="{{ route('petugas.penalties.index') }}" class="py-3 px-8 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-sm transition-all text-center">
+                    <a href="{{ route('petugas.penalties.index') }}" class="py-3 px-8 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-sm transition-all text-center">
                         Batal
                     </a>
                     <button type="submit" class="py-3 px-8 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-opacity-95 transition-all shadow-lg shadow-primary/20">

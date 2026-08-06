@@ -288,7 +288,7 @@
         @endif
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            <section class="xl:col-span-2 bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+            <section class="xl:col-span-2 bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                 <form action="{{ route('petugas.loans.store') }}" method="POST" class="space-y-8">
                     @csrf
 
@@ -319,7 +319,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Jenis
                                 Koleksi</label>
                             <select name="collection_type" id="collection_type"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all">
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all">
                                 <option value="">Semua jenis koleksi</option>
                                 @foreach($collectionTypes as $typeValue => $typeLabel)
                                     <option value="{{ $typeValue }}" {{ old('collection_type') === $typeValue ? 'selected' : '' }}>
@@ -371,7 +371,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Tanggal
                                 Pinjam</label>
                             <input type="date" name="tgl_pinjam" id="tgl_pinjam"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 value="{{ old('tgl_pinjam', now()->toDateString()) }}" required />
                             @error('tgl_pinjam')
                                 <p class="text-xs text-error font-medium">{{ $message }}</p>
@@ -383,7 +383,7 @@
                                 class="block text-xs font-bold text-outline uppercase tracking-wider">Batas Waktu
                                 Pengembalian</label>
                             <input type="date" name="bts_waktu" id="bts_waktu"
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"
                                 value="{{ old('bts_waktu', now()->addDays(7)->toDateString()) }}" required />
                             @error('bts_waktu')
                                 <p class="text-xs text-error font-medium">{{ $message }}</p>
@@ -391,9 +391,9 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-end gap-4 border-t border-outline-variant/10 pt-6">
+                    <div class="flex justify-end gap-4 border-t border-outline-variant/100 pt-6">
                         <a href="{{ route('petugas.loans.index') }}"
-                            class="px-8 py-4 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
+                            class="px-8 py-4 rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
                             Kembali
                         </a>
                         <button type="submit"
@@ -406,29 +406,29 @@
             </section>
 
             <div class="space-y-8">
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                     <div class="flex items-center justify-between mb-5">
                         <h2 class="font-headline-md text-on-surface text-lg">Panduan Petugas</h2>
                         <span class="material-symbols-outlined text-primary">tips_and_updates</span>
                     </div>
                     <div class="space-y-4 text-sm text-on-surface-variant">
-                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/10">
+                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/100">
                             Anda dapat menambahkan <strong>beberapa koleksi sekaligus</strong> untuk satu anggota dalam 1 kali transaksi.
                         </div>
-                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/10">
+                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/100">
                             Sistem akan otomatis mengurangi stok masing-masing koleksi setelah transaksi berhasil disimpan.
                         </div>
                     </div>
                 </section>
 
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                     <div class="flex items-center justify-between mb-5">
                         <h2 class="font-headline-md text-on-surface text-lg">Stok Tersedia</h2>
                         <span class="material-symbols-outlined text-primary">inventory_2</span>
                     </div>
                     <div class="space-y-3">
                         <!-- Buku Umum -->
-                        <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 flex items-center justify-between">
+                        <div class="p-4 rounded-2xl border border-outline-variant/100 bg-slate-50/70 flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[20px]">auto_stories</span>
@@ -444,7 +444,7 @@
                         </div>
 
                         <!-- Laporan PKL -->
-                        <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 flex items-center justify-between">
+                        <div class="p-4 rounded-2xl border border-outline-variant/100 bg-slate-50/70 flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[20px]">assignment</span>
@@ -460,7 +460,7 @@
                         </div>
 
                         <!-- Proposal TA -->
-                        <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 flex items-center justify-between">
+                        <div class="p-4 rounded-2xl border border-outline-variant/100 bg-slate-50/70 flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[20px]">description</span>
@@ -476,7 +476,7 @@
                         </div>
 
                         <!-- Laporan TA -->
-                        <div class="p-4 rounded-2xl border border-outline-variant/10 bg-slate-50/70 flex items-center justify-between">
+                        <div class="p-4 rounded-2xl border border-outline-variant/100 bg-slate-50/70 flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-[20px]">article</span>
@@ -537,7 +537,7 @@
                 badge.textContent = selectedBooks.length + ' Item Dipilih';
 
                 if (selectedBooks.length === 0) {
-                    listContainer.innerHTML = '<div class="p-6 rounded-2xl border-2 border-dashed border-outline-variant/30 text-center text-outline">'
+                    listContainer.innerHTML = '<div class="p-6 rounded-2xl border-2 border-dashed border-outline-variant/100 text-center text-outline">'
                         + '<span class="material-symbols-outlined text-3xl mb-1 text-outline/60">library_add</span>'
                         + '<p class="text-xs font-medium">Belum ada koleksi yang dipilih.</p>'
                         + '<p class="text-[11px] text-outline/80 mt-0.5">Cari judul atau penulis buku untuk menambahkannya ke daftar peminjaman.</p>'
@@ -553,7 +553,7 @@
                     inputsContainer.appendChild(hiddenInput);
 
                     var card = document.createElement('div');
-                    card.className = 'p-4 rounded-2xl border border-outline-variant/20 bg-slate-50 flex items-center justify-between gap-4 transition-all hover:bg-white hover:shadow-sm';
+                    card.className = 'p-4 rounded-2xl border border-outline-variant/100 bg-slate-50 flex items-center justify-between gap-4 transition-all hover:bg-white hover:shadow-sm';
                     card.innerHTML = '<div class="flex items-center gap-3 min-w-0">'
                         + '<div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">' + (idx + 1) + '</div>'
                         + '<div class="min-w-0">'

@@ -149,8 +149,8 @@
         ])
 
         <div class="max-w-3xl" x-data="{ roleName: '{{ old('role_name', $user->role->role_name) }}' }">
-            <div class="bg-white rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-outline-variant/10 bg-slate-50/50">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-outline-variant/100 bg-slate-50/50">
                     <h3 class="font-bold text-slate-800 text-lg">Form Update User</h3>
                     <p class="text-xs text-outline mt-0.5">Ubah informasi akun di bawah ini. Kosongkan password jika tidak ingin diganti.</p>
                 </div>
@@ -340,7 +340,7 @@
                     </div>
 
                     <!-- Password Fields (Optional) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-outline-variant/10 bg-slate-50/30 p-5 rounded-2xl">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-outline-variant/100 bg-slate-50/30 p-5 rounded-2xl">
                         <div>
                             <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Password Baru</label>
                             <input id="password" 
@@ -363,7 +363,7 @@
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/10">
+                    <div class="flex justify-end gap-3 pt-6 border-t border-outline-variant/100">
                         <a href="{{ route('admin.users.index') }}" 
                            class="py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition duration-200">
                             Batal

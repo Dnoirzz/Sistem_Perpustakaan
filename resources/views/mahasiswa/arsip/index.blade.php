@@ -179,7 +179,7 @@
                     @csrf
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Jenis Arsip <span class="text-error">*</span></label>
-                        <select name="type" x-model="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Jenis arsip wajib dipilih')" oninput="this.setCustomValidity('')">
+                        <select name="type" x-model="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Jenis arsip wajib dipilih')" oninput="this.setCustomValidity('')">
                             @foreach($typeOptions as $option)
                                 <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
                             @endforeach
@@ -189,40 +189,40 @@
                     <!-- Nama Tempat PKL (Hanya muncul jika Laporan PKL) -->
                     <div x-show="type === 'laporan-pkl'" x-transition class="space-y-2">
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Nama Tempat PKL <span class="text-error">*</span></label>
-                        <input type="text" name="nama_tempat_pkl" :required="type === 'laporan-pkl'" value="{{ old('nama_tempat_pkl') }}" placeholder="Masukkan Nama Instansi/Perusahaan Tempat PKL" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" oninvalid="this.setCustomValidity('Nama tempat PKL wajib diisi')" oninput="this.setCustomValidity('')">
+                        <input type="text" name="nama_tempat_pkl" :required="type === 'laporan-pkl'" value="{{ old('nama_tempat_pkl') }}" placeholder="Masukkan Nama Instansi/Perusahaan Tempat PKL" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" oninvalid="this.setCustomValidity('Nama tempat PKL wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip <span class="text-error">*</span></label>
-                        <input type="text" name="judul" value="{{ old('judul') }}" placeholder="Masukkan Judul Laporan" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Judul arsip wajib diisi')" oninput="this.setCustomValidity('')">
+                        <input type="text" name="judul" value="{{ old('judul') }}" placeholder="Masukkan Judul Laporan" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Judul arsip wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="grid gap-5 md:grid-cols-2">
                         <div>
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Pembimbing <span class="text-error">*</span></label>
-                            <input type="text" name="pembimbing" value="{{ old('pembimbing') }}" placeholder="Nama Pembimbing" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama dosen pembimbing wajib diisi')" oninput="this.setCustomValidity('')">
+                            <input type="text" name="pembimbing" value="{{ old('pembimbing') }}" placeholder="Nama Pembimbing" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama dosen pembimbing wajib diisi')" oninput="this.setCustomValidity('')">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tahun Terbit <span class="text-error">*</span></label>
-                            <input type="number" name="tahun" value="{{ old('tahun') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Tahun terbit wajib diisi')" oninput="this.setCustomValidity('')">
+                            <input type="number" name="tahun" value="{{ old('tahun') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Tahun terbit wajib diisi')" oninput="this.setCustomValidity('')">
                         </div>
                     </div>
                     <div class="grid gap-5 md:grid-cols-2">
                         <div>
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 1</label>
-                            <input type="text" name="penguji_1" value="{{ old('penguji_1') }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                            <input type="text" name="penguji_1" value="{{ old('penguji_1') }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Dosen Penguji 2</label>
-                            <input type="text" name="penguji_2" value="{{ old('penguji_2') }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                            <input type="text" name="penguji_2" value="{{ old('penguji_2') }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">File PDF <span class="text-error">*</span></label>
-                        <input type="file" name="file_pdf" accept="application/pdf" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required oninvalid="this.setCustomValidity('File PDF utama wajib diunggah')" oninput="this.setCustomValidity('')">
+                        <input type="file" name="file_pdf" accept="application/pdf" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required oninvalid="this.setCustomValidity('File PDF utama wajib diunggah')" oninput="this.setCustomValidity('')">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">File Word <span class="text-error">*</span></label>
-                        <input type="file" name="file_word" accept=".doc,.docx" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required oninvalid="this.setCustomValidity('File Word wajib diunggah')" oninput="this.setCustomValidity('')">
+                        <input type="file" name="file_word" accept=".doc,.docx" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all" required oninvalid="this.setCustomValidity('File Word wajib diunggah')" oninput="this.setCustomValidity('')">
                     </div>
                     <button class="w-full flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
                         <span class="material-symbols-outlined text-[18px]">send</span>
@@ -303,7 +303,7 @@
                                 </div>
                             @endif
                             
-                            <div class="mt-4 flex flex-wrap gap-2 border-t border-outline-variant/10 pt-4">
+                            <div class="mt-4 flex flex-wrap gap-2 border-t border-outline-variant/100 pt-4">
                                 @if(in_array($item['status'], ['pending', 'ditolak'], true))
                                     <a href="{{ route('mahasiswa.arsip.edit', [$item['type'], $item['id']]) }}" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-primary hover:bg-primary/10 border border-primary/20 rounded-2xl transition duration-200">
                                         <span class="material-symbols-outlined text-[16px]">edit</span>
@@ -326,7 +326,7 @@
                             </div>
                         </article>
                     @empty
-                        <div class="rounded-2xl border border-outline-variant/10 bg-slate-50/50 p-8 text-center text-outline font-semibold">
+                        <div class="rounded-2xl border border-outline-variant/100 bg-slate-50/50 p-8 text-center text-outline font-semibold">
                             <div class="flex flex-col items-center justify-center gap-2">
                                 <span class="material-symbols-outlined text-4xl text-outline-variant">folder_open</span>
                                 <span>Belum ada arsip yang Anda unggah.</span>

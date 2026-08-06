@@ -177,7 +177,7 @@
         @endif
 
         <!-- Navigation Tabs -->
-        <div class="flex border-b border-outline-variant/30 mb-8 gap-2">
+        <div class="flex border-b border-outline-variant/100 mb-8 gap-2">
             <a href="{{ route('admin.prodis.index', ['tab' => 'prodi']) }}" 
                class="px-6 py-3.5 font-headline-md font-bold text-sm transition-all border-b-2 flex items-center gap-2 {{ $activeTab === 'prodi' ? 'border-primary text-primary' : 'border-transparent text-outline hover:text-on-surface' }}">
                 <span class="material-symbols-outlined text-[20px]">school</span>
@@ -196,7 +196,7 @@
             <!-- Left Column: List -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Search Box -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/15 shadow-sm">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                     <form action="{{ route('admin.prodis.index') }}" method="GET" class="flex gap-3">
                         <input type="hidden" name="tab" value="{{ $activeTab }}">
                         <div class="relative flex-1">
@@ -224,10 +224,10 @@
                 </div>
 
                 <!-- Table Card -->
-                <div class="bg-white rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden">
+                <div class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden">
                     @if($activeTab === 'prodi')
                         <!-- TAB PRODI -->
-                        <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+                        <div class="p-8 border-b border-outline-variant/100 flex justify-between items-center">
                             <div>
                                 <h2 class="font-headline-md text-on-surface text-lg">Daftar Program Studi</h2>
                                 <p class="text-xs text-outline mt-1">Menampilkan data program studi terdaftar.</p>
@@ -240,7 +240,7 @@
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
-                                    <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
+                                    <tr class="bg-surface-container-low/50 border-b border-outline-variant/100 text-outline-variant text-xs font-bold uppercase tracking-wider">
                                         <th class="py-4.5 px-8">Nama Program Studi</th>
                                         <th class="py-4.5 px-6">Jurusan</th>
                                         <th class="py-4.5 px-6 text-center">Mahasiswa</th>
@@ -306,13 +306,13 @@
 
                         <!-- Pagination -->
                         @if($prodis->hasPages())
-                            <div class="px-8 py-4 border-t border-outline-variant/10 bg-slate-50/50">
+                            <div class="px-8 py-4 border-t border-outline-variant/100 bg-slate-50/50">
                                 {{ $prodis->links() }}
                             </div>
                         @endif
                     @else
                         <!-- TAB JURUSAN -->
-                        <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+                        <div class="p-8 border-b border-outline-variant/100 flex justify-between items-center">
                             <div>
                                 <h2 class="font-headline-md text-on-surface text-lg">Daftar Jurusan</h2>
                                 <p class="text-xs text-outline mt-1">Menampilkan data jurusan terdaftar.</p>
@@ -325,7 +325,7 @@
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
-                                    <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
+                                    <tr class="bg-surface-container-low/50 border-b border-outline-variant/100 text-outline-variant text-xs font-bold uppercase tracking-wider">
                                         <th class="py-4.5 px-8">Nama Jurusan</th>
                                         <th class="py-4.5 px-6 text-center">Jumlah Prodi</th>
                                         <th class="py-4.5 px-8 text-center w-40">Aksi</th>
@@ -383,7 +383,7 @@
 
                         <!-- Pagination -->
                         @if($jurusansPage->hasPages())
-                            <div class="px-8 py-4 border-t border-outline-variant/10 bg-slate-50/50">
+                            <div class="px-8 py-4 border-t border-outline-variant/100 bg-slate-50/50">
                                 {{ $jurusansPage->links() }}
                             </div>
                         @endif
@@ -395,7 +395,7 @@
             <div class="space-y-6">
                 @if($activeTab === 'prodi')
                     <!-- ADD PRODI FORM -->
-                    <div class="bg-white rounded-3xl border border-outline-variant/15 p-8 shadow-sm">
+                    <div class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="font-headline-md text-on-surface text-lg">Tambah Prodi</h3>
                             <span class="material-symbols-outlined text-primary">school</span>
@@ -409,7 +409,7 @@
                                        name="nama_prodi" 
                                        id="nama_prodi" 
                                        placeholder="Contoh: D3 Teknologi Informasi" 
-                                       class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
+                                       class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
                                        value="{{ old('nama_prodi') }}" 
                                        required/>
                             </div>
@@ -418,7 +418,7 @@
                                 <label for="jurusan_id" class="block text-xs font-bold text-outline uppercase tracking-wider">Jurusan</label>
                                 <select name="jurusan_id" 
                                         id="jurusan_id" 
-                                        class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
+                                        class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
                                         required>
                                     <option value="" disabled selected>-- Pilih Jurusan --</option>
                                     @foreach($jurusans as $j)
@@ -438,7 +438,7 @@
                     </div>
                 @else
                     <!-- ADD JURUSAN FORM -->
-                    <div class="bg-white rounded-3xl border border-outline-variant/15 p-8 shadow-sm">
+                    <div class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="font-headline-md text-on-surface text-lg">Tambah Jurusan</h3>
                             <span class="material-symbols-outlined text-primary">domain</span>
@@ -452,7 +452,7 @@
                                        name="nama_jurusan" 
                                        id="nama_jurusan" 
                                        placeholder="Contoh: Teknik Elektro" 
-                                       class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
+                                       class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" 
                                        value="{{ old('nama_jurusan') }}" 
                                        required/>
                             </div>

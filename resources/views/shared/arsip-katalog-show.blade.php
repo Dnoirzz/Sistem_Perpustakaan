@@ -148,7 +148,7 @@
         ])
 
         <div class="grid gap-8 xl:grid-cols-[1.2fr_.8fr]">
-            <section class="rounded-3xl border border-outline-variant/10 bg-white p-8 shadow-sm flex flex-col justify-center items-center text-center bg-gradient-to-br from-primary/5 via-transparent to-primary-container/10 min-h-[480px]">
+            <section class="rounded-3xl border border-outline-variant/100 bg-white p-8 shadow-sm flex flex-col justify-center items-center text-center bg-gradient-to-br from-primary/5 via-transparent to-primary-container/10 min-h-[480px]">
                 <div class="w-24 h-24 rounded-3xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-inner">
                     <span class="material-symbols-outlined text-[48px] animate-pulse">picture_as_pdf</span>
                 </div>
@@ -192,13 +192,13 @@
             </section>
 
             <div class="space-y-6">
-                <section class="rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+                <section class="rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
                     <h2 class="mb-4 text-lg font-bold text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[22px]">info</span> 
                         Informasi Arsip
                     </h2>
                     
-                    <div class="space-y-4 border-t border-outline-variant/10 pt-4 text-xs text-outline font-semibold">
+                    <div class="space-y-4 border-t border-outline-variant/100 pt-4 text-xs text-outline font-semibold">
                         <div class="space-y-1">
                             <span class="block uppercase tracking-wider text-[10px]">Status Arsip</span>
                             <span class="inline-block rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-[11px] font-bold uppercase tracking-wide border border-emerald-200">{{ $archive->status }}</span>
@@ -234,13 +234,13 @@
                     </div>
                 </section>
 
-                <section class="rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+                <section class="rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
                     <h2 class="mb-4 text-lg font-bold text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[22px]">swap_horizontal_circle</span> 
                         Peminjaman Dokumen Fisik
                     </h2>
                     
-                    <div class="border-t border-outline-variant/10 pt-4">
+                    <div class="border-t border-outline-variant/100 pt-4">
                         @if($archive->status === 'aktif' && $archive->collection)
                             @if($archive->collection->stock > 0)
                                 <form action="{{ route($rolePrefix . '.bookings.store') }}" method="POST">

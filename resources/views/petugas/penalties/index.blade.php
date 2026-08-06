@@ -81,7 +81,7 @@
         @endif
 
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">gavel</span>
@@ -93,7 +93,7 @@
                     <span class="text-xs text-outline font-semibold">denda</span>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">payments</span>
@@ -104,7 +104,7 @@
                     <span class="text-3xl font-bold text-on-surface">Rp {{ number_format($stats['unpaid_total'], 0, ',', '.') }}</span>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">check_circle</span>
@@ -119,14 +119,14 @@
         </section>
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex-1">
+            <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex-1">
                 <form action="{{ route('petugas.penalties.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" placeholder="Cari nama anggota, NIM, NIP, atau judul buku..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                        <input type="text" name="search" placeholder="Cari nama anggota, NIM, NIP, atau judul buku..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                     </div>
                     <div>
-                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                             <option value="">Semua Status</option>
                             <option value="belum_dibayar" {{ request('status') === 'belum_dibayar' ? 'selected' : '' }}>Belum Dibayar</option>
                             <option value="lunas" {{ request('status') === 'lunas' ? 'selected' : '' }}>Lunas</option>
@@ -135,7 +135,7 @@
                     <div class="flex gap-2">
                         <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all">Terapkan Filter</button>
                         @if(request()->filled('search') || request()->filled('status'))
-                            <a href="{{ route('petugas.penalties.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">Reset</a>
+                            <a href="{{ route('petugas.penalties.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">Reset</a>
                         @endif
                     </div>
                 </form>
@@ -167,7 +167,7 @@
                 <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
                     <td class="px-8 py-5 whitespace-nowrap">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/10 shadow-sm">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-primary text-xs uppercase border border-outline-variant/100 shadow-sm">
                                 {{ substr($penalty->user->name ?? '', 0, 2) }}
                             </div>
                             <div class="flex flex-col">
@@ -317,8 +317,8 @@
     <div id="penalty-info-modal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-slate-950/45" data-close-penalty-info></div>
         <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="w-full max-w-xl rounded-3xl bg-white border border-outline-variant/10 shadow-2xl overflow-hidden">
-                <div class="flex items-start justify-between gap-4 px-6 py-5 border-b border-outline-variant/10">
+            <div class="w-full max-w-xl rounded-3xl bg-white border border-outline-variant/100 shadow-2xl overflow-hidden">
+                <div class="flex items-start justify-between gap-4 px-6 py-5 border-b border-outline-variant/100">
                     <div>
                         <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">Informasi Denda</p>
                         <h2 class="mt-1 font-headline-md text-on-surface">Detail Keterangan</h2>
@@ -357,7 +357,7 @@
                         </div>
                     </div>
 
-                    <div class="rounded-3xl border border-outline-variant/10 bg-slate-50 px-5 py-4">
+                    <div class="rounded-3xl border border-outline-variant/100 bg-slate-50 px-5 py-4">
                         <p class="text-[11px] font-bold uppercase tracking-widest text-outline">Keterangan</p>
 
                         <div class="mt-3 space-y-3">
@@ -541,7 +541,7 @@
             if (parsed.extras.length) {
                 parsed.extras.forEach((item) => {
                     const row = document.createElement('div');
-                    row.className = 'rounded-2xl bg-white/70 px-4 py-3 border border-outline-variant/10';
+                    row.className = 'rounded-2xl bg-white/70 px-4 py-3 border border-outline-variant/100';
 
                     const title = document.createElement('p');
                     title.className = 'text-[11px] font-bold uppercase tracking-widest text-outline';

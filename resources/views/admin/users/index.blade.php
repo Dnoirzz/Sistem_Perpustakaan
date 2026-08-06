@@ -156,7 +156,7 @@
 
         <div class="space-y-6">
             <!-- Search & Filters -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/15 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <form action="{{ route('admin.users.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                     <!-- Search Input -->
                     <div class="md:col-span-5">
@@ -207,7 +207,7 @@
             </div>
 
             <!-- Action Bar -->
-            <div class="flex justify-between items-center bg-white px-8 py-4 rounded-3xl border border-outline-variant/15 shadow-sm">
+            <div class="flex justify-between items-center bg-white px-8 py-4 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="text-sm font-semibold text-outline">
                     Menampilkan total <span class="text-primary font-bold">{{ $users->total() }}</span> user
                 </div>
@@ -224,11 +224,11 @@
             </div>
 
             <!-- Users Table -->
-            <div class="bg-white rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-surface-container-low/50 border-b border-outline-variant/10 text-outline-variant text-xs font-bold uppercase tracking-wider">
+                            <tr class="bg-surface-container-low/50 border-b border-outline-variant/100 text-outline-variant text-xs font-bold uppercase tracking-wider">
                                 <th class="py-4.5 px-8">Nama / Email</th>
                                 <th class="py-4.5 px-6">Nomor HP</th>
                                 <th class="py-4.5 px-6">Role</th>
@@ -327,7 +327,7 @@
 
                 <!-- Pagination -->
                 @if($users->hasPages())
-                    <div class="px-8 py-4 border-t border-outline-variant/10 bg-slate-50/50">
+                    <div class="px-8 py-4 border-t border-outline-variant/100 bg-slate-50/50">
                         {{ $users->links() }}
                     </div>
                 @endif

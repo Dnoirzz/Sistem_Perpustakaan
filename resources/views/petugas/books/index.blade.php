@@ -166,7 +166,7 @@
                 <a href="{{ route('petugas.books.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-primary text-white shadow-sm transition-all">
                     Daftar Buku
                 </a>
-                <a href="{{ route('petugas.categories.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-slate-50 hover:text-primary transition-all">
+                <a href="{{ route('petugas.categories.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-white border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 hover:text-primary transition-all">
                     Kategori Buku
                 </a>
             </div>
@@ -184,17 +184,17 @@
         </div>
 
         <!-- Filter & Search Section -->
-        <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm mb-8">
+        <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm mb-8">
             <form action="{{ route('petugas.books.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search input -->
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" placeholder="Cari judul buku atau penulis..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                    <input type="text" name="search" placeholder="Cari judul buku atau penulis..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                 </div>
 
                 <!-- Category selector -->
                 <div>
-                    <select name="category" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                    <select name="category" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->kategori_id }}" {{ request('category') == $cat->kategori_id ? 'selected' : '' }}>
@@ -210,7 +210,7 @@
                         Terapkan Filter
                     </button>
                     @if(request()->filled('search') || request()->filled('category'))
-                        <a href="{{ route('petugas.books.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
+                        <a href="{{ route('petugas.books.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
                             Reset
                         </a>
                     @endif
@@ -233,7 +233,7 @@
                 <tr class="even:bg-slate-50/40 hover:bg-sky-50/40 transition-colors duration-150 group">
                     <!-- Cover Column -->
                     <td class="px-4 sm:px-5 py-4 whitespace-nowrap">
-                        <div class="w-12 h-16 bg-white rounded-lg overflow-hidden border border-outline-variant/20 flex items-center justify-center text-outline shadow-2xs">
+                        <div class="w-12 h-16 bg-white rounded-lg overflow-hidden border border-outline-variant/100 flex items-center justify-center text-outline shadow-2xs">
                             <img src="{{ $book->cover_url }}" alt="Cover Buku" class="w-full h-full {{ $book->cover_image ? 'object-cover' : 'object-contain p-1' }}"/>
                         </div>
                     </td>

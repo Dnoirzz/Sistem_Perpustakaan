@@ -17,3 +17,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+*.pptx
+~$*.pptx
+*.ndjson
+_qa_*/
+/tmp
+

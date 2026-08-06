@@ -126,7 +126,7 @@
         @endif
 
         <!-- Filter & Search Bar -->
-        <div class="bg-white rounded-3xl p-6 border border-outline-variant/20 shadow-sm mb-8">
+        <div class="bg-white rounded-3xl p-6 border border-outline-variant/100 shadow-sm mb-8">
             <form action="{{ route('petugas.verifikasi.index') }}" method="GET" class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="relative flex-1 w-full">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>

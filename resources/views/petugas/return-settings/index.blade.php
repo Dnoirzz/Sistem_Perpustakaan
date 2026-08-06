@@ -129,7 +129,7 @@
                 </x-table>
             </section>
 
-            <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+            <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                 <div class="flex items-center justify-between mb-6">
                     <div>
                         <h2 class="font-headline-md text-on-surface text-lg">Tambah Checklist</h2>
@@ -142,19 +142,19 @@
                     @csrf
                     <div>
                         <label for="item_name" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Nama Item</label>
-                        <input type="text" id="item_name" name="item_name" value="{{ old('item_name') }}" placeholder="Contoh: Tidak ada bekas terbakar" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold">
+                        <input type="text" id="item_name" name="item_name" value="{{ old('item_name') }}" placeholder="Contoh: Tidak ada bekas terbakar" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold">
                     </div>
                     <div>
                         <label for="description" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Deskripsi</label>
-                        <textarea id="description" name="description" rows="3" placeholder="Jelaskan kriteria pemeriksaan..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('description') }}</textarea>
+                        <textarea id="description" name="description" rows="3" placeholder="Jelaskan kriteria pemeriksaan..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none">{{ old('description') }}</textarea>
                     </div>
                     <div>
                         <label for="sort_order" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Urutan Tampil</label>
-                        <input type="number" id="sort_order" name="sort_order" min="1" value="{{ old('sort_order', $checklists->count() + 1) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold">
+                        <input type="number" id="sort_order" name="sort_order" min="1" value="{{ old('sort_order', $checklists->count() + 1) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold">
                     </div>
-                    <label class="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/20">
+                    <label class="flex items-center gap-3 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/100">
                         <input type="hidden" name="is_active" value="0">
-                        <input type="checkbox" name="is_active" value="1" class="rounded border-outline-variant/50 text-primary focus:ring-primary" {{ old('is_active', '1') ? 'checked' : '' }}>
+                        <input type="checkbox" name="is_active" value="1" class="rounded border-outline-variant/100 text-primary focus:ring-primary" {{ old('is_active', '1') ? 'checked' : '' }}>
                         <span class="text-sm font-semibold text-on-surface">Aktifkan checklist ini</span>
                     </label>
                     <button type="submit" class="w-full py-3 px-6 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-sm transition-all shadow-sm">

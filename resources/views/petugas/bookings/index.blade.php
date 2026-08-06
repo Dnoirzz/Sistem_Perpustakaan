@@ -155,7 +155,7 @@
 
         {{-- Statistik --}}
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">hourglass_empty</span>
@@ -168,7 +168,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">check_circle</span>
@@ -181,7 +181,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-200">
                         <span class="material-symbols-outlined">analytics</span>
@@ -197,14 +197,14 @@
 
         {{-- Filter & Search --}}
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <section class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex-1">
+            <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex-1">
                 <form action="{{ route('petugas.bookings.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
+                        <input type="text" name="search" placeholder="Cari nama, NIM, NIP, atau judul buku" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
                     </div>
                     <div>
-                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                             <option value="">Semua Status</option>
                             <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="disetujui" {{ request('status') === 'disetujui' ? 'selected' : '' }}>Disetujui</option>
@@ -216,7 +216,7 @@
                             Terapkan Filter
                         </button>
                         @if(request()->filled('search') || request()->filled('status'))
-                            <a href="{{ route('petugas.bookings.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
+                            <a href="{{ route('petugas.bookings.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">
                                 Reset
                             </a>
                         @endif
@@ -239,7 +239,7 @@
                 <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
                     <td class="px-8 py-5 whitespace-nowrap">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/10 shadow-xs">
+                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/100 shadow-xs">
                                 {{ substr($booking->user->name, 0, 2) }}
                             </div>
                             <div class="flex flex-col">
@@ -368,11 +368,11 @@
                             <!-- Hour Selection -->
                             <div class="relative flex-1">
                                 <input type="hidden" id="modal-pickup-hour" name="pickup_hour" value="13">
-                                <button type="button" id="pickup-hour-btn" onclick="toggleHourDropdown(event)" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant flex justify-between items-center bg-white shadow-sm">
+                                <button type="button" id="pickup-hour-btn" onclick="toggleHourDropdown(event)" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant flex justify-between items-center bg-white shadow-sm">
                                     <span id="pickup-hour-label">13</span>
                                     <span class="material-symbols-outlined text-[18px] text-outline">expand_more</span>
                                 </button>
-                                <div id="pickup-hour-menu" class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-outline-variant/40 rounded-2xl shadow-xl max-h-[160px] overflow-y-auto divide-y divide-outline-variant/10">
+                                <div id="pickup-hour-menu" class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-outline-variant/100 rounded-2xl shadow-xl max-h-[160px] overflow-y-auto divide-y divide-outline-variant/10">
                                     @for($i = 0; $i < 24; $i++)
                                         @php $hourStr = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
                                         <button type="button" onclick="selectHour('{{ $hourStr }}', event)" class="w-full px-4 py-2 text-left text-xs font-semibold hover:bg-slate-50 text-on-surface-variant transition-colors">
@@ -387,11 +387,11 @@
                             <!-- Minute Selection -->
                             <div class="relative flex-1">
                                 <input type="hidden" id="modal-pickup-minute" name="pickup_minute" value="00">
-                                <button type="button" id="pickup-minute-btn" onclick="toggleMinuteDropdown(event)" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant flex justify-between items-center bg-white shadow-sm">
+                                <button type="button" id="pickup-minute-btn" onclick="toggleMinuteDropdown(event)" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant flex justify-between items-center bg-white shadow-sm">
                                     <span id="pickup-minute-label">00</span>
                                     <span class="material-symbols-outlined text-[18px] text-outline">expand_more</span>
                                 </button>
-                                <div id="pickup-minute-menu" class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-outline-variant/40 rounded-2xl shadow-xl max-h-[160px] overflow-y-auto divide-y divide-outline-variant/10">
+                                <div id="pickup-minute-menu" class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-outline-variant/100 rounded-2xl shadow-xl max-h-[160px] overflow-y-auto divide-y divide-outline-variant/10">
                                     @for($i = 0; $i < 60; $i++)
                                         @php $minStr = str_pad($i, 2, '0', STR_PAD_LEFT); @endphp
                                         <button type="button" onclick="selectMinute('{{ $minStr }}', event)" class="w-full px-4 py-2 text-left text-xs font-semibold hover:bg-slate-50 text-on-surface-variant transition-colors">
@@ -407,11 +407,11 @@
 
                     <div>
                         <label class="block text-xs font-bold text-on-surface mb-2 uppercase tracking-wide">Keterangan / Catatan</label>
-                        <textarea id="modal-note" name="note" rows="3" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant" placeholder="Tulis keterangan untuk anggota..."></textarea>
+                        <textarea id="modal-note" name="note" rows="3" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant" placeholder="Tulis keterangan untuk anggota..."></textarea>
                     </div>
 
                     <div class="flex gap-3">
-                        <button type="button" onclick="closeProcessModal()" class="flex-1 py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-sm transition-all">
+                        <button type="button" onclick="closeProcessModal()" class="flex-1 py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-sm transition-all">
                             Batal
                         </button>
                         <button type="submit" id="modal-submit-btn" class="flex-1 py-3 px-6 rounded-2xl text-white font-bold text-sm transition-all shadow-lg">

@@ -165,8 +165,8 @@
 
         <div class="grid gap-8 xl:grid-cols-[1.2fr_.8fr]">
             <div class="space-y-6">
-                <section class="rounded-3xl border border-outline-variant/10 bg-white p-8 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-outline-variant/10 pb-4 mb-6">
+                <section class="rounded-3xl border border-outline-variant/100 bg-white p-8 shadow-sm">
+                    <div class="flex items-center justify-between border-b border-outline-variant/100 pb-4 mb-6">
                         <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary text-[24px]">info</span>
                             Informasi Arsip
@@ -235,7 +235,7 @@
                         </div>
                     @endif
 
-                    <div class="mt-8 flex flex-wrap gap-3 border-t border-outline-variant/10 pt-6">
+                    <div class="mt-8 flex flex-wrap gap-3 border-t border-outline-variant/100 pt-6">
                         @if($archive->file_pdf)
                             <a href="{{ route('petugas.arsip.download', [$archiveType, $archive->getKey()]) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-on-background text-white font-bold text-sm hover:bg-opacity-90 transition duration-200 shadow-sm">
                                 <span class="material-symbols-outlined text-[20px]">download</span>
@@ -249,24 +249,24 @@
                         @endif
 
                         @if($archive->file_word)
-                            <a href="{{ route('petugas.arsip.download', [$archiveType, $archive->getKey(), 'kind' => 'word']) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm bg-white hover:bg-slate-50 transition duration-200 shadow-sm">
+                            <a href="{{ route('petugas.arsip.download', [$archiveType, $archive->getKey(), 'kind' => 'word']) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm bg-white hover:bg-slate-50 transition duration-200 shadow-sm">
                                 <span class="material-symbols-outlined text-[20px]">description</span>
                                 Unduh Word
                             </a>
                         @else
-                            <button type="button" onclick="window.SIPUSModal.alert('Berkas Word Belum Diunggah', 'Mahasiswa belum mengunggah berkas dokumen Word (.doc / .docx) untuk arsip karya ilmiah ini.', 'warning', { confirmText: 'Paham & Tutup' })" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-dashed border-outline-variant/40 text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-50/50 hover:bg-slate-100 transition duration-200">
+                            <button type="button" onclick="window.SIPUSModal.alert('Berkas Word Belum Diunggah', 'Mahasiswa belum mengunggah berkas dokumen Word (.doc / .docx) untuk arsip karya ilmiah ini.', 'warning', { confirmText: 'Paham & Tutup' })" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-dashed border-outline-variant/100 text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-50/50 hover:bg-slate-100 transition duration-200">
                                 <span class="material-symbols-outlined text-[20px]">description</span>
                                 Unduh Word
                             </button>
                         @endif
 
                         @if($archive->surat_tanda_terima_pdf)
-                            <a href="{{ route('petugas.arsip.surat', [$archiveType, $archive->getKey()]) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm bg-white hover:bg-slate-50 transition duration-200 shadow-sm">
+                            <a href="{{ route('petugas.arsip.surat', [$archiveType, $archive->getKey()]) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm bg-white hover:bg-slate-50 transition duration-200 shadow-sm">
                                 <span class="material-symbols-outlined text-[20px]">feed</span>
                                 Unduh Surat Tanda Terima
                             </a>
                         @else
-                            <button type="button" onclick="window.SIPUSModal.alert('Surat Belum Diterbitkan', 'Surat Tanda Terima belum diterbitkan karena arsip ini belum diverifikasi oleh petugas.', 'warning', { confirmText: 'Paham & Tutup' })" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-dashed border-outline-variant/40 text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-50/50 hover:bg-slate-100 transition duration-200">
+                            <button type="button" onclick="window.SIPUSModal.alert('Surat Belum Diterbitkan', 'Surat Tanda Terima belum diterbitkan karena arsip ini belum diverifikasi oleh petugas.', 'warning', { confirmText: 'Paham & Tutup' })" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-dashed border-outline-variant/100 text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-50/50 hover:bg-slate-100 transition duration-200">
                                 <span class="material-symbols-outlined text-[20px]">feed</span>
                                 Unduh Surat Tanda Terima
                             </button>
@@ -277,7 +277,7 @@
 
             <div class="space-y-6">
                 @if($archive->preview_pdf)
-                    <section class="rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+                    <section class="rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
                         <h2 class="mb-2 text-lg font-bold text-on-surface flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary text-[22px]">find_in_page</span>
                             Berkas Preview
@@ -286,7 +286,7 @@
                     </section>
                 @endif
 
-                <section class="rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+                <section class="rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
                     <h2 class="mb-4 text-lg font-bold text-on-surface flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[22px]">check_box</span>
                         Aksi Petugas
@@ -303,11 +303,11 @@
                         @endif
 
                         @if(in_array($archive->status, ['pending', 'diverifikasi'], true))
-                            <form action="{{ route('petugas.arsip.reject', [$archiveType, $archive->getKey()]) }}" method="POST" class="space-y-3 {{ $archive->status === 'pending' ? 'border-t border-outline-variant/10 pt-4' : '' }}">
+                            <form action="{{ route('petugas.arsip.reject', [$archiveType, $archive->getKey()]) }}" method="POST" class="space-y-3 {{ $archive->status === 'pending' ? 'border-t border-outline-variant/100 pt-4' : '' }}">
                                 @csrf
                                 <div class="space-y-2">
                                     <label class="block text-xs font-bold text-outline uppercase tracking-wider">Alasan Penolakan / Koreksi</label>
-                                    <textarea name="catatan_petugas" rows="3" placeholder="Tuliskan catatan detail mengapa berkas ditolak atau bagian mana yang perlu diperbaiki oleh mahasiswa..." class="w-full rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all px-4 py-3" required></textarea>
+                                    <textarea name="catatan_petugas" rows="3" placeholder="Tuliskan catatan detail mengapa berkas ditolak atau bagian mana yang perlu diperbaiki oleh mahasiswa..." class="w-full rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all px-4 py-3" required></textarea>
                                 </div>
                                 <button class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-error hover:bg-error/95 text-white font-bold px-5 py-3.5 text-sm shadow-lg shadow-error/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
                                     <span class="material-symbols-outlined text-[20px]">cancel</span>
@@ -317,7 +317,7 @@
                         @endif
 
                         @if($archive->status === 'diverifikasi')
-                            <form action="{{ route('petugas.arsip.confirm', [$archiveType, $archive->getKey()]) }}" method="POST" class="border-t border-outline-variant/10 pt-4">
+                            <form action="{{ route('petugas.arsip.confirm', [$archiveType, $archive->getKey()]) }}" method="POST" class="border-t border-outline-variant/100 pt-4">
                                 @csrf
                                 <button class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3.5 text-sm shadow-lg shadow-emerald-600/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
                                     <span class="material-symbols-outlined text-[20px]">task_alt</span>
@@ -326,7 +326,7 @@
                             </form>
                         @endif
 
-                        <form action="{{ route('petugas.arsip.destroy', [$archiveType, $archive->getKey()]) }}" method="POST" onsubmit="return confirm('Hapus arsip ini secara permanen? Tindakan ini tidak dapat dibatalkan.')" class="border-t border-outline-variant/10 pt-4">
+                        <form action="{{ route('petugas.arsip.destroy', [$archiveType, $archive->getKey()]) }}" method="POST" onsubmit="return confirm('Hapus arsip ini secara permanen? Tindakan ini tidak dapat dibatalkan.')" class="border-t border-outline-variant/100 pt-4">
                             @csrf
                             @method('DELETE')
                             <button class="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-error/30 bg-white hover:bg-error/5 text-error font-bold px-5 py-3 text-sm transition duration-200">

@@ -179,7 +179,7 @@
         <!-- Stats Section -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
             <!-- Total Judul Buku -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200">
                         <span class="material-symbols-outlined">menu_book</span>
@@ -193,7 +193,7 @@
             </div>
             
             <!-- Peminjaman Aktif -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                         <span class="material-symbols-outlined">swap_horiz</span>
@@ -207,7 +207,7 @@
             </div>
 
             <!-- Buku Terlambat -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white shadow-lg shadow-red-200">
                         <span class="material-symbols-outlined">warning</span>
@@ -221,7 +221,7 @@
             </div>
 
             <!-- Booking Pending -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <span class="material-symbols-outlined">hourglass_empty</span>
@@ -235,7 +235,7 @@
             </div>
 
             <!-- Denda Aktif -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-200">
                         <span class="material-symbols-outlined">payments</span>
@@ -252,7 +252,7 @@
         <!-- Charts Section -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
             <!-- Line Chart: Tren Peminjaman -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm">
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <h3 class="text-sm font-bold text-on-surface mb-4">Tren Peminjaman Bulanan ({{ date('Y') }})</h3>
                 <div class="h-64 relative">
                     <canvas id="chartTrenPeminjaman"></canvas>
@@ -260,7 +260,7 @@
             </div>
 
             <!-- Pie Chart: Distribusi Kategori -->
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col justify-between">
                 <h3 class="text-sm font-bold text-on-surface mb-4">Distribusi Kategori Populer</h3>
                 <div class="h-64 relative flex items-center justify-center">
                     @if(count($categoryLabels) > 0)
@@ -273,8 +273,8 @@
         </section>
 
         <!-- Full Width Layout: Recent Loans Table -->
-        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden">
-            <div class="p-8 border-b border-outline-variant/10 flex items-center justify-between">
+        <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 overflow-hidden">
+            <div class="p-8 border-b border-outline-variant/100 flex items-center justify-between">
                 <div>
                     <h2 class="font-headline-md text-on-surface">Daftar Transaksi Peminjaman Aktif</h2>
                     <p class="text-sm text-outline">Daftar peminjamn dan buku yang sedang dipinjam atau terlambat</p>

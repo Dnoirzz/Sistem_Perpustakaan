@@ -155,7 +155,7 @@
             </a>
 
             <!-- Form Card -->
-            <div class="bg-white rounded-3xl border border-outline-variant/15 p-8 shadow-sm">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="font-headline-md text-on-surface text-lg">Form Edit Prodi</h3>
                     <span class="material-symbols-outlined text-primary">edit_square</span>
@@ -170,7 +170,7 @@
                         <input type="text" 
                                name="nama_prodi" 
                                id="nama_prodi" 
-                               class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('nama_prodi') border-error @enderror" 
+                               class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('nama_prodi') border-error @enderror" 
                                value="{{ old('nama_prodi', $prodi->nama_prodi) }}" 
                                required/>
                         @error('nama_prodi')
@@ -182,7 +182,7 @@
                         <label for="jurusan_id" class="block text-xs font-bold text-outline uppercase tracking-wider">Jurusan</label>
                         <select name="jurusan_id" 
                                 id="jurusan_id" 
-                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('jurusan_id') border-error @enderror" 
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('jurusan_id') border-error @enderror" 
                                 required>
                             <option value="" disabled>-- Pilih Jurusan --</option>
                             @foreach($jurusans as $j)

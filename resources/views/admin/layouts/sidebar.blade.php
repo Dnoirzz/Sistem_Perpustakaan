@@ -1,5 +1,5 @@
 <!-- Sidebar Navigation -->
-<aside class="fixed left-0 top-0 h-full w-64 bg-white border-r border-outline-variant/30 flex flex-col z-50">
+<aside class="fixed left-0 top-0 h-full w-64 bg-white border-r border-outline-variant/10 flex flex-col z-50">
     <div class="p-6 border-b border-outline-variant/10">
         <div class="flex items-center gap-3">
             <img src="{{ asset('img/logo_polnep.webp') }}" class="w-10 h-10 object-contain" alt="Logo POLNEP">
@@ -38,7 +38,7 @@
                 <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
             </summary>
 
-            <div class="mt-2 ml-4 pl-3 border-l border-outline-variant/20 space-y-1">
+            <div class="mt-2 ml-4 pl-3 border-l border-outline-variant/10 space-y-1">
                 <a class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('admin.settings.wa') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('admin.settings.wa') }}">
                     <span class="material-symbols-outlined text-[18px]">chat</span>
                     <span class="text-sm">Notifikasi WA</span>
@@ -150,7 +150,7 @@
 <div class="sidebar-overlay fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-[45] hidden opacity-0 transition-all duration-300" style="z-index: 45;" id="sidebarOverlay"></div>
 
 <!-- Mobile top bar -->
-<div class="mobile-top-bar fixed top-0 left-0 right-0 h-16 bg-white border-b border-outline-variant/30 hidden items-center justify-between px-6 z-40 shadow-sm" id="mobileTopBar">
+<div class="mobile-top-bar fixed top-0 left-0 right-0 h-16 bg-white border-b border-outline-variant/10 hidden items-center justify-between px-6 z-40 shadow-sm" id="mobileTopBar">
     <div class="flex items-center gap-3">
         <button id="mobileMenuBtn" class="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center text-on-surface-variant active:scale-95 transition-all">
             <span class="material-symbols-outlined text-[26px]">menu</span>
@@ -163,7 +163,7 @@
             <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=e2e7ff&color=00a5c0&bold=true" class="w-full h-full object-cover" alt="Avatar">
         </button>
 
-        <div x-show="mobileMenuOpen" x-cloak style="display: none;" x-transition class="absolute right-0 top-11 w-56 bg-white rounded-2xl shadow-xl border border-outline-variant/20 py-2 z-50 overflow-hidden">
+        <div x-show="mobileMenuOpen" x-cloak style="display: none;" x-transition class="absolute right-0 top-11 w-56 bg-white rounded-2xl shadow-xl border border-outline-variant/10 py-2 z-50 overflow-hidden">
             <div class="px-4 py-2 border-b border-outline-variant/10 bg-slate-50/60">
                 <p class="text-xs font-bold text-on-surface truncate">{{ Auth::user()->name }}</p>
                 <p class="text-[10px] text-outline truncate mt-0.5">{{ Auth::user()->email }}</p>

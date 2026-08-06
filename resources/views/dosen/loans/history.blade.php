@@ -215,7 +215,7 @@
         {{-- Tampilan Mobile Card List --}}
         <div class="lg:hidden space-y-4">
             @forelse($history as $item)
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col gap-4">
                     <!-- Judul Buku & Penulis -->
                     <div class="flex justify-between items-start gap-3">
                         <div class="flex-1">
@@ -242,7 +242,7 @@
                     </div>
 
                     <!-- Info Tanggal -->
-                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant/10">
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant/100">
                         <div>
                             <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Tanggal Pinjam</span>
                             <span class="text-xs font-semibold text-on-surface">
@@ -272,7 +272,7 @@
                     </div>
 
                     <!-- Keterangan -->
-                    <div class="pt-4 border-t border-outline-variant/10 flex flex-col gap-1">
+                    <div class="pt-4 border-t border-outline-variant/100 flex flex-col gap-1">
                         <span class="text-[10px] text-outline uppercase tracking-wider block">Keterangan</span>
                         <span class="text-xs font-medium text-on-surface-variant">
                             {{ $item['keterangan'] }}
@@ -280,7 +280,7 @@
                     </div>
                 </div>
             @empty
-                <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 text-center text-outline text-sm font-medium shadow-sm">
+                <div class="bg-white p-8 rounded-3xl border border-outline-variant/100 text-center text-outline text-sm font-medium shadow-sm">
                     Belum ada riwayat aktivitas peminjaman fisik maupun baca online.
                 </div>
             @endforelse

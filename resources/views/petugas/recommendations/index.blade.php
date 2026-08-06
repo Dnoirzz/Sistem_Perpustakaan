@@ -149,11 +149,11 @@
         @endif
 
         <!-- Filter Bar -->
-        <section class="mb-8 rounded-3xl border border-outline-variant/10 bg-white p-6 shadow-sm">
+        <section class="mb-8 rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
             <form action="{{ route('petugas.recommendations.index') }}" method="GET" class="flex flex-wrap items-center gap-4">
                 <div class="flex-1 min-w-[200px]">
                     <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Status Usulan</label>
-                    <select name="status" onchange="this.form.submit()" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/45 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                    <select name="status" onchange="this.form.submit()" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
                         <option value="">Semua Status</option>
                         <option value="pending" @selected($selectedStatus === 'pending')>Pending</option>
                         <option value="disetujui" @selected($selectedStatus === 'disetujui')>Disetujui</option>
@@ -162,7 +162,7 @@
                 </div>
                 @if($selectedStatus !== null && $selectedStatus !== '')
                     <div class="pt-6">
-                        <a href="{{ route('petugas.recommendations.index') }}" class="rounded-2xl border border-outline-variant/30 px-6 py-3 text-center text-xs font-bold text-outline transition-all hover:bg-slate-50 flex items-center justify-center">
+                        <a href="{{ route('petugas.recommendations.index') }}" class="rounded-2xl border border-outline-variant/100 px-6 py-3 text-center text-xs font-bold text-outline transition-all hover:bg-slate-50 flex items-center justify-center">
                             Reset Filter
                         </a>
                     </div>

@@ -130,7 +130,7 @@
             <h2 class="text-xs font-bold text-outline uppercase tracking-wider mb-4">Ringkasan Total Data Perpustakaan</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- 1. Total Anggota -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm hover:shadow-md transition-all">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[24px]">group</span>
@@ -144,7 +144,7 @@
                 </div>
 
                 <!-- 2. Total Sirkulasi / Peminjaman -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm hover:shadow-md transition-all">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[24px]">swap_horiz</span>
@@ -158,7 +158,7 @@
                 </div>
 
                 <!-- 3. Total Koleksi Perpustakaan -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm hover:shadow-md transition-all">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[24px]">inventory_2</span>
@@ -172,7 +172,7 @@
                 </div>
 
                 <!-- 4. Total Denda Belum Dibayar -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-all">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm hover:shadow-md transition-all">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[24px]">payments</span>
@@ -192,7 +192,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 
                 <!-- 1. Laporan Sirkulasi -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/40 transition-all group">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col justify-between hover:border-primary/40 transition-all group">
                     <div>
                         <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-[28px]">sync_alt</span>
@@ -207,7 +207,7 @@
                 </div>
 
                 <!-- 2. Laporan Koleksi -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-secondary/40 transition-all group">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col justify-between hover:border-secondary/40 transition-all group">
                     <div>
                         <div class="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-[28px]">menu_book</span>
@@ -222,7 +222,7 @@
                 </div>
 
                 <!-- 3. Laporan Arsip Digital -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-primary/40 transition-all group">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col justify-between hover:border-primary/40 transition-all group">
                     <div>
                         <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-[28px]">folder_shared</span>
@@ -237,7 +237,7 @@
                 </div>
 
                 <!-- 4. Laporan Denda & Sanksi -->
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between hover:border-rose-500/40 transition-all group">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col justify-between hover:border-rose-500/40 transition-all group">
                     <div>
                         <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-[28px]">gavel</span>

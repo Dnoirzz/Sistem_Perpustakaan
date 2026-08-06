@@ -146,7 +146,7 @@
             'back_url' => route('mahasiswa.arsip.index')
         ])
 
-        <section class="max-w-4xl rounded-3xl border border-outline-variant/10 bg-white p-8 shadow-sm">
+        <section class="max-w-4xl rounded-3xl border border-outline-variant/100 bg-white p-8 shadow-sm">
             <form action="{{ route('mahasiswa.arsip.update', [$archiveType, $archive->getKey()]) }}" method="POST" enctype="multipart/form-data" class="space-y-6" onsubmit="return validatePengujiForm(this)">
                 @csrf
                 @method('PUT')
@@ -154,39 +154,39 @@
                 
                 <div>
                     <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Judul Arsip <span class="text-error">*</span></label>
-                    <input type="text" name="judul" value="{{ old('judul', $archiveTitle) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Judul arsip wajib diisi')" oninput="this.setCustomValidity('')">
+                    <input type="text" name="judul" value="{{ old('judul', $archiveTitle) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Judul arsip wajib diisi')" oninput="this.setCustomValidity('')">
                 </div>
                 
                 @if ($archiveType === 'laporan-pkl')
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Nama Tempat PKL <span class="text-error">*</span></label>
-                        <input type="text" name="nama_tempat_pkl" value="{{ old('nama_tempat_pkl', $archive->nama_tempat_pkl) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama tempat PKL wajib diisi')" oninput="this.setCustomValidity('')">
+                        <input type="text" name="nama_tempat_pkl" value="{{ old('nama_tempat_pkl', $archive->nama_tempat_pkl) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama tempat PKL wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                 @endif
                 
                 <div class="grid gap-6 md:grid-cols-2">
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Pembimbing <span class="text-error">*</span></label>
-                        <input type="text" name="pembimbing" value="{{ old('pembimbing', $archive->pembimbing) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama dosen pembimbing wajib diisi')" oninput="this.setCustomValidity('')">
+                        <input type="text" name="pembimbing" value="{{ old('pembimbing', $archive->pembimbing) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Nama dosen pembimbing wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Tahun Terbit <span class="text-error">*</span></label>
-                        <input type="number" name="tahun" value="{{ old('tahun', $archive->tahun) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Tahun terbit wajib diisi')" oninput="this.setCustomValidity('')">
+                        <input type="number" name="tahun" value="{{ old('tahun', $archive->tahun) }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Tahun terbit wajib diisi')" oninput="this.setCustomValidity('')">
                     </div>
                 </div>
                 
                 <div class="grid gap-6 md:grid-cols-2">
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 1</label>
-                        <input type="text" name="penguji_1" value="{{ old('penguji_1', $archive->penguji_1) }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                        <input type="text" name="penguji_1" value="{{ old('penguji_1', $archive->penguji_1) }}" placeholder="Nama Penguji 1" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Penguji 2</label>
-                        <input type="text" name="penguji_2" value="{{ old('penguji_2', $archive->penguji_2) }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
+                        <input type="text" name="penguji_2" value="{{ old('penguji_2', $archive->penguji_2) }}" placeholder="Nama Penguji 2" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all">
                     </div>
                 </div>
                 
-                <div class="border-t border-outline-variant/10 pt-6">
+                <div class="border-t border-outline-variant/100 pt-6">
                     <h3 class="text-sm font-bold text-on-surface-variant mb-4 uppercase tracking-widest flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[18px]">cloud_upload</span>
                         Ganti File Berkas (Opsional)
@@ -194,19 +194,19 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Ganti PDF Utama</label>
-                            <input type="file" name="file_pdf" accept="application/pdf" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all">
+                            <input type="file" name="file_pdf" accept="application/pdf" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Ganti File Word</label>
-                            <input type="file" name="file_word" accept=".doc,.docx" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all">
+                            <input type="file" name="file_word" accept=".doc,.docx" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-outline bg-slate-50 transition-all">
                         </div>
                     </div>
                 </div>
 
                 <!-- Action buttons -->
-                <div class="flex justify-end gap-4 border-t border-outline-variant/10 pt-6 mt-8">
+                <div class="flex justify-end gap-4 border-t border-outline-variant/100 pt-6 mt-8">
                     <a href="{{ route('mahasiswa.arsip.index') }}"
-                        class="px-8 py-4 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
+                        class="px-8 py-4 rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
                         Batal
                     </a>
                     <button type="submit"

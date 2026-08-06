@@ -155,7 +155,7 @@
             </a>
 
             <!-- Form Card -->
-            <div class="bg-white rounded-3xl border border-outline-variant/15 p-8 shadow-sm">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="font-headline-md text-on-surface text-lg">Form Edit Jurusan</h3>
                     <span class="material-symbols-outlined text-primary">edit_square</span>
@@ -170,7 +170,7 @@
                         <input type="text" 
                                name="nama_jurusan" 
                                id="nama_jurusan" 
-                               class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('nama_jurusan') border-error @enderror" 
+                               class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all @error('nama_jurusan') border-error @enderror" 
                                value="{{ old('nama_jurusan', $jurusan->nama_jurusan) }}" 
                                required/>
                         @error('nama_jurusan')

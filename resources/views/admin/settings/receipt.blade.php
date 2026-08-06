@@ -170,8 +170,8 @@
             <!-- Left & Middle Column: Configuration Fields -->
             <div class="lg:col-span-2 space-y-8">
                 <!-- Kop Surat Section -->
-                <section class="bg-white rounded-3xl border border-outline-variant/20 p-8 shadow-sm">
-                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/10">
+                <section class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/100">
                         <span class="material-symbols-outlined text-primary text-3xl">domain</span>
                         <div>
                             <h2 class="font-headline-md text-lg text-on-surface">Struktur Kop Surat Resmi</h2>
@@ -220,7 +220,7 @@
                             <p class="text-[10px] text-outline">Alamat jalan, nomor telepon, faksimile, alamat surel, dan kode pos.</p>
                         </div>
 
-                        <div class="flex flex-col md:flex-row items-center gap-4 border-t border-outline-variant/10 pt-6 mt-4">
+                        <div class="flex flex-col md:flex-row items-center gap-4 border-t border-outline-variant/100 pt-6 mt-4">
                             <div class="w-20 h-20 rounded-2xl bg-slate-50 border border-slate-200/60 flex items-center justify-center p-2 shrink-0 shadow-sm relative group overflow-hidden">
                                 <img src="{{ route('receipt.logo') }}?t={{ time() }}" class="w-full h-full object-contain transition duration-300 group-hover:scale-105" alt="Logo Instansi">
                             </div>
@@ -238,8 +238,8 @@
                 </section>
 
                 <!-- Penandatangan & Format Surat Section -->
-                <section class="bg-white rounded-3xl border border-outline-variant/20 p-8 shadow-sm">
-                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/10">
+                <section class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/100">
                         <span class="material-symbols-outlined text-primary text-3xl">badge</span>
                         <div>
                             <h2 class="font-headline-md text-lg text-on-surface">Format Penomoran & Penandatangan</h2>
@@ -298,7 +298,7 @@
             <!-- Right Column: Info & Action Buttons -->
             <div class="space-y-8">
                 <!-- Action Card -->
-                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/15 p-8">
+                <section class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                     <h3 class="font-headline-md text-lg text-on-surface mb-4 flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[22px]">settings_suggest</span>
                         Simpan Konfigurasi

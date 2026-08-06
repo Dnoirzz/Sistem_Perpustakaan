@@ -165,8 +165,8 @@
         <div class="max-w-4xl space-y-8">
             
             <!-- Card 1: Informasi Profil -->
-            <div class="bg-white rounded-3xl border border-outline-variant/20 p-8 shadow-sm">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/10">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/100">
                     <span class="material-symbols-outlined text-primary text-3xl">badge</span>
                     <div>
                         <h2 class="font-headline-md text-lg text-on-surface">Informasi Profil</h2>
@@ -179,8 +179,8 @@
             </div>
 
             <!-- Card 2: Update Password -->
-            <div class="bg-white rounded-3xl border border-outline-variant/20 p-8 shadow-sm">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/10">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/100">
                     <span class="material-symbols-outlined text-primary text-3xl">lock</span>
                     <div>
                         <h2 class="font-headline-md text-lg text-on-surface">Perbarui Kata Sandi</h2>
@@ -193,8 +193,8 @@
             </div>
 
             <!-- Card 3: Delete Account (Hanya Tampil Jika Diizinkan) -->
-            <div class="bg-white rounded-3xl border border-outline-variant/20 p-8 shadow-sm">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/10">
+            <div class="bg-white rounded-3xl border border-outline-variant/100 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/100">
                     <span class="material-symbols-outlined text-error text-3xl">no_accounts</span>
                     <div>
                         <h2 class="font-headline-md text-lg text-error">Hapus Akun</h2>

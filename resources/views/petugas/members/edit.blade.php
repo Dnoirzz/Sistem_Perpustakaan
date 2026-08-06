@@ -160,13 +160,13 @@
         ])
 
         <!-- Form Card Container -->
-        <section class="max-w-6xl bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+        <section class="max-w-6xl bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
             <form action="{{ route('petugas.members.update', $member->user_id) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
 
                 <!-- Basic User Info Section -->
-                <div class="border-b border-outline-variant/10 pb-6">
+                <div class="border-b border-outline-variant/100 pb-6">
                     <h3 class="text-sm font-bold text-on-surface-variant mb-4 uppercase tracking-widest flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[18px]">account_box</span>
                         Informasi Akun Dasar
@@ -176,7 +176,7 @@
                         <!-- Nama Lengkap -->
                         <div class="space-y-2">
                             <label for="name" class="block text-xs font-bold text-outline uppercase tracking-wider">Nama Lengkap</label>
-                            <input type="text" name="name" id="name" placeholder="Nama Lengkap" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('name', $member->name) }}" required/>
+                            <input type="text" name="name" id="name" placeholder="Nama Lengkap" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('name', $member->name) }}" required/>
                             @error('name')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -185,7 +185,7 @@
                         <!-- Alamat Email -->
                         <div class="space-y-2">
                             <label for="email" class="block text-xs font-bold text-outline uppercase tracking-wider">Alamat Email</label>
-                            <input type="email" name="email" id="email" placeholder="Email" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('email', $member->email) }}" required/>
+                            <input type="email" name="email" id="email" placeholder="Email" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('email', $member->email) }}" required/>
                             @error('email')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -194,7 +194,7 @@
                         <!-- No HP -->
                         <div class="space-y-2">
                             <label for="no_hp" class="block text-xs font-bold text-outline uppercase tracking-wider">Nomor Handphone (WhatsApp)</label>
-                            <input type="text" name="no_hp" id="no_hp" placeholder="No HP" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('no_hp', $member->no_hp) }}" required/>
+                            <input type="text" name="no_hp" id="no_hp" placeholder="No HP" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('no_hp', $member->no_hp) }}" required/>
                             @error('no_hp')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -203,7 +203,7 @@
                         <!-- Peran / Role (Read-only) -->
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-outline uppercase tracking-wider">Jenis Keanggotaan</label>
-                            <div class="w-full px-4 py-3 rounded-2xl border border-outline-variant/30 bg-slate-50 text-sm font-semibold text-on-surface-variant flex items-center gap-2">
+                            <div class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 bg-slate-50 text-sm font-semibold text-on-surface-variant flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary text-[18px]">{{ $member->role->role_name === 'mahasiswa' ? 'school' : 'person' }}</span>
                                 {{ ucfirst($member->role->role_name) }}
                                 <span class="ml-auto text-[10px] text-outline bg-outline-variant/15 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Tidak dapat diubah</span>
@@ -214,7 +214,7 @@
                 </div>
 
                 <!-- Academic Info Section (Dynamic based on selected role) -->
-                <div class="border-b border-outline-variant/10 pb-6">
+                <div class="border-b border-outline-variant/100 pb-6">
                     <h3 class="text-sm font-bold text-on-surface-variant mb-4 uppercase tracking-widest flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary text-[18px]">school</span>
                         Informasi Akademik
@@ -225,7 +225,7 @@
                         <!-- NIM -->
                         <div class="space-y-2">
                             <label for="nim" class="block text-xs font-bold text-outline uppercase tracking-wider">Nomor Induk Mahasiswa (NIM)</label>
-                            <input type="text" name="nim" id="nim" placeholder="NIM" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('nim', $member->mahasiswa->nim ?? '') }}" :required="roleName === 'mahasiswa'"/>
+                            <input type="text" name="nim" id="nim" placeholder="NIM" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('nim', $member->mahasiswa->nim ?? '') }}" :required="roleName === 'mahasiswa'"/>
                             @error('nim')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -234,7 +234,7 @@
                         <!-- Prodi -->
                         <div class="space-y-2">
                             <label for="prodi_id_mhs" class="block text-xs font-bold text-outline uppercase tracking-wider">Program Studi</label>
-                            <select name="prodi_id" id="prodi_id_mhs" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" :required="roleName === 'mahasiswa'">
+                            <select name="prodi_id" id="prodi_id_mhs" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" :required="roleName === 'mahasiswa'">
                                 <option value="" disabled>Pilih Program Studi</option>
                                 @foreach($prodis as $p)
                                     <option value="{{ $p->prodi_id }}" {{ old('prodi_id', ($member->mahasiswa->prodi_id ?? '')) == $p->prodi_id ? 'selected' : '' }}>{{ $p->nama_prodi }}</option>
@@ -248,7 +248,7 @@
                         <!-- Semester -->
                         <div class="space-y-2">
                             <label for="semester" class="block text-xs font-bold text-outline uppercase tracking-wider">Semester</label>
-                            <input type="number" name="semester" id="semester" placeholder="Semester" min="1" max="14" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('semester', ($member->mahasiswa->semester ?? 1)) }}" :required="roleName === 'mahasiswa'"/>
+                            <input type="number" name="semester" id="semester" placeholder="Semester" min="1" max="14" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('semester', ($member->mahasiswa->semester ?? 1)) }}" :required="roleName === 'mahasiswa'"/>
                             @error('semester')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -260,7 +260,7 @@
                         <!-- NIP -->
                         <div class="space-y-2">
                             <label for="nip" class="block text-xs font-bold text-outline uppercase tracking-wider">Nomor Induk Pegawai (NIP)</label>
-                            <input type="text" name="nip" id="nip" placeholder="NIP" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('nip', $member->dosen->nip ?? '') }}" :required="roleName === 'dosen'"/>
+                            <input type="text" name="nip" id="nip" placeholder="NIP" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('nip', $member->dosen->nip ?? '') }}" :required="roleName === 'dosen'"/>
                             @error('nip')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -269,7 +269,7 @@
                         <!-- Prodi -->
                         <div class="space-y-2">
                             <label for="prodi_id_dsn" class="block text-xs font-bold text-outline uppercase tracking-wider">Program Studi</label>
-                            <select name="prodi_id" id="prodi_id_dsn" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" :required="roleName === 'dosen'">
+                            <select name="prodi_id" id="prodi_id_dsn" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" :required="roleName === 'dosen'">
                                 <option value="" disabled>Pilih Program Studi</option>
                                 @foreach($prodis as $p)
                                     <option value="{{ $p->prodi_id }}" {{ old('prodi_id', ($member->dosen->prodi_id ?? '')) == $p->prodi_id ? 'selected' : '' }}>{{ $p->nama_prodi }}</option>
@@ -294,7 +294,7 @@
                         <!-- Password -->
                         <div class="space-y-2">
                             <label for="password" class="block text-xs font-bold text-outline uppercase tracking-wider">Password Baru</label>
-                            <input type="password" name="password" id="password" placeholder="Masukkan Password Baru" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"/>
+                            <input type="password" name="password" id="password" placeholder="Masukkan Password Baru" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"/>
                             @error('password')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -303,14 +303,14 @@
                         <!-- Confirm Password -->
                         <div class="space-y-2">
                             <label for="password_confirmation" class="block text-xs font-bold text-outline uppercase tracking-wider">Konfirmasi Password Baru</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Ulangi password baru" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"/>
+                            <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Ulangi password baru" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all"/>
                         </div>
                     </div>
                 </div>
 
                 <!-- Action buttons -->
-                <div class="flex justify-end gap-4 border-t border-outline-variant/10 pt-6">
-                    <a href="{{ route('petugas.members.index') }}" class="px-8 py-4 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
+                <div class="flex justify-end gap-4 border-t border-outline-variant/100 pt-6">
+                    <a href="{{ route('petugas.members.index') }}" class="px-8 py-4 rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
                         Batal
                     </a>
                     <button type="submit" class="flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">

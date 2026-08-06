@@ -176,7 +176,7 @@
 
         <!-- Tab Navigation for Pustaka -->
         <div class="flex gap-4 mb-8">
-            <a href="{{ route('petugas.books.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-white border border-outline-variant/20 text-on-surface-variant hover:bg-slate-50 hover:text-primary transition-all">
+            <a href="{{ route('petugas.books.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-white border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 hover:text-primary transition-all">
                 Daftar Buku
             </a>
             <a href="{{ route('petugas.categories.index') }}" class="px-6 py-3 rounded-2xl font-bold text-sm bg-primary text-white shadow-sm transition-all">
@@ -234,7 +234,7 @@
 
             <!-- Right Column: Add Category Form -->
             <div class="space-y-6">
-                <div class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+                <div class="bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="font-headline-md text-on-surface text-lg">Tambah Kategori</h3>
                         <span class="material-symbols-outlined text-primary">library_add</span>
@@ -244,7 +244,7 @@
                         @csrf
                         <div class="space-y-2">
                             <label for="kategori_name" class="block text-xs font-bold text-outline uppercase tracking-wider">Nama Kategori</label>
-                            <input type="text" name="kategori_name" id="kategori_name" placeholder="Contoh: Pemrograman Web" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('kategori_name') }}" required/>
+                            <input type="text" name="kategori_name" id="kategori_name" placeholder="Contoh: Pemrograman Web" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('kategori_name') }}" required/>
                         </div>
 
                         <button type="submit" class="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">

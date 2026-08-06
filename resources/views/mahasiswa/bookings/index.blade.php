@@ -251,7 +251,7 @@
         {{-- Tampilan Mobile Card List --}}
         <div class="lg:hidden space-y-4">
             @forelse($bookings as $booking)
-                <div class="bg-white p-6 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
+                <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex flex-col gap-4">
                     <!-- Judul Buku & Penulis -->
                     <div>
                         <h4 class="font-bold text-on-surface text-sm">{{ $booking->collection?->display_title ?? 'Buku tidak ditemukan' }}</h4>
@@ -259,7 +259,7 @@
                     </div>
 
                     <!-- Info Tanggal -->
-                    <div class="pt-4 border-t border-outline-variant/10">
+                    <div class="pt-4 border-t border-outline-variant/100">
                         <span class="text-[10px] text-outline uppercase tracking-wider block mb-1">Tanggal Booking</span>
                         <span class="text-xs font-semibold text-on-surface">
                             {{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d M Y') }}
@@ -267,7 +267,7 @@
                     </div>
 
                     <!-- Keterangan -->
-                    <div class="pt-4 border-t border-outline-variant/10 flex flex-col gap-1">
+                    <div class="pt-4 border-t border-outline-variant/100 flex flex-col gap-1">
                         <span class="text-[10px] text-outline uppercase tracking-wider block">Keterangan</span>
                         <span class="text-xs font-medium text-on-surface-variant">
                             @if($booking->note)
@@ -288,7 +288,7 @@
                     </div>
 
                     <!-- Status & Aksi -->
-                    <div class="flex justify-between items-center pt-4 border-t border-outline-variant/10">
+                    <div class="flex justify-between items-center pt-4 border-t border-outline-variant/100">
                         <div>
                             @if($booking->status === 'pending')
                                 <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wide">
@@ -322,7 +322,7 @@
                     </div>
                 </div>
             @empty
-                <div class="bg-white p-8 rounded-3xl border border-outline-variant/10 text-center text-outline text-sm font-medium shadow-sm">
+                <div class="bg-white p-8 rounded-3xl border border-outline-variant/100 text-center text-outline text-sm font-medium shadow-sm">
                     Anda belum pernah melakukan booking buku online.
                 </div>
             @endforelse
@@ -365,11 +365,11 @@
 
                     <div>
                         <label for="cancel_reason" class="block text-sm font-bold text-on-surface mb-2">Alasan pembatalan</label>
-                        <textarea id="cancel_reason" name="cancel_reason" rows="4" placeholder="Tuliskan alasan pembatalan booking Anda..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/40 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none" required>{{ old('cancel_reason') }}</textarea>
+                        <textarea id="cancel_reason" name="cancel_reason" rows="4" placeholder="Tuliskan alasan pembatalan booking Anda..." class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm resize-none" required>{{ old('cancel_reason') }}</textarea>
                     </div>
 
                     <div class="flex gap-3">
-                        <button type="button" onclick="closeCancelModal()" class="flex-1 py-3 px-6 rounded-2xl border border-outline-variant/30 text-on-surface-variant hover:bg-slate-50 font-bold text-sm transition-all">
+                        <button type="button" onclick="closeCancelModal()" class="flex-1 py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-sm transition-all">
                             Kembali
                         </button>
                         <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-rose-500 text-white font-bold text-sm hover:bg-rose-600 transition-all shadow-lg shadow-rose-200">

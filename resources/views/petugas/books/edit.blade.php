@@ -147,7 +147,7 @@
         ])
 
         <!-- Form Container -->
-        <section class="max-w-6xl bg-white rounded-3xl shadow-sm border border-outline-variant/10 p-8">
+        <section class="max-w-6xl bg-white rounded-3xl shadow-sm border border-outline-variant/100 p-8">
             <form action="{{ route('petugas.books.update', $book->buku_id) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
                 @csrf
                 @method('PUT')
@@ -181,7 +181,7 @@
                         <!-- Judul Buku -->
                         <div class="space-y-2">
                             <label for="judul" class="block text-xs font-bold text-outline uppercase tracking-wider">Judul Buku</label>
-                            <input type="text" name="judul" id="judul" placeholder="Judul Buku" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('judul', $book->judul) }}" required oninvalid="this.setCustomValidity('Judul buku wajib diisi.')" oninput="this.setCustomValidity('')"/>
+                            <input type="text" name="judul" id="judul" placeholder="Judul Buku" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('judul', $book->judul) }}" required oninvalid="this.setCustomValidity('Judul buku wajib diisi.')" oninput="this.setCustomValidity('')"/>
                             @error('judul')
                                 <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                             @enderror
@@ -192,7 +192,7 @@
                             <!-- Penulis -->
                             <div class="space-y-2">
                                 <label for="author" class="block text-xs font-bold text-outline uppercase tracking-wider">Penulis / Author</label>
-                                <input type="text" name="author" id="author" placeholder="Penulis" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('author', $book->author) }}" required oninvalid="this.setCustomValidity('Nama penulis wajib diisi.')" oninput="this.setCustomValidity('')"/>
+                                <input type="text" name="author" id="author" placeholder="Penulis" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('author', $book->author) }}" required oninvalid="this.setCustomValidity('Nama penulis wajib diisi.')" oninput="this.setCustomValidity('')"/>
                                 @error('author')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror
@@ -201,7 +201,7 @@
                             <!-- Kategori -->
                             <div class="space-y-2">
                                 <label for="kategori_id" class="block text-xs font-bold text-outline uppercase tracking-wider">Kategori Buku</label>
-                                <select name="kategori_id" id="kategori_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Silakan pilih kategori buku terlebih dahulu.')" oninput="this.setCustomValidity('')">
+                                <select name="kategori_id" id="kategori_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold text-on-surface-variant transition-all" required oninvalid="this.setCustomValidity('Silakan pilih kategori buku terlebih dahulu.')" oninput="this.setCustomValidity('')">
                                     @foreach($categories as $cat)
                                         <option value="{{ $cat->kategori_id }}" {{ old('kategori_id', $book->kategori_id) == $cat->kategori_id ? 'selected' : '' }}>
                                             {{ $cat->kategori_name }}
@@ -219,7 +219,7 @@
                             <!-- Penerbit -->
                             <div class="sm:col-span-2 space-y-2">
                                 <label for="publisher" class="block text-xs font-bold text-outline uppercase tracking-wider">Penerbit</label>
-                                <input type="text" name="publisher" id="publisher" placeholder="Penerbit" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('publisher', $book->publisher) }}"/>
+                                <input type="text" name="publisher" id="publisher" placeholder="Penerbit" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('publisher', $book->publisher) }}"/>
                                 @error('publisher')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror
@@ -228,7 +228,7 @@
                             <!-- Tahun Terbit -->
                             <div class="space-y-2">
                                 <label for="release" class="block text-xs font-bold text-outline uppercase tracking-wider">Tahun Terbit</label>
-                                <input type="number" name="release" id="release" placeholder="Tahun" min="1900" max="{{ date('Y') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('release', $book->release) }}" oninvalid="this.setCustomValidity(this.validity.rangeOverflow ? 'Tahun terbit tidak boleh lebih dari {{ date('Y') }}.' : (this.validity.rangeUnderflow ? 'Tahun terbit minimal tahun 1900.' : 'Tahun terbit tidak valid.'))" oninput="this.setCustomValidity('')"/>
+                                <input type="number" name="release" id="release" placeholder="Tahun" min="1900" max="{{ date('Y') }}" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('release', $book->release) }}" oninvalid="this.setCustomValidity(this.validity.rangeOverflow ? 'Tahun terbit tidak boleh lebih dari {{ date('Y') }}.' : (this.validity.rangeUnderflow ? 'Tahun terbit minimal tahun 1900.' : 'Tahun terbit tidak valid.'))" oninput="this.setCustomValidity('')"/>
                                 @error('release')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror
@@ -237,7 +237,7 @@
                             <!-- Stok -->
                             <div class="space-y-2">
                                 <label for="stock" class="block text-xs font-bold text-outline uppercase tracking-wider">Stok Buku</label>
-                                <input type="number" name="stock" id="stock" placeholder="Stok" min="0" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('stock', $book->stock) }}" required oninvalid="this.setCustomValidity(this.validity.valueMissing ? 'Stok buku wajib diisi.' : (this.validity.rangeUnderflow ? 'Stok buku tidak boleh kurang dari 0.' : 'Stok buku tidak valid.'))" oninput="this.setCustomValidity('')"/>
+                                <input type="number" name="stock" id="stock" placeholder="Stok" min="0" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm font-semibold transition-all" value="{{ old('stock', $book->stock) }}" required oninvalid="this.setCustomValidity(this.validity.valueMissing ? 'Stok buku wajib diisi.' : (this.validity.rangeUnderflow ? 'Stok buku tidak boleh kurang dari 0.' : 'Stok buku tidak valid.'))" oninput="this.setCustomValidity('')"/>
                                 @error('stock')
                                     <p class="text-xs text-error font-medium mt-1">{{ $message }}</p>
                                 @enderror
@@ -247,8 +247,8 @@
                 </div>
 
                 <!-- Form Buttons -->
-                <div class="flex justify-end gap-4 border-t border-outline-variant/10 pt-6">
-                    <a href="{{ route('petugas.books.index') }}" class="px-8 py-4 rounded-2xl border border-outline-variant/30 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
+                <div class="flex justify-end gap-4 border-t border-outline-variant/100 pt-6">
+                    <a href="{{ route('petugas.books.index') }}" class="px-8 py-4 rounded-2xl border border-outline-variant/100 text-on-surface-variant font-bold text-sm hover:bg-slate-50 transition-all text-center">
                         Batal
                     </a>
                     <button type="submit" class="flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
