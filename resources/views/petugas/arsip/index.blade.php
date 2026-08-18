@@ -204,56 +204,55 @@
 
         <x-table :pagination="$archives->hasPages() ? $archives->links() : null">
             <x-slot name="headers">
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Jenis</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Judul</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Mahasiswa</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap w-28">Aksi</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Jenis &amp; Status</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Judul &amp; Informasi</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Mahasiswa</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-center text-slate-700 w-24">Aksi</th>
             </x-slot>
 
             @forelse($archives as $item)
-                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
-                    <td class="px-8 py-5 whitespace-nowrap">
-                        <span class="inline-flex items-center px-3.5 py-1 rounded-full bg-teal-100 text-teal-800 border border-teal-200 text-xs font-extrabold tracking-wide whitespace-nowrap">
-                            {{ $item['type_label'] }}
-                        </span>
-                    </td>
-                    <td class="px-8 py-5 max-w-md">
-                        <div class="font-bold text-slate-900 text-sm line-clamp-2 group-hover:text-teal-700 transition-colors">{{ $item['title'] }}</div>
-                        <div class="text-xs text-slate-500 mt-1.5 flex items-center gap-2 font-medium">
-                            <span class="material-symbols-outlined text-[14px]">calendar_month</span> Tahun {{ $item['year'] ?? '-' }}
-                            <span class="text-slate-300">•</span>
-                            <span class="material-symbols-outlined text-[14px]">person</span> Pembimbing: {{ $item['pembimbing'] ?? '-' }}
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group border-b border-slate-100">
+                    <td class="px-5 py-3.5">
+                        <div class="flex flex-col gap-1 items-start">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-extrabold tracking-wide">
+                                {{ $item['type_label'] }}
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide border
+                                {{ $item['status'] === 'ditolak' ? 'bg-rose-100 text-rose-700 border-rose-200' : 
+                                   ($item['status'] === 'aktif' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 
+                                   ($item['status'] === 'diverifikasi' ? 'bg-sky-100 text-sky-800 border-sky-200' : 'bg-amber-100 text-amber-800 border-amber-200')) }}">
+                                {{ $item['status'] }}
+                            </span>
                         </div>
                     </td>
-                    <td class="px-8 py-5 whitespace-nowrap">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/100 shadow-xs shrink-0">
+                    <td class="px-5 py-3.5 max-w-lg">
+                        <div class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2 group-hover:text-teal-700 transition-colors">{{ $item['title'] }}</div>
+                        <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-2 font-medium">
+                            <span>Tahun: {{ $item['year'] ?? '-' }}</span>
+                            <span class="text-slate-300">•</span>
+                            <span class="truncate">Pembimbing: {{ $item['pembimbing'] ?? '-' }}</span>
+                        </div>
+                    </td>
+                    <td class="px-5 py-3.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/100 shrink-0">
                                 {{ substr($item['mahasiswa_name'] ?? 'M', 0, 2) }}
                             </div>
-                            <div class="flex flex-col">
-                                <span class="font-bold text-slate-900 text-sm whitespace-nowrap group-hover:text-teal-700 transition-colors">{{ $item['mahasiswa_name'] ?? '-' }}</span>
-                                <span class="text-[10px] text-slate-500 font-bold tracking-wider mt-0.5 whitespace-nowrap">NIM: {{ $item['nim'] ?? '-' }}</span>
+                            <div class="flex flex-col min-w-0">
+                                <span class="font-bold text-slate-900 text-xs sm:text-sm truncate group-hover:text-teal-700 transition-colors">{{ $item['mahasiswa_name'] ?? '-' }}</span>
+                                <span class="text-[10px] text-slate-500 font-bold tracking-wider truncate">NIM: {{ $item['nim'] ?? '-' }}</span>
                             </div>
                         </div>
                     </td>
-                    <td class="px-8 py-5 whitespace-nowrap">
-                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold tracking-wide border whitespace-nowrap shadow-2xs
-                            {{ $item['status'] === 'ditolak' ? 'bg-rose-100 text-rose-700 border-rose-200' : 
-                               ($item['status'] === 'aktif' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 
-                               ($item['status'] === 'diverifikasi' ? 'bg-sky-100 text-sky-800 border-sky-200' : 'bg-amber-100 text-amber-800 border-amber-200')) }}">
-                            {{ $item['status'] }}
-                        </span>
-                    </td>
-                    <td class="px-8 py-5 text-center whitespace-nowrap">
-                        <a href="{{ route('petugas.arsip.show', [$item['type'], $item['id']]) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 flex items-center justify-center transition-all inline-flex active:scale-95" title="Detail Arsip">
-                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    <td class="px-5 py-3.5 text-center">
+                        <a href="{{ route('petugas.arsip.show', [$item['type'], $item['id']]) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 flex items-center justify-center transition-all inline-flex active:scale-95 mx-auto" title="Detail Arsip">
+                            <span class="material-symbols-outlined text-[17px]">visibility</span>
                         </a>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="px-8 py-14 text-center text-slate-500 font-medium">Belum ada data arsip digital.</td>
+                    <td colspan="4" class="px-5 py-12 text-center text-slate-500 font-medium">Belum ada data arsip digital.</td>
                 </tr>
             @endforelse
         </x-table>

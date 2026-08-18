@@ -268,18 +268,36 @@
                                 <span class="material-symbols-outlined text-[20px]">info</span>
                             </button>
 
-                            @if($needsReplacement && ! $replacementReceived)
-                                <form method="POST" action="{{ route('petugas.penalties.confirm-replacement', $penalty->penalti_id) }}" onsubmit="return confirm('Konfirmasi buku pengganti sudah diterima perpustakaan? Stok akan bertambah 1.')">
-                                    @csrf
-                                    <button
-                                        type="submit"
-                                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-violet-500 text-white hover:bg-violet-600 transition-all shadow-xs active:scale-95 shadow-violet-200"
-                                        title="Konfirmasi buku pengganti diterima"
-                                        aria-label="Konfirmasi buku pengganti diterima"
-                                    >
+                            @if(($needsReplacement || in_array($penalty->type, ['kerusakan', 'kehilangan'], true)) && ! $replacementReceived && $penalty->status === 'belum_dibayar')
+                                <div class="relative" x-data="{ openOpt: false }">
+                                    <button @click="openOpt = !openOpt" type="button" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-violet-600 text-white hover:bg-violet-700 transition-all shadow-xs active:scale-95 shadow-violet-200" title="Konfirmasi Buku Pengganti Diterima">
                                         <span class="material-symbols-outlined text-[20px]">library_add_check</span>
                                     </button>
-                                </form>
+
+                                    <div x-show="openOpt" @click.away="openOpt = false" x-transition class="absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-xl z-[90] p-3 text-left space-y-2">
+                                        <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">Pilih Jenis Penggantian:</p>
+
+                                        <button type="button" 
+                                                onclick="openSameBookModal('{{ $penalty->penalti_id }}', '{{ e($penalty->loan?->collection?->display_title) }}', '{{ e($penalty->user?->name) }}')"
+                                                class="w-full text-left p-2 rounded-xl hover:bg-emerald-50 text-slate-800 transition-all border border-slate-100 hover:border-emerald-200">
+                                            <div class="flex items-center gap-2 text-emerald-700 font-bold text-xs">
+                                                <span class="material-symbols-outlined text-[16px]">sync</span>
+                                                Buku Sama Persis (+1 Stok)
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 mt-0.5">Stok buku fisik baru bertambah +1.</p>
+                                        </button>
+
+                                        <button type="button" 
+                                                onclick="openNewCollectionModal('{{ $penalty->penalti_id }}', '{{ e($penalty->loan?->collection?->display_title) }}', '{{ e($penalty->loan?->collection?->book?->category?->kategori_name ?? 'Umum') }}', '{{ $penalty->loan?->collection?->book?->category_id }}', '{{ e($penalty->user?->name) }}')"
+                                                class="w-full text-left p-2 rounded-xl hover:bg-sky-50 text-slate-800 transition-all border border-slate-100 hover:border-sky-200">
+                                            <div class="flex items-center gap-2 text-sky-700 font-bold text-xs">
+                                                <span class="material-symbols-outlined text-[16px]">library_add</span>
+                                                Koleksi Baru (1 Kategori)
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 mt-0.5">Daftarkan koleksi judul baru.</p>
+                                        </button>
+                                    </div>
+                                </div>
                             @endif
 
                             @if($penalty->status === 'belum_dibayar' && ! ($penalty->type === 'kehilangan' && $penalty->penalti_type === 'ganti_buku' && ! $replacementReceived) && ! $paymentReceived)
@@ -601,6 +619,128 @@
                 closePenaltyInfo();
             }
         });
+    </script>
+
+    <!-- MODAL 1: PENGGANTIAN BUKU SAMA -->
+    <div id="modal-same-book" class="fixed inset-0 z-[99999] hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 my-auto relative">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2 text-emerald-700">
+                    <span class="material-symbols-outlined text-2xl">sync</span>
+                    <h3 class="font-bold text-base text-slate-800">Ganti Buku Sama Persis</h3>
+                </div>
+                <button type="button" onclick="closeSameBookModal()" class="text-slate-400 hover:text-slate-600 rounded-full p-1">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
+            <form id="same-book-form" method="POST" action="" class="space-y-4">
+                @csrf
+                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-900 space-y-1">
+                    <p><strong>Peminjam:</strong> <span id="same-user-name"></span></p>
+                    <p><strong>Judul Buku:</strong> <span id="same-book-title"></span></p>
+                    <p class="text-[11px] text-emerald-700 mt-1 font-medium">💡 Menyetujui penggantian ini akan menambah <strong>+1 Stok Fisik Baru</strong> pada judul buku ini dan melunaskan denda sanksi terkait.</p>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Catatan Penggantian</label>
+                    <textarea name="notes" rows="2" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-xs resize-none" placeholder="Misal: Diterima 1 eks fisik buku baru berkondisi mulus dari peminjam."></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeSameBookModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md">Proses &amp; Tambah Stok (+1)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: PENGGANTIAN KOLEKSI BARU (1 KATEGORI) -->
+    <div id="modal-new-collection" class="fixed inset-0 z-[99999] hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 my-auto relative">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2 text-sky-700">
+                    <span class="material-symbols-outlined text-2xl">library_add</span>
+                    <h3 class="font-bold text-base text-slate-800">Ganti Koleksi Baru (1 Kategori)</h3>
+                </div>
+                <button type="button" onclick="closeNewCollectionModal()" class="text-slate-400 hover:text-slate-600 rounded-full p-1">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
+            <form id="new-collection-form" method="POST" action="" class="space-y-4">
+                @csrf
+                <div class="p-3 bg-sky-50 border border-sky-200 rounded-2xl text-xs text-sky-900 space-y-1">
+                    <p><strong>Peminjam:</strong> <span id="new-user-name"></span></p>
+                    <p><strong>Buku Asli Rusak:</strong> <span id="new-old-title"></span></p>
+                    <p><strong>Kategori Terkunci:</strong> <span id="new-category-name" class="font-extrabold text-sky-800"></span></p>
+                    <input type="hidden" name="category_id" id="new-category-id" value="">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="space-y-1 md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Judul Buku Baru <span class="text-rose-500">*</span></label>
+                        <input type="text" name="judul" required placeholder="Judul buku baru yang diserahkan peminjam" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold focus:border-sky-500">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Nama Pengarang <span class="text-rose-500">*</span></label>
+                        <input type="text" name="pengarang" required placeholder="Nama penulis/pengarang" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Nama Penerbit <span class="text-rose-500">*</span></label>
+                        <input type="text" name="penerbit" required placeholder="Penerbit" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Tahun Terbit <span class="text-rose-500">*</span></label>
+                        <input type="number" name="tahun_terbit" required min="1900" max="{{ date('Y') + 1 }}" value="{{ date('Y') }}" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Nomor ISBN</label>
+                        <input type="text" name="isbn" placeholder="Opsional (misal: 978-602-...)" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Catatan Penggantian</label>
+                    <textarea name="notes" rows="2" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-xs resize-none" placeholder="Catatan tambahan petugas..."></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeNewCollectionModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-md">Simpan Koleksi Baru &amp; Lunaskan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSameBookModal(id, title, user) {
+            document.getElementById('same-book-form').action = "{{ url('petugas/penalties') }}/" + id + "/confirm-replacement-same";
+            document.getElementById('same-book-title').textContent = title;
+            document.getElementById('same-user-name').textContent = user;
+            document.getElementById('modal-same-book').classList.remove('hidden');
+        }
+
+        function closeSameBookModal() {
+            document.getElementById('modal-same-book').classList.add('hidden');
+        }
+
+        function openNewCollectionModal(id, oldTitle, categoryName, categoryId, user) {
+            document.getElementById('new-collection-form').action = "{{ url('petugas/penalties') }}/" + id + "/confirm-replacement-new";
+            document.getElementById('new-old-title').textContent = oldTitle;
+            document.getElementById('new-category-name').textContent = categoryName;
+            document.getElementById('new-category-id').value = categoryId || '';
+            document.getElementById('new-user-name').textContent = user;
+            document.getElementById('modal-new-collection').classList.remove('hidden');
+        }
+
+        function closeNewCollectionModal() {
+            document.getElementById('modal-new-collection').classList.add('hidden');
+        }
     </script>
 </body>
 </html>

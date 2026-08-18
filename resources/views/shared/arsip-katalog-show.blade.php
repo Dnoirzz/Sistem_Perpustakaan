@@ -163,7 +163,7 @@
                 <div class="space-y-4">
                     @if($archive->file_pdf)
                         @auth
-                            <a href="{{ route($rolePrefix . '.katalog-arsip.full', [$archiveType, $archive->getKey(), \Illuminate\Support\Str::slug($archiveTitle)]) }}" target="_blank" class="inline-flex items-center gap-2.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-8 py-4 text-base shadow-lg shadow-primary/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                            <a href="{{ route($rolePrefix . '.katalog-arsip.full', [$archiveType, $archive->getKey(), \Illuminate\Support\Str::slug($archiveTitle)]) }}?view_token={{ $viewToken ?? '' }}" target="_blank" class="inline-flex items-center gap-2.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-8 py-4 text-base shadow-lg shadow-primary/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
                                 <span class="material-symbols-outlined text-[22px]">open_in_new</span>
                                 Baca Dokumen Lengkap (PDF)
                             </a>

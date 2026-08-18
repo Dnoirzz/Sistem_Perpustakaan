@@ -13,7 +13,8 @@
     @php
         $libraryMenuOpen = request()->routeIs('petugas.books.*')
             || request()->routeIs('petugas.categories.*')
-            || request()->routeIs('petugas.arsip.*');
+            || request()->routeIs('petugas.arsip.*')
+            || request()->routeIs('petugas.damaged-books.*');
         $loanManagementMenuOpen = request()->routeIs('petugas.loans.*')
             || request()->routeIs('petugas.returns.*')
             || request()->routeIs('petugas.bookings.*')
@@ -49,6 +50,12 @@
                     <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-[18px]">menu_book</span>
                         <span class="text-sm">Kelola Buku</span>
+                    </div>
+                </a>
+                <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.damaged-books.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.damaged-books.index') }}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px]">report_problem</span>
+                        <span class="text-sm">Kelola Buku Rusak</span>
                     </div>
                 </a>
                 <a class="flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('petugas.arsip.*') ? 'bg-surface-container text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }} transition-all" href="{{ route('petugas.arsip.index') }}">

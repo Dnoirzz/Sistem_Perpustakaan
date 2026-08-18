@@ -257,56 +257,53 @@
 
             <x-table :pagination="$members->hasPages() ? $members->links() : null">
                 <x-slot name="headers">
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Calon Anggota</th>
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Peran & Prodi</th>
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">NIM/NIP</th>
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Bukti Identitas</th>
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap w-48">Aksi Verifikasi</th>
+                    <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Calon Anggota</th>
+                    <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Program Studi</th>
+                    <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Bukti Identitas</th>
+                    <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-center text-slate-700 w-36">Aksi Verifikasi</th>
                 </x-slot>
 
                 @forelse($members as $m)
-                    <tr class="even:bg-slate-50/40 hover:bg-amber-50/30 transition-colors duration-150 group">
-                        <td class="px-8 py-5 whitespace-nowrap">
+                    <tr class="even:bg-slate-50/40 hover:bg-amber-50/30 transition-colors duration-150 group border-b border-slate-100">
+                        <td class="px-5 py-3.5">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 font-bold flex items-center justify-center text-xs uppercase border border-amber-200 shadow-xs">
+                                <div class="w-9 h-9 rounded-2xl bg-amber-100 text-amber-800 font-bold flex items-center justify-center text-xs uppercase border border-amber-200 shrink-0">
                                     {{ substr($m->name, 0, 2) }}
                                 </div>
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-slate-900 text-sm group-hover:text-amber-800 transition-colors">{{ $m->name }}</span>
-                                    <span class="text-xs text-slate-500 font-medium">{{ $m->email }} • {{ $m->no_hp }}</span>
+                                <div class="flex flex-col min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-amber-800 transition-colors truncate">{{ $m->name }}</span>
+                                        <span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase {{ $m->isMahasiswa() ? 'bg-sky-100 text-sky-800 border border-sky-200' : 'bg-purple-100 text-purple-800 border border-purple-200' }}">
+                                            {{ $m->role->role_name ?? '-' }}
+                                        </span>
+                                    </div>
+                                    <span class="text-[11px] text-slate-500 font-medium truncate">
+                                        @if($m->isMahasiswa())
+                                            NIM: {{ $m->mahasiswa->nim ?? '-' }}
+                                        @elseif($m->isDosen())
+                                            NIP: {{ $m->dosen->nip ?? '-' }}
+                                        @endif
+                                        • {{ $m->email }}
+                                    </span>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-8 py-5 whitespace-nowrap">
-                            <div class="space-y-1">
-                                <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $m->isMahasiswa() ? 'bg-sky-100 text-sky-800 border border-sky-200' : 'bg-purple-100 text-purple-800 border border-purple-200' }}">
-                                    {{ $m->role->role_name ?? '-' }}
-                                </span>
-                                <p class="text-xs text-slate-600 font-semibold">
-                                    @if($m->isMahasiswa())
-                                        {{ $m->mahasiswa->prodi->nama_prodi ?? '-' }} (Sem {{ $m->mahasiswa->semester ?? '-' }})
-                                    @elseif($m->isDosen())
-                                        {{ $m->dosen->prodi->nama_prodi ?? '-' }}
-                                    @else
-                                        -
-                                    @endif
-                                </p>
-                            </div>
+                        <td class="px-5 py-3.5">
+                            <span class="text-xs text-slate-800 font-bold truncate block">
+                                @if($m->isMahasiswa())
+                                    {{ $m->mahasiswa->prodi->nama_prodi ?? '-' }}
+                                @elseif($m->isDosen())
+                                    {{ $m->dosen->prodi->nama_prodi ?? '-' }}
+                                @else
+                                    -
+                                @endif
+                            </span>
                         </td>
-                        <td class="px-8 py-5 font-mono text-xs font-bold text-slate-800 whitespace-nowrap">
-                            @if($m->isMahasiswa())
-                                NIM: {{ $m->mahasiswa->nim ?? '-' }}
-                            @elseif($m->isDosen())
-                                NIP: {{ $m->dosen->nip ?? '-' }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="px-8 py-5 whitespace-nowrap">
+                        <td class="px-5 py-3.5">
                             @if(!empty($m->foto_ktm))
                                 <button type="button" 
                                         onclick="previewKtm('{{ route('petugas.members.ktm', $m->user_id) }}', '{{ e($m->name) }}')"
-                                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200">
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200">
                                     <span class="material-symbols-outlined text-[16px]">badge</span>
                                     Lihat Identitas
                                 </button>
@@ -314,18 +311,19 @@
                                 <span class="text-xs text-slate-400 italic">Tanpa Berkas</span>
                             @endif
                         </td>
-                        <td class="px-8 py-5 text-center whitespace-nowrap">
-                            <div class="flex items-center justify-center gap-2">
+                        <td class="px-5 py-3.5 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
                                 <form action="{{ route('petugas.members.approve', $m->user_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui akun {{ e($m->name) }}?')">
                                     @csrf
-                                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1 active:scale-95">
+                                    <button type="submit" title="Setujui Pendaftaran" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1 active:scale-95">
                                         <span class="material-symbols-outlined text-[16px]">check</span>
                                     </button>
                                 </form>
 
                                 <button type="button" 
+                                        title="Tolak Pendaftaran"
                                         onclick="openRejectModal('{{ $m->user_id }}', '{{ e($m->name) }}')"
-                                        class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-xl transition-all flex items-center gap-1 active:scale-95">
+                                        class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-xl transition-all flex items-center gap-1 active:scale-95">
                                     <span class="material-symbols-outlined text-[16px]">close</span>
                                 </button>
                             </div>
@@ -333,8 +331,8 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-8 py-14 text-center">
-                            <span class="material-symbols-outlined text-slate-300 text-6xl mb-2">verified</span>
+                        <td colspan="4" class="px-5 py-12 text-center">
+                            <span class="material-symbols-outlined text-slate-300 text-5xl mb-2">verified</span>
                             <p class="font-bold text-slate-700 text-sm">Tidak Ada Antrian Verifikasi</p>
                             <p class="text-xs text-slate-400">Seluruh pendaftaran anggota baru telah terverifikasi.</p>
                         </td>
@@ -345,22 +343,32 @@
             <!-- TAB 1: VERIFIED ACTIVE MEMBERS TABLE -->
             <x-table :pagination="$members->hasPages() ? $members->links() : null">
                 <x-slot name="headers">
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Nama & ID Anggota</th>
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Akun / Kontak</th>
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Peran</th>
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Detail Akademis</th>
-                    <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-center text-slate-700 whitespace-nowrap w-40">Aksi</th>
+                    <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Anggota</th>
+                    <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Kontak</th>
+                    <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Program Studi</th>
+                    <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-center text-slate-700 w-32">Aksi</th>
                 </x-slot>
 
                 @forelse($members as $m)
-                    <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
-                        <td class="px-8 py-5 whitespace-nowrap">
+                    <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group border-b border-slate-100">
+                        <td class="px-5 py-3.5">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/100 shadow-xs">
+                                <div class="w-9 h-9 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-teal-700 text-xs uppercase border border-outline-variant/100 shrink-0">
                                     {{ substr($m->name, 0, 2) }}
                                 </div>
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $m->name }}</span>
+                                <div class="flex flex-col min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-teal-700 transition-colors truncate">{{ $m->name }}</span>
+                                        @if($m->role->role_name === 'mahasiswa')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[9px] font-extrabold tracking-wide">
+                                                Mahasiswa
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-[9px] font-extrabold tracking-wide">
+                                                Dosen
+                                            </span>
+                                        @endif
+                                    </div>
                                     <span class="text-[10px] text-slate-500 font-bold tracking-wider">
                                         @if($m->role->role_name === 'mahasiswa')
                                             NIM: {{ $m->mahasiswa->nim ?? '-' }}
@@ -372,52 +380,38 @@
                             </div>
                         </td>
 
-                        <td class="px-8 py-5 text-sm text-slate-700 whitespace-nowrap">
-                            <div class="flex flex-col">
-                                <span class="font-bold text-xs text-slate-900">{{ $m->email }}</span>
-                                <span class="text-[10px] text-slate-500 mt-0.5 font-medium">{{ $m->no_hp ?? '-' }}</span>
+                        <td class="px-5 py-3.5 text-xs text-slate-700">
+                            <div class="flex flex-col min-w-0">
+                                <span class="font-bold text-xs text-slate-900 truncate">{{ $m->email }}</span>
+                                <span class="text-[10px] text-slate-500 font-medium truncate">{{ $m->no_hp ?? '-' }}</span>
                             </div>
                         </td>
 
-                        <td class="px-8 py-5 whitespace-nowrap">
-                            @if($m->role->role_name === 'mahasiswa')
-                                <span class="inline-flex items-center px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide">
-                                    Mahasiswa
-                                </span>
-                            @else
-                                <span class="inline-flex items-center px-3.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide">
-                                    Dosen
-                                </span>
-                            @endif
-                        </td>
-
-                        <td class="px-8 py-5 whitespace-nowrap">
-                            <div class="flex flex-col">
+                        <td class="px-5 py-3.5">
+                            <span class="font-bold text-xs text-slate-800 truncate block">
                                 @if($m->role->role_name === 'mahasiswa')
-                                    <span class="font-bold text-xs text-slate-900">{{ $m->mahasiswa->prodi->nama_prodi ?? 'Prodi' }}</span>
-                                    <span class="text-[10px] text-slate-500 mt-0.5 font-bold uppercase">Semester {{ $m->mahasiswa->semester ?? '-' }}</span>
+                                    {{ $m->mahasiswa->prodi->nama_prodi ?? 'Prodi' }}
                                 @else
-                                    <span class="font-bold text-xs text-slate-900">{{ $m->dosen->prodi->nama_prodi ?? 'Prodi' }}</span>
-                                    <span class="text-[10px] text-slate-500 mt-0.5 font-bold uppercase">Pengajar / Dosen</span>
+                                    {{ $m->dosen->prodi->nama_prodi ?? 'Prodi' }}
                                 @endif
-                            </div>
+                            </span>
                         </td>
 
-                        <td class="px-8 py-5 text-center whitespace-nowrap">
-                            <div class="flex items-center justify-center gap-2">
+                        <td class="px-5 py-3.5 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
                                 <a href="{{ route('petugas.members.show', $m->user_id) }}" class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 flex items-center justify-center transition-all active:scale-95" title="Lihat Detail">
-                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    <span class="material-symbols-outlined text-[17px]">visibility</span>
                                 </a>
 
                                 <a href="{{ route('petugas.members.edit', $m->user_id) }}" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-600 hover:text-white hover:border-amber-600 flex items-center justify-center transition-all active:scale-95" title="Edit Anggota">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    <span class="material-symbols-outlined text-[17px]">edit</span>
                                 </a>
                                 
                                 <form action="{{ route('petugas.members.destroy', $m->user_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus anggota ini? Seluruh data sirkulasi dan log terkait anggota ini akan hilang.')" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 flex items-center justify-center transition-all active:scale-95" title="Hapus Anggota">
-                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        <span class="material-symbols-outlined text-[17px]">delete</span>
                                     </button>
                                 </form>
                             </div>
@@ -425,7 +419,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-8 py-14 text-center text-slate-500 font-medium">Data anggota perpustakaan tidak ditemukan.</td>
+                        <td colspan="4" class="px-5 py-12 text-center text-slate-500 font-medium">Data anggota perpustakaan tidak ditemukan.</td>
                     </tr>
                 @endforelse
             </x-table>

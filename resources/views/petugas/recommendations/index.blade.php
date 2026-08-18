@@ -173,67 +173,73 @@
         <!-- Table Card -->
         <x-table :pagination="$recommendations->hasPages() ? $recommendations->links() : null">
             <x-slot name="headers">
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Pengusul</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Judul & Penulis</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Alasan Usulan</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Tanggal Masuk</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-slate-700 whitespace-nowrap">Status</th>
-                <th class="px-8 py-4 font-bold text-xs uppercase tracking-wider text-right text-slate-700 whitespace-nowrap">Aksi</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Pengusul &amp; Tanggal</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Buku Yang Diusulkan</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Alasan Usulan</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Status</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-right text-slate-700 w-40">Aksi</th>
             </x-slot>
 
             @forelse($recommendations as $rec)
-                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group">
-                    <td class="px-8 py-5 whitespace-nowrap">
-                        <div class="flex flex-col">
-                            <span class="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">{{ $rec->user?->name }}</span>
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{{ $rec->user?->role?->role_name }}</span>
+                <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group border-b border-slate-100">
+                    <td class="px-5 py-3.5">
+                        <div class="flex flex-col min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-900 text-xs sm:text-sm group-hover:text-teal-700 transition-colors truncate">{{ $rec->user?->name ?? 'Anonim' }}</span>
+                                <span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-slate-100 text-slate-700 border border-slate-200">
+                                    {{ $rec->user?->role?->role_name ?? '-' }}
+                                </span>
+                            </div>
+                            <span class="text-[11px] text-slate-500 font-medium mt-0.5 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[13px]">schedule</span>
+                                {{ $rec->created_at->translatedFormat('d-m-Y H:i') }}
+                            </span>
                         </div>
                     </td>
-                    <td class="px-8 py-5">
-                        <div class="flex flex-col">
-                            <span class="font-bold text-slate-900 text-sm">{{ $rec->title }}</span>
-                            <span class="text-xs text-slate-500 font-medium">Oleh: {{ $rec->author ?: 'Anonim' }}</span>
+                    <td class="px-5 py-3.5 max-w-xs">
+                        <div class="flex flex-col min-w-0">
+                            <span class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2">{{ $rec->title }}</span>
+                            <span class="text-[11px] text-slate-500 font-medium truncate mt-0.5">Penulis: {{ $rec->author ?: 'Anonim' }}</span>
                         </div>
                     </td>
-                    <td class="px-8 py-5 text-sm text-slate-700 font-medium" title="{{ $rec->reason }}">
-                        {{ $rec->reason ?: '-' }}
+                    <td class="px-5 py-3.5 max-w-xs">
+                        <p class="text-xs text-slate-700 font-medium leading-relaxed">
+                            {{ $rec->reason ?: '-' }}
+                        </p>
                     </td>
-                    <td class="px-8 py-5 text-sm text-slate-700 font-medium whitespace-nowrap">
-                        {{ $rec->created_at->translatedFormat('d-m-Y H:i') }}
-                    </td>
-                    <td class="px-8 py-5 whitespace-nowrap">
+                    <td class="px-5 py-3.5 whitespace-nowrap">
                         @if($rec->status === 'pending')
-                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold tracking-wide shadow-2xs">
-                                <span class="w-2 h-2 rounded-full bg-amber-600 mr-2 animate-pulse"></span>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-extrabold tracking-wide">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-600 mr-1.5 animate-pulse"></span>
                                 Pending
                             </span>
                         @elseif($rec->status === 'disetujui')
-                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
-                                <span class="w-2 h-2 rounded-full bg-emerald-600 mr-2"></span>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-extrabold tracking-wide">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
                                 Disetujui
                             </span>
                         @else
-                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
-                                <span class="w-2 h-2 rounded-full bg-rose-600 mr-2"></span>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-extrabold tracking-wide">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-600 mr-1.5"></span>
                                 Ditolak
                             </span>
                         @endif
                     </td>
-                    <td class="px-8 py-5 text-right whitespace-nowrap">
+                    <td class="px-5 py-3.5 text-right whitespace-nowrap">
                         @if($rec->status === 'pending')
-                            <div class="flex items-center justify-end gap-2" x-data="{ openVerify: false }">
+                            <div class="flex items-center justify-end gap-1.5" x-data="{ openVerify: false }">
                                 <!-- Tombol Tolak -->
                                 <form action="{{ route('petugas.recommendations.verify', $rec->rekomendasi_id) }}" method="POST" class="inline">
                                     @csrf
                                     <input type="hidden" name="status" value="ditolak">
-                                    <button type="submit" class="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 text-xs font-bold transition-all shadow-2xs active:scale-95">
+                                    <button type="submit" title="Tolak Usulan" class="px-2.5 py-1.5 rounded-xl border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 text-xs font-bold transition-all shadow-xs active:scale-95">
                                         Tolak
                                     </button>
                                 </form>
 
-                                <!-- Tombol Setujui dengan Dropdown Sesi Voting (Alpine.js) -->
+                                <!-- Tombol Setujui dengan Dropdown Sesi Voting -->
                                 <div class="relative">
-                                    <button @click="openVerify = !openVerify" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1 shadow-2xs active:scale-95">
+                                    <button @click="openVerify = !openVerify" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1 shadow-xs active:scale-95">
                                         Setujui
                                         <span class="material-symbols-outlined text-[14px]">expand_more</span>
                                     </button>
@@ -255,7 +261,7 @@
                                         <!-- Aksi 2: Setujui dan masukkan ke voting -->
                                         @if($activeVotings->count() > 0)
                                             <div class="border-t border-slate-100 pt-3">
-                                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Setujui & Masukkan ke Sesi Voting:</p>
+                                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Setujui &amp; Masukkan ke Sesi Voting:</p>
                                                 <div class="space-y-1 max-h-40 overflow-y-auto pr-1">
                                                     @foreach($activeVotings as $voting)
                                                         <form action="{{ route('petugas.recommendations.verify', $rec->rekomendasi_id) }}" method="POST">
@@ -282,8 +288,8 @@
                             <form action="{{ route('petugas.recommendations.destroy', $rec->rekomendasi_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus usulan ini?')" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 flex items-center justify-center transition-all inline-flex active:scale-95">
-                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                <button type="submit" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 flex items-center justify-center transition-all inline-flex active:scale-95" title="Hapus Usulan">
+                                    <span class="material-symbols-outlined text-[17px]">delete</span>
                                 </button>
                             </form>
                         @endif
@@ -291,7 +297,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="px-8 py-14 text-center text-slate-500 font-medium">Tidak ada usulan buku baru yang cocok dengan kriteria filter.</td>
+                    <td colspan="5" class="px-5 py-12 text-center text-slate-500 font-medium">Tidak ada usulan buku baru yang cocok dengan kriteria filter.</td>
                 </tr>
             @endforelse
         </x-table>

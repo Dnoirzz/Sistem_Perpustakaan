@@ -54,7 +54,13 @@ class ArsipDigital
 
     public static function definition(string $type): array
     {
-        $definition = static::definitions()[$type] ?? null;
+        $normalizedDash = str_replace('_', '-', $type);
+        $normalizedUnderscore = str_replace('-', '_', $type);
+
+        $definition = static::definitions()[$type]
+            ?? static::definitions()[$normalizedDash]
+            ?? static::definitions()[$normalizedUnderscore]
+            ?? null;
 
         if (! $definition) {
             throw new InvalidArgumentException("Tipe arsip [$type] tidak dikenali.");

@@ -227,6 +227,8 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::post('/penalties', [PetugasPenaltyController::class, 'store'])->name('penalties.store');
     Route::post('/penalties/{penalty}/mark-paid', [PetugasPenaltyController::class, 'markPaid'])->name('penalties.mark-paid');
     Route::post('/penalties/{penalty}/confirm-replacement', [PetugasPenaltyController::class, 'confirmReplacement'])->name('penalties.confirm-replacement');
+    Route::post('/penalties/{penalty}/confirm-replacement-same', [PetugasPenaltyController::class, 'confirmReplacementSame'])->name('penalties.confirm-replacement-same');
+    Route::post('/penalties/{penalty}/confirm-replacement-new', [PetugasPenaltyController::class, 'confirmReplacementNew'])->name('penalties.confirm-replacement-new');
 
     // Pengaturan Checklist & Denda Pengembalian
     Route::get('/return-settings', [PetugasReturnSettingController::class, 'index'])->name('return-settings.index');
@@ -236,6 +238,15 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::delete('/return-settings/checklists/{checklist}', [PetugasReturnSettingController::class, 'destroyChecklist'])->name('return-settings.checklists.destroy');
     Route::get('/return-settings/penalty-rules/{penaltyRule}/edit', [PetugasReturnSettingController::class, 'editPenaltyRule'])->name('return-settings.penalty-rules.edit');
     Route::put('/return-settings/penalty-rules/{penaltyRule}', [PetugasReturnSettingController::class, 'updatePenaltyRule'])->name('return-settings.penalty-rules.update');
+
+    // Pemantauan Buku Rusak & Penggantian Buku
+    Route::get('/damaged-books', [\App\Http\Controllers\Petugas\DamagedBookController::class, 'index'])->name('damaged-books.index');
+    Route::post('/damaged-books/store-internal', [\App\Http\Controllers\Petugas\DamagedBookController::class, 'storeInternal'])->name('damaged-books.store-internal');
+    Route::post('/damaged-books/{id}/restore-stock', [\App\Http\Controllers\Petugas\DamagedBookController::class, 'restoreToStock'])->name('damaged-books.restore-stock');
+    Route::post('/damaged-books/{id}/mark-repair', [\App\Http\Controllers\Petugas\DamagedBookController::class, 'markInRepair'])->name('damaged-books.mark-repair');
+    Route::post('/damaged-books/{id}/resolve-same', [\App\Http\Controllers\Petugas\DamagedBookController::class, 'resolveSameBook'])->name('damaged-books.resolve-same');
+    Route::post('/damaged-books/{id}/resolve-new', [\App\Http\Controllers\Petugas\DamagedBookController::class, 'resolveNewCollection'])->name('damaged-books.resolve-new');
+    Route::post('/damaged-books/{id}/mark-scrapped', [\App\Http\Controllers\Petugas\DamagedBookController::class, 'markScrapped'])->name('damaged-books.mark-scrapped');
 
     // Usulan Buku Baru (Fase 6)
     Route::get('/recommendations', [\App\Http\Controllers\Petugas\RecommendationController::class, 'index'])->name('recommendations.index');
@@ -336,6 +347,24 @@ Route::middleware(['auth', 'role:mahasiswa'])->prefix('mahasiswa')->name('mahasi
     Route::get('/loans', [\App\Http\Controllers\MemberLoanController::class, 'activeLoans'])->name('loans.active');
     Route::get('/loans/history', [\App\Http\Controllers\MemberLoanController::class, 'loanHistory'])->name('loans.history');
     Route::get('/loans/penalties', [\App\Http\Controllers\MemberLoanController::class, 'myPenalties'])->name('loans.penalties');
+});
+
+// Rute Demo/Preview Halaman Error Kustom (Dev Testing)
+Route::get('/demo-error/{code}', function ($code) {
+    $messages = [
+        '403' => 'Akses Halaman Pembaca Ditolak: Tautan viewer telah kadaluarsa.',
+        '404' => 'Halaman atau naskah dokumen yang Anda cari tidak dapat ditemukan.',
+        '500' => 'Terjadi kesalahan internal pada server sistem.',
+        '419' => 'Sesi keamanan halaman telah berakhir karena terlalu lama tidak ada aktivitas.',
+        '503' => 'Sistem Perpustakaan Digital sedang dalam proses pemeliharaan rutin.'
+    ];
+    
+    $msg = $messages[$code] ?? "Contoh pesan pengujian untuk error {$code}.";
+    
+    if (view()->exists("errors.{$code}")) {
+        abort((int) $code, $msg);
+    }
+    abort(404);
 });
 
 require __DIR__.'/auth.php';

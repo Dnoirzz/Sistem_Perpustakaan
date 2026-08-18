@@ -169,7 +169,8 @@ class ReturnController extends Controller
         $wasOverdue = $loan->isOverdue();
         $today = today();
         
-        $shouldRestock = true;
+        // If the book has a physical issue / condition failure, it is damaged and must NOT restock into available inventory
+        $shouldRestock = ! $hasPhysicalIssue;
         $penaltyAmount = $request->filled('penalty_amount') ? (float) $request->input('penalty_amount') : 0;
 
         $releasedCollectionId = null;
@@ -223,6 +224,19 @@ class ReturnController extends Controller
             if ($shouldRestock && $collection) {
                 $collection->syncBackingStock(1);
                 $releasedCollectionId = $loan->koleksi_id;
+            }
+
+            // Record entry in damaged_books if the physical inspection failed
+            if ($hasPhysicalIssue) {
+                \App\Models\DamagedBook::create([
+                    'loan_id' => $loan->loan_id,
+                    'koleksi_id' => $loan->koleksi_id,
+                    'user_id' => $loan->user_id,
+                    'reported_by' => auth()->id(),
+                    'reported_at' => now(),
+                    'condition_notes' => $request->input('return_condition_notes') ?: implode(', ', $failedConditions),
+                    'status' => 'menunggu_penggantian',
+                ]);
             }
 
             $createdPenalties = [];

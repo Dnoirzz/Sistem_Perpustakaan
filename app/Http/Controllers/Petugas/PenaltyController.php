@@ -73,7 +73,177 @@ class PenaltyController extends Controller
             'paid_today' => Penalty::where('status', 'lunas')->whereDate('updated_at', today())->count(),
         ];
 
-        return view('petugas.penalties.index', compact('penalties', 'stats', 'search', 'status'));
+        $categories = \App\Models\Category::orderBy('kategori_name')->get();
+
+        return view('petugas.penalties.index', compact('penalties', 'stats', 'search', 'status', 'categories'));
+    }
+
+    /**
+     * Konfirmasi bahwa buku pengganti yang SAMA PERSIS telah diterima.
+     * Menambah +1 stok ketersediaan dari unit fisik baru yang diserahkan.
+     */
+    public function confirmReplacementSame(Request $request, $penalti_id)
+    {
+        $releasedCollectionId = null;
+
+        DB::transaction(function () use ($penalti_id, $request, &$releasedCollectionId) {
+            $penalty = Penalty::query()->whereKey($penalti_id)->lockForUpdate()->firstOrFail();
+
+            if (! in_array($penalty->penalti_type, ['ganti_buku', 'kombinasi'], true) && ! in_array($penalty->type, ['kerusakan', 'kehilangan'], true)) {
+                throw ValidationException::withMessages([
+                    'penalty' => 'Metode sanksi ini tidak membutuhkan konfirmasi fisik buku pengganti.',
+                ]);
+            }
+
+            if ($penalty->replacement_received_at !== null) {
+                throw ValidationException::withMessages([
+                    'penalty' => 'Buku pengganti untuk sanksi ini sudah pernah dikonfirmasi diterima.',
+                ]);
+            }
+
+            $loan = Loan::with(['user', 'collection.book'])->whereKey($penalty->loan_id)->lockForUpdate()->firstOrFail();
+            $collection = Collection::query()->whereKey($loan->koleksi_id)->lockForUpdate()->first();
+
+            if ($collection) {
+                $collection->syncBackingStock(1);
+                $releasedCollectionId = $collection->koleksi_id;
+            }
+
+            $replacementReceivedAt = now();
+            $isCombination = $penalty->penalti_type === 'kombinasi';
+            $isFullySettled = ! $isCombination || $penalty->payment_received_at !== null;
+
+            $penalty->update([
+                'replacement_received_at' => $replacementReceivedAt,
+                'status' => $isFullySettled ? 'lunas' : 'belum_dibayar',
+            ]);
+
+            // Update catatan di pemantauan buku rusak jika ada
+            \App\Models\DamagedBook::where('loan_id', $loan->loan_id)
+                ->where('status', 'menunggu_penggantian')
+                ->update([
+                    'status' => 'selesai_diganti_sama',
+                    'replacement_notes' => $request->input('notes', 'Penggantian buku fisik baru yang sama persis dikonfirmasi di Halaman Denda.'),
+                    'resolved_at' => now(),
+                ]);
+
+            $collectionTitle = $loan->collection?->display_title ?? 'Koleksi';
+            $notificationMessage = $isCombination && ! $isFullySettled
+                ? "Buku pengganti (Judul Sama) untuk koleksi \"{$collectionTitle}\" telah diterima. Pembayaran tunai masih belum dikonfirmasi."
+                : "Buku pengganti (Judul Sama) untuk koleksi \"{$collectionTitle}\" telah diterima dan sanksi dinyatakan lunas.";
+
+            NotificationCustom::send(
+                $penalty->user_id,
+                'Buku Pengganti Diterima',
+                $notificationMessage,
+                $penalty->user?->isDosen() ? route('dosen.loans.penalties') : route('mahasiswa.loans.penalties'),
+                'denda'
+            );
+
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'activity' => 'Mengonfirmasi buku pengganti (Judul Sama) untuk koleksi "' . $collectionTitle . '" dari anggota: ' . ($penalty->user?->name ?? 'Anggota'),
+            ]);
+        });
+
+        if ($releasedCollectionId) {
+            Antrian::checkAndNotifyAvailableQueue($releasedCollectionId);
+        }
+
+        return redirect()->route('petugas.penalties.index')->with('success', 'Buku pengganti (Judul Sama) berhasil dikonfirmasi diterima. Stok ketersediaan buku bertambah +1.');
+    }
+
+    /**
+     * Konfirmasi bahwa buku pengganti KOLEKSI BARU (1 Kategori) telah diterima.
+     * Mendaftarkan 1 Koleksi Judul Baru di katalog perpustakaan tanpa menambah stok buku lama.
+     */
+    public function confirmReplacementNew(Request $request, $penalti_id)
+    {
+        $penalty = Penalty::with(['loan.collection.book.category', 'user'])->findOrFail($penalti_id);
+
+        if ($penalty->replacement_received_at !== null) {
+            return redirect()->back()->with('error', 'Buku pengganti untuk sanksi ini sudah pernah dikonfirmasi diterima.');
+        }
+
+        $originalCategoryId = $penalty->loan?->collection?->book?->category_id;
+
+        $validated = $request->validate([
+            'judul' => ['required', 'string', 'max:255'],
+            'pengarang' => ['required', 'string', 'max:255'],
+            'penerbit' => ['required', 'string', 'max:255'],
+            'tahun_terbit' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
+            'isbn' => ['nullable', 'string', 'max:100'],
+            'deskripsi' => ['nullable', 'string', 'max:2000'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+            'category_id' => $originalCategoryId ? ['nullable', 'integer'] : ['required', 'exists:categories,category_id'],
+        ], [
+            'judul.required' => 'Judul buku baru wajib diisi.',
+            'pengarang.required' => 'Nama pengarang wajib diisi.',
+            'penerbit.required' => 'Nama penerbit wajib diisi.',
+            'tahun_terbit.required' => 'Tahun terbit wajib diisi.',
+        ]);
+
+        $categoryIdToUse = $originalCategoryId ?: $validated['category_id'];
+
+        DB::transaction(function () use ($penalty, $validated, $categoryIdToUse, $request) {
+            // 1. Buat Buku Baru
+            $newBook = \App\Models\Book::create([
+                'category_id' => $categoryIdToUse,
+                'judul' => $validated['judul'],
+                'author' => $validated['pengarang'],
+                'publisher' => $validated['penerbit'],
+                'publication_year' => $validated['tahun_terbit'],
+                'isbn' => $validated['isbn'] ?? null,
+                'description' => $validated['deskripsi'] ?? ('Buku penggantian dari peminjam: ' . ($penalty->user?->name ?? '-')),
+                'stock' => 1,
+            ]);
+
+            // 2. Buat Koleksi Baru untuk Buku Baru tersebut
+            $newCollection = Collection::create([
+                'item_type' => 'book',
+                'item_id' => $newBook->buku_id,
+                'stock' => 1,
+            ]);
+
+            // 3. Update status Penalty
+            $isCombination = $penalty->penalti_type === 'kombinasi';
+            $isFullySettled = ! $isCombination || $penalty->payment_received_at !== null;
+
+            $penalty->update([
+                'replacement_received_at' => now(),
+                'status' => $isFullySettled ? 'lunas' : 'belum_dibayar',
+            ]);
+
+            // 4. Update status DamagedBook jika ada
+            if ($penalty->loan_id) {
+                \App\Models\DamagedBook::where('loan_id', $penalty->loan_id)
+                    ->where('status', 'menunggu_penggantian')
+                    ->update([
+                        'status' => 'selesai_diganti_koleksi_baru',
+                        'replacement_koleksi_id' => $newCollection->koleksi_id,
+                        'replacement_notes' => $request->input('notes', 'Diganti koleksi baru: "' . $newBook->judul . '" (Dikonfirmasi di Halaman Denda).'),
+                        'resolved_at' => now(),
+                    ]);
+            }
+
+            $collectionTitle = $penalty->loan?->collection?->display_title ?? 'Koleksi';
+            $notificationMessage = "Buku pengganti koleksi baru (\"{$newBook->judul}\") untuk penggantian \"{$collectionTitle}\" telah diterima dan dikatalogkan.";
+
+            NotificationCustom::send(
+                $penalty->user_id,
+                'Buku Pengganti Baru Diterima',
+                $notificationMessage,
+                $penalty->user?->isDosen() ? route('dosen.loans.penalties') : route('mahasiswa.loans.penalties'),
+                'denda'
+            );
+
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'activity' => 'Mengonfirmasi buku pengganti Koleksi Baru ("' . $newBook->judul . '") dari peminjam: ' . ($penalty->user?->name ?? 'Anggota'),
+            ]);
+        });
+
+        return redirect()->route('petugas.penalties.index')->with('success', 'Buku pengganti (Koleksi Baru) berhasil dikatalogkan dengan stok = 1 dan sanksi telah dilunaskan.');
     }
 
     /**
