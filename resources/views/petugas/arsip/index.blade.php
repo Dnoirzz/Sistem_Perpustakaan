@@ -175,7 +175,7 @@
                 </div>
                 <div>
                     <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        <option value="">Semua Jenis</option>
+                        <option value="">Jenis Arsip</option>
                         @foreach($typeOptions as $option)
                             <option value="{{ $option['value'] }}" @selected($selectedType === $option['value'])>{{ $option['label'] }}</option>
                         @endforeach
@@ -183,7 +183,7 @@
                 </div>
                 <div>
                     <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        <option value="">Semua Status</option>
+                        <option value="">Status Arsip</option>
                         @foreach($statusOptions as $value => $label)
                             <option value="{{ $value }}" @selected($selectedStatus === $value)>{{ $label }}</option>
                         @endforeach
@@ -204,7 +204,8 @@
 
         <x-table :pagination="$archives->hasPages() ? $archives->links() : null">
             <x-slot name="headers">
-                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Jenis &amp; Status</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Jenis</th>
+                <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Status</th>
                 <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Judul &amp; Informasi</th>
                 <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-slate-700">Mahasiswa</th>
                 <th class="px-5 py-3.5 font-bold text-xs uppercase tracking-wider text-center text-slate-700 w-24">Aksi</th>
@@ -213,17 +214,17 @@
             @forelse($archives as $item)
                 <tr class="even:bg-slate-50/40 hover:bg-teal-50/40 transition-colors duration-150 group border-b border-slate-100">
                     <td class="px-5 py-3.5">
-                        <div class="flex flex-col gap-1 items-start">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-extrabold tracking-wide">
-                                {{ $item['type_label'] }}
-                            </span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide border
-                                {{ $item['status'] === 'ditolak' ? 'bg-rose-100 text-rose-700 border-rose-200' : 
-                                   ($item['status'] === 'aktif' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 
-                                   ($item['status'] === 'diverifikasi' ? 'bg-sky-100 text-sky-800 border-sky-200' : 'bg-amber-100 text-amber-800 border-amber-200')) }}">
-                                {{ $item['status'] }}
-                            </span>
-                        </div>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-extrabold tracking-wide">
+                            {{ $item['type_label'] }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-3.5">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide border
+                            {{ $item['status'] === 'ditolak' ? 'bg-rose-100 text-rose-700 border-rose-200' :
+                               ($item['status'] === 'aktif' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                               ($item['status'] === 'diverifikasi' ? 'bg-sky-100 text-sky-800 border-sky-200' : 'bg-amber-100 text-amber-800 border-amber-200')) }}">
+                            {{ $item['status'] }}
+                        </span>
                     </td>
                     <td class="px-5 py-3.5 max-w-lg">
                         <div class="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2 group-hover:text-teal-700 transition-colors">{{ $item['title'] }}</div>
@@ -252,7 +253,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="px-5 py-12 text-center text-slate-500 font-medium">Belum ada data arsip digital.</td>
+                    <td colspan="5" class="px-5 py-12 text-center text-slate-500 font-medium">Belum ada data arsip digital.</td>
                 </tr>
             @endforelse
         </x-table>

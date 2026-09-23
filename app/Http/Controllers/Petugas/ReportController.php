@@ -41,8 +41,7 @@ class ReportController extends Controller
             'total_collections' => Collection::sum('stock'),
             'total_books' => Book::count(),
             'total_archives' => LaporanPkl::count() + ProposalTa::count() + LaporanTugasAkhir::count(),
-            'unpaid_penalties_amount' => Penalty::where('status', 'belum_dibayar')->sum('amount'),
-            'unpaid_penalties_count' => Penalty::where('status', 'belum_dibayar')->count(),
+            'total_penalties' => Penalty::count(),
         ];
 
         return view('petugas.reports.index', [
@@ -211,8 +210,8 @@ class ReportController extends Controller
         $stats = [
             'unpaid_amount' => Penalty::where('status', 'belum_dibayar')->sum('amount'),
             'unpaid_count' => Penalty::where('status', 'belum_dibayar')->count(),
-            'paid_amount' => Penalty::where('status', 'dibayar')->sum('amount'),
-            'paid_count' => Penalty::where('status', 'dibayar')->count(),
+            'paid_amount' => Penalty::where('status', 'lunas')->sum('amount'),
+            'paid_count' => Penalty::where('status', 'lunas')->count(),
         ];
 
         return view('petugas.reports.denda', compact('penalties', 'search', 'status', 'type', 'stats'));
@@ -277,8 +276,8 @@ class ReportController extends Controller
         $sheet->setCellValue('C4', 'Koleksi / Buku');
         $sheet->setCellValue('D4', 'Jenis Sanksi');
         $sheet->setCellValue('E4', 'Metode Penyelesaian');
-        $sheet->setCellValue('F4', 'Nominal Denda');
-        $sheet->setCellValue('G4', 'Status');
+        $sheet->setCellValue('F4', 'Nominal Sanksi');
+        $sheet->setCellValue('G4', 'Status Penyelesaian');
         $sheet->setCellValue('H4', 'Keterangan');
         $sheet->getStyle('A4:H4')->getFont()->setBold(true);
 
@@ -291,7 +290,7 @@ class ReportController extends Controller
             $sheet->setCellValue('E' . $rowNum, str_replace('_', ' ', ucfirst($pen->penalti_type ?? 'uang_tunai')));
             $sheet->setCellValue('F' . $rowNum, (float) $pen->amount);
             $sheet->getStyle('F' . $rowNum)->getNumberFormat()->setFormatCode('#,##0');
-            $sheet->setCellValue('G' . $rowNum, $pen->status === 'dibayar' ? 'LUNAS' : 'BELUM DIBAYAR');
+            $sheet->setCellValue('G' . $rowNum, $pen->status === 'lunas' ? 'SELESAI' : 'BELUM SELESAI');
             $sheet->setCellValue('H' . $rowNum, $pen->description ?: '-');
             $rowNum++;
         }

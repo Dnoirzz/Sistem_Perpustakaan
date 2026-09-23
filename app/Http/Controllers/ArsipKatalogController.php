@@ -42,6 +42,7 @@ class ArsipKatalogController extends Controller
             'archives' => $paginated,
             'typeOptions' => ArsipDigital::typeOptions(),
             'prodis' => Prodi::query()->orderBy('nama_prodi')->get(),
+            'years' => ArsipDigital::catalogYears(),
             'selectedType' => $type,
         ]);
     }

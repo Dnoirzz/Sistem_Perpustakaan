@@ -169,8 +169,8 @@
                 </div>
 
                 <!-- Category filter and Submit -->
-                <div class="flex gap-2">
-                    <select name="category" class="flex-1 px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
+                <div class="flex min-w-0 gap-2">
+                    <select name="category" class="min-w-0 flex-1 px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->kategori_id }}" {{ request('category') == $cat->kategori_id ? 'selected' : '' }}>
@@ -179,12 +179,12 @@
                         @endforeach
                     </select>
 
-                    <button type="submit" class="py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all">
+                    <button type="submit" class="shrink-0 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all">
                         Cari
                     </button>
                     
                     @if(request()->filled('search') || request()->filled('category'))
-                        <a href="{{ route('mahasiswa.books.index') }}" class="py-3 px-4 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs flex items-center justify-center transition-all">
+                        <a href="{{ route('mahasiswa.books.index') }}" class="shrink-0 py-3 px-4 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs flex items-center justify-center transition-all">
                             Reset
                         </a>
                     @endif

@@ -134,6 +134,9 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #b1afc2;
         }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="font-body-md text-body-md antialiased min-h-screen">
@@ -160,45 +163,149 @@
             </div>
         @endif
 
+        @php
+            $catalogRouteName = Auth::check() ? $rolePrefix . '.katalog-arsip.index' : 'katalog-arsip.index';
+            $searchByOptions = [
+                'judul' => 'Judul Karya Ilmiah',
+                'penulis' => 'Nama Mahasiswa / NIM',
+                'pembimbing' => 'Dosen Pembimbing',
+                'penguji' => 'Dosen Penguji',
+                'tempat_pkl' => 'Tempat PKL',
+            ];
+            $searchPlaceholders = [
+                'all' => 'Masukkan judul, nama mahasiswa, dosen, atau prodi',
+                'judul' => 'Masukkan judul karya ilmiah',
+                'penulis' => 'Masukkan nama mahasiswa atau NIM',
+                'pembimbing' => 'Masukkan nama dosen pembimbing',
+                'penguji' => 'Masukkan nama dosen penguji',
+                'tempat_pkl' => 'Masukkan nama instansi atau tempat PKL',
+            ];
+            $selectedSearchBy = (string) request('search_by', '');
+            $selectedTypeLabel = collect($typeOptions)->firstWhere('value', request('type'))['label'] ?? null;
+            $selectedProdi = $prodis->first(fn ($prodi) => (string) $prodi->prodi_id === (string) request('prodi_id'));
+            $hasActiveFilters = request()->filled('search')
+                || request()->filled('type')
+                || request()->filled('prodi_id')
+                || request()->filled('year');
+        @endphp
+
         <section class="mb-8 rounded-3xl border border-outline-variant/100 bg-white p-6 shadow-sm">
-            <form action="{{ Auth::check() ? route($rolePrefix . '.katalog-arsip.index') : route('katalog-arsip.index') }}" method="GET" class="grid gap-4 md:grid-cols-5">
-                <div>
-                    <select name="search_by" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        <option value="all" @selected(request('search_by') === 'all' || !request('search_by'))>Cari Berdasarkan</option>
-                        <option value="judul" @selected(request('search_by') === 'judul')>Judul Karya Ilmiah</option>
-                        <option value="penulis" @selected(request('search_by') === 'penulis')>Nama Mahasiswa / NIM</option>
-                        <option value="pembimbing" @selected(request('search_by') === 'pembimbing')>Dosen Pembimbing</option>
-                        <option value="penguji" @selected(request('search_by') === 'penguji')>Dosen Penguji</option>
-                        <option value="tempat_pkl" @selected(request('search_by') === 'tempat_pkl')>Tempat PKL</option>
-                    </select>
+            <form
+                action="{{ route($catalogRouteName) }}"
+                method="GET"
+                x-data="{ searchBy: @js($selectedSearchBy), placeholders: @js($searchPlaceholders) }"
+            >
+                <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <div>
+                        <label for="search_by" class="sr-only">Cari berdasarkan</label>
+                        <select
+                            id="search_by"
+                            name="search_by"
+                            x-model="searchBy"
+                            @change="searchBy ? $nextTick(() => $refs.searchInput.focus()) : ($refs.searchInput.value = '', $el.form.submit())"
+                            class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all"
+                        >
+                            <option value="" @selected($selectedSearchBy === '')>Cari berdasarkan</option>
+                            @foreach($searchByOptions as $value => $label)
+                                <option value="{{ $value }}" @selected($selectedSearchBy === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="archive_type" class="sr-only">Jenis arsip</label>
+                        <select id="archive_type" name="type" onchange="this.form.submit()" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                            <option value="">Jenis Arsip</option>
+                            @foreach($typeOptions as $typeOption)
+                                <option value="{{ $typeOption['value'] }}" @selected(request('type') === $typeOption['value'])>{{ $typeOption['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="archive_prodi" class="sr-only">Program studi</label>
+                        <select id="archive_prodi" name="prodi_id" onchange="this.form.submit()" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                            <option value="">Program Studi</option>
+                            @foreach($prodis as $prodi)
+                                <option value="{{ $prodi->prodi_id }}" @selected((string) request('prodi_id') === (string) $prodi->prodi_id)>{{ $prodi->nama_prodi }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="archive_year" class="sr-only">Tahun arsip</label>
+                        <select id="archive_year" name="year" onchange="this.form.submit()" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                            <option value="">Tahun Terbit</option>
+                            @foreach($years as $year)
+                                <option value="{{ $year }}" @selected((string) request('year') === (string) $year)>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-                <div class="relative flex items-center">
-                    <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Kata kunci pencarian" class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all">
+
+                <div
+                    x-cloak
+                    x-show="searchBy"
+                    x-transition.opacity.duration.200ms
+                    class="mt-4 border-t border-outline-variant/60 pt-4"
+                >
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <div class="relative flex min-w-0 flex-1 items-center">
+                            <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
+                            <input
+                                x-ref="searchInput"
+                                type="text"
+                                name="search"
+                                value="{{ request('search') }}"
+                                :placeholder="placeholders[searchBy] || 'Kata kunci pencarian'"
+                                class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all"
+                            >
+                        </div>
+                        <button type="submit" class="flex shrink-0 items-center justify-center gap-1.5 rounded-2xl bg-primary px-7 py-3 text-xs font-bold text-white shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:bg-primary/95 active:translate-y-0">
+                            <span class="material-symbols-outlined text-[18px]">search</span>
+                            Cari
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <select name="type" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        <option value="">Semua Jenis</option>
-                        @foreach($typeOptions as $typeOption)
-                            <option value="{{ $typeOption['value'] }}" @selected(request('type') === $typeOption['value'])>{{ $typeOption['label'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <select name="prodi_id" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
-                        <option value="">Semua Prodi</option>
-                        @foreach($prodis as $prodi)
-                            <option value="{{ $prodi->prodi_id }}" @selected((string) request('prodi_id') === (string) $prodi->prodi_id)>{{ $prodi->nama_prodi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="flex gap-3">
-                    <input type="number" name="year" value="{{ request('year') }}" placeholder="Tahun" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold transition-all">
-                    <button class="flex items-center justify-center gap-1.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-bold px-6 py-3 text-xs shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
-                        <span class="material-symbols-outlined text-[18px]">search</span>
-                        Cari
-                    </button>
-                </div>
+
+                @if($hasActiveFilters)
+                    <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-outline-variant/60 pt-4">
+                        <span class="mr-1 text-[11px] font-bold uppercase tracking-wider text-outline">Filter aktif:</span>
+
+                        @if(request()->filled('search'))
+                            <a href="{{ route($catalogRouteName, request()->except(['search', 'search_by', 'page'])) }}" class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/20" title="Hapus pencarian kata kunci">
+                                {{ $searchByOptions[$selectedSearchBy] ?? 'Pencarian' }}: {{ request('search') }}
+                                <span aria-hidden="true">&times;</span>
+                            </a>
+                        @endif
+
+                        @if($selectedTypeLabel)
+                            <a href="{{ route($catalogRouteName, request()->except(['type', 'page'])) }}" class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/20" title="Hapus filter jenis">
+                                {{ $selectedTypeLabel }}
+                                <span aria-hidden="true">&times;</span>
+                            </a>
+                        @endif
+
+                        @if($selectedProdi)
+                            <a href="{{ route($catalogRouteName, request()->except(['prodi_id', 'page'])) }}" class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/20" title="Hapus filter program studi">
+                                {{ $selectedProdi->nama_prodi }}
+                                <span aria-hidden="true">&times;</span>
+                            </a>
+                        @endif
+
+                        @if(request()->filled('year'))
+                            <a href="{{ route($catalogRouteName, request()->except(['year', 'page'])) }}" class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/20" title="Hapus filter tahun">
+                                Tahun {{ request('year') }}
+                                <span aria-hidden="true">&times;</span>
+                            </a>
+                        @endif
+
+                        <a href="{{ route($catalogRouteName) }}" class="ml-auto inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 transition-colors hover:text-rose-700 hover:underline">
+                            <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+                            Reset Semua
+                        </a>
+                    </div>
+                @endif
             </form>
         </section>
 
@@ -209,8 +316,14 @@
                         <div class="mb-4 flex items-center justify-between gap-4">
                             <span class="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-primary whitespace-nowrap">{{ $item['type_label'] }}</span>
                             <span class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide border whitespace-nowrap
-                                {{ $item['status'] === 'aktif' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-500/15 text-amber-700 border-amber-500/20' }}">
-                                {{ $item['status'] === 'aktif' ? 'Diserahkan' : 'Belum Diserahkan' }}
+                                {{ match($item['availability_status']) {
+                                    'tersedia' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                    'dipinjam' => 'bg-rose-50 text-rose-700 border-rose-200',
+                                    'dipesan' => 'bg-sky-50 text-sky-700 border-sky-200',
+                                    'belum_diserahkan' => 'bg-amber-500/15 text-amber-700 border-amber-500/20',
+                                    default => 'bg-slate-100 text-slate-600 border-slate-200',
+                                } }}">
+                                {{ $item['availability_label'] }}
                             </span>
                         </div>
                         <h2 class="line-clamp-2 text-[17px] font-bold text-on-surface mb-4 leading-snug" style="font-family: Outfit, sans-serif;">{{ $item['title'] }}</h2>

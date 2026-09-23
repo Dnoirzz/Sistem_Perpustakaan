@@ -182,7 +182,12 @@ class ArsipDigital
         return collect(static::definitions())
             ->flatMap(function (array $definition, string $type) use ($filters) {
                 $titleField = $definition['title_field'];
-                $query = $definition['model']::with(['mahasiswa.user', 'mahasiswa.prodi', 'collection'])
+                $query = $definition['model']::with([
+                    'mahasiswa.user',
+                    'mahasiswa.prodi',
+                    'collection.loans' => fn ($relation) => $relation->whereIn('status', ['dipinjam', 'terlambat']),
+                    'collection.bookings' => fn ($relation) => $relation->where('status', 'disetujui'),
+                ])
                     ->whereIn('status', static::catalogStatuses());
 
                 if (! empty($filters['year'])) {
@@ -195,11 +200,16 @@ class ArsipDigital
                     });
                 }
 
-                if (! empty($filters['search'])) {
-                    $search = $filters['search'];
+                $search = trim((string) ($filters['search'] ?? ''));
+
+                if ($search !== '') {
                     $searchBy = $filters['search_by'] ?? 'all';
 
-                    $query->where(function (Builder $builder) use ($search, $searchBy, $titleField) {
+                    if ($searchBy === 'tempat_pkl' && $type !== 'laporan-pkl') {
+                        return collect();
+                    }
+
+                    $query->where(function (Builder $builder) use ($search, $searchBy, $titleField, $type) {
                         if ($searchBy === 'judul') {
                             $builder->where($titleField, 'like', "%{$search}%");
                         } elseif ($searchBy === 'penulis') {
@@ -218,11 +228,15 @@ class ArsipDigital
                             $builder->where($titleField, 'like', "%{$search}%")
                                 ->orWhere('pembimbing', 'like', "%{$search}%")
                                 ->orWhere('penguji_1', 'like', "%{$search}%")
-                                ->orWhere('penguji_2', 'like', "%{$search}%")
-                                ->orWhere('nama_tempat_pkl', 'like', "%{$search}%")
-                                ->orWhereHas('mahasiswa.user', function (Builder $userQuery) use ($search) {
-                                    $userQuery->where('name', 'like', "%{$search}%");
-                                })
+                                ->orWhere('penguji_2', 'like', "%{$search}%");
+
+                            if ($type === 'laporan-pkl') {
+                                $builder->orWhere('nama_tempat_pkl', 'like', "%{$search}%");
+                            }
+
+                            $builder->orWhereHas('mahasiswa.user', function (Builder $userQuery) use ($search) {
+                                $userQuery->where('name', 'like', "%{$search}%");
+                            })
                                 ->orWhereHas('mahasiswa.prodi', function (Builder $prodiQuery) use ($search) {
                                     $prodiQuery->where('nama_prodi', 'like', "%{$search}%");
                                 });
@@ -230,10 +244,74 @@ class ArsipDigital
                     });
                 }
 
-                return $query->get()->map(fn (EloquentModel $archive) => static::toSummary($archive, $type));
+                return $query->get()->map(fn (EloquentModel $archive) => [
+                    ...static::toSummary($archive, $type),
+                    ...static::availability($archive),
+                ]);
             })
             ->sortByDesc('created_at')
             ->values();
+    }
+
+    public static function catalogYears(): Collection
+    {
+        return collect(static::definitions())
+            ->flatMap(fn (array $definition) => $definition['model']::query()
+                ->whereIn('status', static::catalogStatuses())
+                ->whereNotNull('tahun')
+                ->distinct()
+                ->pluck('tahun'))
+            ->filter()
+            ->map(fn ($year) => (int) $year)
+            ->unique()
+            ->sortDesc()
+            ->values();
+    }
+
+    public static function availability(EloquentModel $archive): array
+    {
+        $collection = $archive->collection;
+
+        if ($archive->status !== static::STATUS_AKTIF || ! $collection) {
+            return [
+                'availability_status' => 'belum_diserahkan',
+                'availability_label' => 'Belum Diserahkan',
+            ];
+        }
+
+        $hasActiveLoan = $collection->relationLoaded('loans')
+            ? $collection->loans->isNotEmpty()
+            : $collection->loans()->whereIn('status', ['dipinjam', 'terlambat'])->exists();
+
+        if ($hasActiveLoan) {
+            return [
+                'availability_status' => 'dipinjam',
+                'availability_label' => 'Sedang Dipinjam',
+            ];
+        }
+
+        $hasApprovedBooking = $collection->relationLoaded('bookings')
+            ? $collection->bookings->isNotEmpty()
+            : $collection->bookings()->where('status', 'disetujui')->exists();
+
+        if ($hasApprovedBooking) {
+            return [
+                'availability_status' => 'dipesan',
+                'availability_label' => 'Telah Dibooking',
+            ];
+        }
+
+        if ((int) $collection->stock > 0) {
+            return [
+                'availability_status' => 'tersedia',
+                'availability_label' => 'Tersedia',
+            ];
+        }
+
+        return [
+            'availability_status' => 'tidak_tersedia',
+            'availability_label' => 'Tidak Tersedia',
+        ];
     }
 
     public static function toSummary(EloquentModel $archive, ?string $type = null): array

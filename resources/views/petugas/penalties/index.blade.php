@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <script id="tailwind-config">
         tailwind.config = {
@@ -56,6 +57,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #c7c4d8; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #b1afc2; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="font-body-md text-body-md antialiased min-h-screen">
@@ -80,71 +82,129 @@
             </div>
         @endif
 
-        <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        <section class="mb-8 max-w-sm">
             <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
                 <div class="flex items-center justify-between mb-5">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-200">
                         <span class="material-symbols-outlined">gavel</span>
                     </div>
                 </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Denda Aktif</h3>
+                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Sanksi Aktif</h3>
                 <div class="flex items-baseline gap-2">
                     <span class="text-3xl font-bold {{ $stats['unpaid_count'] > 0 ? 'text-rose-600' : 'text-on-surface' }}">{{ $stats['unpaid_count'] }}</span>
-                    <span class="text-xs text-outline font-semibold">denda</span>
-                </div>
-            </div>
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
-                <div class="flex items-center justify-between mb-5">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-200">
-                        <span class="material-symbols-outlined">payments</span>
-                    </div>
-                </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Total Nominal Belum Bayar</h3>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-bold text-on-surface">Rp {{ number_format($stats['unpaid_total'], 0, ',', '.') }}</span>
-                </div>
-            </div>
-            <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
-                <div class="flex items-center justify-between mb-5">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
-                        <span class="material-symbols-outlined">check_circle</span>
-                    </div>
-                </div>
-                <h3 class="text-on-surface-variant font-label-md text-sm mb-1">Lunas Hari Ini</h3>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-bold text-on-surface">{{ $stats['paid_today'] }}</span>
-                    <span class="text-xs text-outline font-semibold">denda</span>
+                    <span class="text-xs text-outline font-semibold">sanksi</span>
                 </div>
             </div>
         </section>
 
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <section class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm flex-1">
-                <form action="{{ route('petugas.penalties.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="relative">
-                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-                        <input type="text" name="search" placeholder="Cari nama anggota, NIM, NIP, atau judul buku..." class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold" value="{{ request('search') }}"/>
-                    </div>
-                    <div>
-                        <select name="status" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant">
-                            <option value="">Semua Status</option>
-                            <option value="belum_dibayar" {{ request('status') === 'belum_dibayar' ? 'selected' : '' }}>Belum Dibayar</option>
-                            <option value="lunas" {{ request('status') === 'lunas' ? 'selected' : '' }}>Lunas</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-2">
-                        <button type="submit" class="flex-1 py-3 px-6 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-opacity-95 transition-all">Terapkan Filter</button>
-                        @if(request()->filled('search') || request()->filled('status'))
-                            <a href="{{ route('petugas.penalties.index') }}" class="py-3 px-6 rounded-2xl border border-outline-variant/100 text-on-surface-variant hover:bg-slate-50 font-bold text-xs transition-all text-center">Reset</a>
-                        @endif
-                    </div>
-                </form>
-            </section>
+        <div class="mb-6 flex justify-end">
             <a href="{{ route('petugas.penalties.create') }}" class="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:bg-opacity-95 transition-all whitespace-nowrap">
                 <span class="material-symbols-outlined text-[18px]">add_circle</span>
                 Proses Buku Hilang
             </a>
         </div>
+
+        @php
+            $searchByOptions = [
+                'anggota' => 'Nama Anggota',
+                'identitas' => 'NIM / NIP',
+                'koleksi' => 'Judul Buku / Arsip',
+            ];
+            $searchPlaceholders = [
+                'all' => 'Masukkan nama, NIM, NIP, atau judul koleksi',
+                'anggota' => 'Masukkan nama anggota',
+                'identitas' => 'Masukkan NIM atau NIP',
+                'koleksi' => 'Masukkan judul buku atau arsip',
+            ];
+            $selectedSearchBy = request()->filled('search')
+                ? (string) request('search_by', 'all')
+                : (string) request('search_by', '');
+            $statusLabels = [
+                'belum_dibayar' => 'Belum Selesai',
+                'lunas' => 'Selesai',
+            ];
+            $hasActiveFilters = request()->filled('search') || request()->filled('status');
+        @endphp
+
+        <section class="mb-8 bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm">
+                <form
+                    action="{{ route('petugas.penalties.index') }}"
+                    method="GET"
+                    x-data="{ searchBy: @js($selectedSearchBy), placeholders: @js($searchPlaceholders) }"
+                >
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="penalty_search_by" class="sr-only">Cari berdasarkan</label>
+                            <select
+                                id="penalty_search_by"
+                                name="search_by"
+                                x-model="searchBy"
+                                @change="searchBy ? $nextTick(() => $refs.searchInput.focus()) : ($refs.searchInput.value = '', $el.form.submit())"
+                                class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all"
+                            >
+                                <option value="" @selected($selectedSearchBy === '')>Cari berdasarkan</option>
+                                @foreach($searchByOptions as $value => $label)
+                                    <option value="{{ $value }}" @selected($selectedSearchBy === $value)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="penalty_status" class="sr-only">Status penyelesaian</label>
+                            <select id="penalty_status" name="status" onchange="this.form.submit()" class="w-full px-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold text-on-surface-variant transition-all">
+                            <option value="">Semua Status</option>
+                            <option value="belum_dibayar" {{ request('status') === 'belum_dibayar' ? 'selected' : '' }}>Belum Selesai</option>
+                            <option value="lunas" {{ request('status') === 'lunas' ? 'selected' : '' }}>Selesai</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div x-cloak x-show="searchBy" x-transition.opacity.duration.200ms class="mt-4 border-t border-outline-variant/60 pt-4">
+                        <div class="flex flex-col gap-3 sm:flex-row">
+                            <div class="relative flex min-w-0 flex-1 items-center">
+                                <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">search</span>
+                                <input
+                                    x-ref="searchInput"
+                                    type="text"
+                                    name="search"
+                                    value="{{ request('search') }}"
+                                    :placeholder="placeholders[searchBy] || 'Kata kunci pencarian'"
+                                    class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-semibold placeholder:truncate transition-all"
+                                >
+                            </div>
+                            <button type="submit" class="flex shrink-0 items-center justify-center gap-1.5 rounded-2xl bg-primary px-7 py-3 text-xs font-bold text-white shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:bg-primary/95 active:translate-y-0">
+                                <span class="material-symbols-outlined text-[18px]">search</span>
+                                Cari
+                            </button>
+                        </div>
+                    </div>
+
+                    @if($hasActiveFilters)
+                        <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-outline-variant/60 pt-4">
+                            <span class="mr-1 text-[11px] font-bold uppercase tracking-wider text-outline">Filter aktif:</span>
+
+                            @if(request()->filled('search'))
+                                <a href="{{ route('petugas.penalties.index', request()->except(['search', 'search_by', 'page'])) }}" class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/20" title="Hapus pencarian kata kunci">
+                                    {{ $searchByOptions[$selectedSearchBy] ?? 'Pencarian' }}: {{ request('search') }}
+                                    <span aria-hidden="true">&times;</span>
+                                </a>
+                            @endif
+
+                            @if(request()->filled('status'))
+                                <a href="{{ route('petugas.penalties.index', request()->except(['status', 'page'])) }}" class="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/20" title="Hapus filter status">
+                                    {{ $statusLabels[request('status')] ?? ucfirst((string) request('status')) }}
+                                    <span aria-hidden="true">&times;</span>
+                                </a>
+                            @endif
+
+                            <a href="{{ route('petugas.penalties.index') }}" class="ml-auto inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 transition-colors hover:text-rose-700 hover:underline">
+                                <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+                                Reset Semua
+                            </a>
+                        </div>
+                    @endif
+                </form>
+        </section>
 
         <x-table :pagination="$penalties->hasPages() ? $penalties->links() : null">
             <x-slot name="headers">
@@ -240,13 +300,13 @@
                             @else
                                 <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold tracking-wide shadow-2xs">
                                     <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse"></span>
-                                    Belum Dibayar
+                                    Belum Selesai
                                 </span>
                             @endif
                         @else
                             <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold tracking-wide shadow-2xs">
                                 <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-                                Lunas
+                                Selesai
                             </span>
                         @endif
                     </td>
@@ -301,19 +361,19 @@
                             @endif
 
                             @if($penalty->status === 'belum_dibayar' && ! ($penalty->type === 'kehilangan' && $penalty->penalti_type === 'ganti_buku' && ! $replacementReceived) && ! $paymentReceived)
-                                <form method="POST" action="{{ route('petugas.penalties.mark-paid', $penalty->penalti_id) }}" onsubmit="return confirm('Tandai denda ini sebagai lunas?')">
+                                <form method="POST" action="{{ route('petugas.penalties.mark-paid', $penalty->penalti_id) }}" onsubmit="return confirm('Tandai sanksi ini sebagai selesai?')">
                                     @csrf
                                     <button
                                         type="submit"
                                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-xs active:scale-95 shadow-emerald-200"
-                                        title="Tandai lunas"
-                                        aria-label="Tandai denda sebagai lunas"
+                                        title="Tandai selesai"
+                                        aria-label="Tandai sanksi sebagai selesai"
                                     >
                                         <span class="material-symbols-outlined text-[20px]">check</span>
                                     </button>
                                 </form>
                             @elseif($penalty->status === 'lunas')
-                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 text-slate-400 border border-slate-200" title="Sudah lunas">
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 text-slate-400 border border-slate-200" title="Sudah selesai">
                                     <span class="material-symbols-outlined text-[20px]">check_circle</span>
                                 </span>
                             @elseif($paymentReceived)
@@ -639,7 +699,7 @@
                 <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-900 space-y-1">
                     <p><strong>Peminjam:</strong> <span id="same-user-name"></span></p>
                     <p><strong>Judul Buku:</strong> <span id="same-book-title"></span></p>
-                    <p class="text-[11px] text-emerald-700 mt-1 font-medium">💡 Menyetujui penggantian ini akan menambah <strong>+1 Stok Fisik Baru</strong> pada judul buku ini dan melunaskan denda sanksi terkait.</p>
+                    <p class="text-[11px] text-emerald-700 mt-1 font-medium">💡 Menyetujui penggantian ini akan menambah <strong>+1 Stok Fisik Baru</strong> pada judul buku ini dan menyelesaikan sanksi terkait.</p>
                 </div>
 
                 <div class="space-y-1">
@@ -711,7 +771,7 @@
 
                 <div class="flex items-center justify-end gap-2 pt-2">
                     <button type="button" onclick="closeNewCollectionModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-md">Simpan Koleksi Baru &amp; Lunaskan</button>
+                    <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-md">Simpan Koleksi Baru &amp; Selesaikan</button>
                 </div>
             </form>
         </div>

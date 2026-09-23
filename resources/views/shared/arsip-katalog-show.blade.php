@@ -215,6 +215,12 @@
                             <span class="block uppercase tracking-wider text-[10px]">Program Studi</span>
                             <p class="text-sm font-bold text-on-surface">{{ $archive->mahasiswa?->prodi?->nama_prodi ?? $archive->mahasiswa?->prodi?->prodi_name ?? '-' }}</p>
                         </div>
+                        @if($archiveType === 'laporan-pkl')
+                            <div class="space-y-1">
+                                <span class="block uppercase tracking-wider text-[10px]">Nama Tempat PKL</span>
+                                <p class="text-sm font-bold text-on-surface">{{ $archive->nama_tempat_pkl ?? '-' }}</p>
+                            </div>
+                        @endif
                         <div class="space-y-1">
                             <span class="block uppercase tracking-wider text-[10px]">Dosen Pembimbing</span>
                             <p class="text-sm font-bold text-on-surface">{{ $archive->pembimbing ?? '-' }}</p>

@@ -84,11 +84,11 @@
                     <input type="text" name="search" value="{{ $search }}" onchange="this.form.submit()" placeholder="Nama Anggota, NIM, NIP" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 text-xs font-semibold text-slate-700"/>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status Pembayaran</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status Penyelesaian</label>
                     <select name="status" onchange="this.form.submit()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 text-xs font-semibold text-slate-700">
                         <option value="all" {{ $status === 'all' ? 'selected' : '' }}>Semua Status</option>
-                        <option value="belum_dibayar" {{ $status === 'belum_dibayar' ? 'selected' : '' }}>Belum Dibayar</option>
-                        <option value="dibayar" {{ $status === 'dibayar' ? 'selected' : '' }}>Lunas / Dibayar</option>
+                        <option value="belum_dibayar" {{ $status === 'belum_dibayar' ? 'selected' : '' }}>Belum Selesai</option>
+                        <option value="lunas" {{ $status === 'lunas' ? 'selected' : '' }}>Selesai</option>
                     </select>
                 </div>
                 <div>
@@ -117,7 +117,7 @@
                 <h2 class="text-base lg:text-lg font-extrabold uppercase tracking-wide text-slate-900">PERPUSTAKAAN PSDKU POLITEKNIK NEGERI PONTIANAK SUKAMARA</h2>
                 <h3 class="text-sm font-bold uppercase tracking-wider text-rose-700 pt-2">LAPORAN REKAPITULASI DENDA & SANKSI</h3>
                 <p class="text-xs text-slate-500 font-medium">
-                    Status: {{ $status === 'all' ? 'Semua Status' : ucfirst($status) }} • Sanksi: {{ $type === 'all' ? 'Semua Jenis' : ucfirst($type) }}
+                    Status: {{ ['all' => 'Semua Status', 'belum_dibayar' => 'Belum Selesai', 'lunas' => 'Selesai'][$status] ?? ucfirst($status) }} • Sanksi: {{ $type === 'all' ? 'Semua Jenis' : ucfirst($type) }}
                 </p>
             </div>
 
@@ -131,8 +131,8 @@
                             <th class="py-3 px-4 border-r border-slate-300">Koleksi Terkait</th>
                             <th class="py-3 px-3 border-r border-slate-300">Jenis Sanksi</th>
                             <th class="py-3 px-3 border-r border-slate-300">Metode</th>
-                            <th class="py-3 px-4 border-r border-slate-300 text-right">Nominal Denda</th>
-                            <th class="py-3 px-3 text-center">Status</th>
+                            <th class="py-3 px-4 border-r border-slate-300 text-right">Nominal Sanksi</th>
+                            <th class="py-3 px-3 text-center">Status Penyelesaian</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-slate-800 font-medium">
@@ -166,10 +166,10 @@
                                     Rp {{ number_format($pen->amount, 0, ',', '.') }}
                                 </td>
                                 <td class="py-3 px-3 text-center font-bold">
-                                    @if($pen->status === 'dibayar')
-                                        <span class="text-emerald-700 uppercase text-[10px]">Lunas</span>
+                                    @if($pen->status === 'lunas')
+                                        <span class="text-emerald-700 uppercase text-[10px]">Selesai</span>
                                     @else
-                                        <span class="text-rose-700 uppercase text-[10px]">Belum Dibayar</span>
+                                        <span class="text-rose-700 uppercase text-[10px]">Belum Selesai</span>
                                     @endif
                                 </td>
                             </tr>
@@ -182,7 +182,7 @@
                     @if($penalties->isNotEmpty())
                         <tfoot>
                             <tr class="bg-slate-50 font-bold text-slate-900">
-                                <td colspan="5" class="py-3 px-4 text-right border-r border-slate-300">TOTAL DENDA DI TAMPILAN:</td>
+                                <td colspan="5" class="py-3 px-4 text-right border-r border-slate-300">Total Nominal Sanksi:</td>
                                 <td class="py-3 px-4 text-right border-r border-slate-300 text-rose-700">Rp {{ number_format($totalAmountOnPage, 0, ',', '.') }}</td>
                                 <td></td>
                             </tr>

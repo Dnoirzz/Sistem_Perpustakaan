@@ -171,16 +171,17 @@
                     </div>
                 </div>
 
-                <!-- 4. Total Denda Belum Dibayar -->
+                <!-- 4. Total Sanksi dan Denda -->
                 <div class="bg-white p-6 rounded-3xl border border-outline-variant/100 shadow-sm hover:shadow-md transition-all">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-[24px]">payments</span>
+                            <span class="material-symbols-outlined text-[24px]">gavel</span>
                         </div>
                     </div>
-                    <h3 class="text-on-surface-variant font-label-md text-xs mb-1">Denda Belum Dibayar</h3>
+                    <h3 class="text-on-surface-variant font-label-md text-xs mb-1">Total Sanksi &amp; Denda</h3>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-2xl font-extrabold text-rose-600">Rp {{ number_format($stats['unpaid_penalties_amount'], 0, ',', '.') }}</span>
+                        <span class="text-3xl font-bold text-rose-600">{{ number_format($stats['total_penalties'], 0, ',', '.') }}</span>
+                        <span class="text-xs text-outline font-semibold">kasus</span>
                     </div>
                 </div>
             </div>
@@ -243,7 +244,7 @@
                             <span class="material-symbols-outlined text-[28px]">gavel</span>
                         </div>
                         <h3 class="font-headline-md text-on-surface text-base mb-1">Laporan Denda & Sanksi</h3>
-                        <p class="text-xs text-outline mb-6">Tampilkan tabel rekapan kasus keterlambatan, kerusakan, kehilangan buku, serta status pelunasannya.</p>
+                        <p class="text-xs text-outline mb-6">Tampilkan tabel rekapan kasus keterlambatan, kerusakan, kehilangan buku, serta status penyelesaiannya.</p>
                     </div>
                     <a href="{{ route('petugas.reports.denda') }}" class="w-full py-3 px-4 rounded-2xl bg-rose-600 text-white text-xs font-bold transition-all shadow-md shadow-rose-200 hover:bg-rose-700 text-center flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">visibility</span>

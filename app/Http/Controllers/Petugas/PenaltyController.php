@@ -24,7 +24,8 @@ class PenaltyController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $search = trim((string) $request->input('search', ''));
+        $searchBy = $request->input('search_by') ?: 'all';
         $status = $request->input('status');
 
         $query = Penalty::with([
@@ -38,25 +39,45 @@ class PenaltyController extends Controller
             $query->where('status', $status);
         }
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
+        if ($search !== '') {
+            $matchingCollectionIds = in_array($searchBy, ['all', 'koleksi'], true)
+                ? ArsipDigital::matchingCollectionIds($search)
+                : [];
+
+            $query->where(function ($q) use ($search, $searchBy, $matchingCollectionIds) {
+                if ($searchBy === 'anggota') {
+                    $q->whereHas('user', fn ($uq) => $uq->where('name', 'like', "%{$search}%"));
+
+                    return;
+                }
+
+                if ($searchBy === 'identitas') {
+                    $q->whereHas('user', function ($uq) use ($search) {
+                        $uq->whereHas('mahasiswa', fn ($mq) => $mq->where('nim', 'like', "%{$search}%"))
+                            ->orWhereHas('dosen', fn ($dq) => $dq->where('nip', 'like', "%{$search}%"));
+                    });
+
+                    return;
+                }
+
+                if ($searchBy === 'koleksi') {
+                    if ($matchingCollectionIds === []) {
+                        $q->whereRaw('1 = 0');
+                    } else {
+                        $q->whereHas('loan', fn ($lq) => $lq->whereIn('koleksi_id', $matchingCollectionIds));
+                    }
+
+                    return;
+                }
+
                 $q->whereHas('user', function ($uq) use ($search) {
                     $uq->where('name', 'like', "%{$search}%")
-                        ->orWhereHas('mahasiswa', function ($mq) use ($search) {
-                            $mq->where('nim', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('dosen', function ($dq) use ($search) {
-                            $dq->where('nip', 'like', "%{$search}%");
-                        });
-                })->orWhereHas('loan.collection.book', function ($bq) use ($search) {
-                    $bq->where('judul', 'like', "%{$search}%");
+                        ->orWhereHas('mahasiswa', fn ($mq) => $mq->where('nim', 'like', "%{$search}%"))
+                        ->orWhereHas('dosen', fn ($dq) => $dq->where('nip', 'like', "%{$search}%"));
                 });
 
-                $matchingCollectionIds = ArsipDigital::matchingCollectionIds($search);
                 if ($matchingCollectionIds !== []) {
-                    $q->orWhereHas('loan', function ($lq) use ($matchingCollectionIds) {
-                        $lq->whereIn('koleksi_id', $matchingCollectionIds);
-                    });
+                    $q->orWhereHas('loan', fn ($lq) => $lq->whereIn('koleksi_id', $matchingCollectionIds));
                 }
             });
         }
@@ -69,13 +90,11 @@ class PenaltyController extends Controller
 
         $stats = [
             'unpaid_count' => Penalty::where('status', 'belum_dibayar')->count(),
-            'unpaid_total' => Penalty::where('status', 'belum_dibayar')->sum('amount'),
-            'paid_today' => Penalty::where('status', 'lunas')->whereDate('updated_at', today())->count(),
         ];
 
         $categories = \App\Models\Category::orderBy('kategori_name')->get();
 
-        return view('petugas.penalties.index', compact('penalties', 'stats', 'search', 'status', 'categories'));
+        return view('petugas.penalties.index', compact('penalties', 'stats', 'search', 'searchBy', 'status', 'categories'));
     }
 
     /**

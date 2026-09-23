@@ -147,8 +147,8 @@
                 <th style="width: 22%;">Nama Anggota</th>
                 <th style="width: 33%;">Koleksi Buku / Arsip</th>
                 <th style="width: 12%;">Jenis Sanksi</th>
-                <th style="width: 13%; text-align: right;">Nominal Denda</th>
-                <th style="width: 15%;">Status</th>
+                <th style="width: 13%; text-align: right;">Nominal Sanksi</th>
+                <th style="width: 15%;">Status Penyelesaian</th>
             </tr>
         </thead>
         <tbody>
@@ -171,10 +171,10 @@
                     <td class="text-center">{{ ucfirst($pen->type) }}</td>
                     <td class="text-right" style="font-weight: bold;">Rp {{ number_format($pen->amount, 0, ',', '.') }}</td>
                     <td class="text-center" style="font-weight: bold;">
-                        @if($pen->status === 'dibayar')
-                            LUNAS
+                        @if($pen->status === 'lunas')
+                            SELESAI
                         @else
-                            <span style="color: red;">BELUM DIBAYAR</span>
+                            <span style="color: red;">BELUM SELESAI</span>
                         @endif
                     </td>
                 </tr>
@@ -187,7 +187,7 @@
         @if($penalties->isNotEmpty())
             <tfoot>
                 <tr style="background-color: #fafafa;">
-                    <td colspan="4" class="text-right" style="font-weight: bold;">TOTAL DENDA REKAPITULASI:</td>
+                    <td colspan="4" class="text-right" style="font-weight: bold;">TOTAL NOMINAL SANKSI:</td>
                     <td class="text-right" style="font-weight: bold; font-size: 11pt;">Rp {{ number_format($totalAmount, 0, ',', '.') }}</td>
                     <td></td>
                 </tr>
