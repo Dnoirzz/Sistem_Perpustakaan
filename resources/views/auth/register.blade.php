@@ -546,7 +546,7 @@
     @endif
     <div class="register-layout">
         <aside class="visual-pane" aria-hidden="true">
-            <div style="width: min(220px, 55%); aspect-ratio: 1/1; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1.5px solid rgba(255, 255, 255, 0.25); border-radius: 24px; padding: 2rem; box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1), 0 10px 25px rgba(0, 0, 0, 0.05);">
+            <div style="width: min(220px, 55%); aspect-ratio: 1/1; margin-bottom: 4rem; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1.5px solid rgba(255, 255, 255, 0.25); border-radius: 24px; padding: 2rem; box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1), 0 10px 25px rgba(0, 0, 0, 0.05);">
                 <img src="{{ asset('img/logo_polnep.webp') }}" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo POLNEP">
             </div>
             <div class="visual-text">
